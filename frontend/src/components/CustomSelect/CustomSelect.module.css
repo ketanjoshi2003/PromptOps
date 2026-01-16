@@ -1,0 +1,79 @@
+.selectContainer {
+    position: relative;
+    width: 100%;
+}
+
+.selectHeader {
+    width: 100%;
+    padding: 10px var(--spacing-md);
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.selectHeader:hover {
+    border-color: var(--color-text-muted);
+}
+
+.arrow {
+    font-size: 0.8em;
+    transition: transform 0.2s;
+    color: var(--color-text-secondary);
+}
+
+.arrowOpen {
+    transform: rotate(180deg);
+}
+
+.optionsContainer {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 4px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px var(--shadow-sm);
+    /* Use theme shadow */
+    z-index: 1000;
+    overflow: hidden;
+    max-height: 200px;
+    overflow-y: auto;
+    animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top center;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.option {
+    padding: 10px var(--spacing-md);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.option:hover,
+.option.selected {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
