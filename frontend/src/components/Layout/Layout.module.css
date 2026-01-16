@@ -95,21 +95,21 @@
 }
 
 .navItem:hover {
-    background-color: transparent;
-    border-color: var(--color-text-primary);
-    color: var(--color-text-primary);
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: transparent;
+    color: #ef4444;
 }
 
 .navItemActive {
-    background-color: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border-color: transparent;
 }
 
 .navItemActive:hover {
-    background-color: #ffffff;
-    border-color: #ffffff;
-    color: #000000;
+    background-color: rgba(239, 68, 68, 0.2);
+    border-color: transparent;
+    color: #ef4444;
 }
 
 
