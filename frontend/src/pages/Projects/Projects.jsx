@@ -209,9 +209,26 @@ const Projects = ({ isVisible }) => {
             {/* Portal Actions to Header */}
             {document.getElementById('header-actions-root') && createPortal(
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    {/* Left Side: Title or Selection Status */}
-                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
-                        {isSelectionMode ? `Selected (${selectedIds.size})` : ''}
+                    {/* Left Side: Title or Selection Status + Search */}
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', minWidth: isSelectionMode ? 'auto' : '0' }}>
+                            {isSelectionMode ? `Selected (${selectedIds.size})` : ''}
+                        </div>
+
+                        {!isSelectionMode && projects.length > 0 && (
+                            <div className={styles.headerSearchContainer}>
+                                <div className={styles.searchIcon} style={{ left: '10px' }}>
+                                    <FiSearch size={16} />
+                                </div>
+                                <input
+                                    type="text"
+                                    className={styles.headerSearchInput}
+                                    placeholder="Search..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Side: Actions */}
@@ -242,21 +259,6 @@ const Projects = ({ isVisible }) => {
                     </div>
                 </div>,
                 document.getElementById('header-actions-root')
-            )}
-
-            {projects.length > 0 && (
-                <div className={styles.searchContainer}>
-                    <div className={styles.searchIcon}>
-                        <FiSearch />
-                    </div>
-                    <input
-                        type="text"
-                        className={styles.searchInput}
-                        placeholder="Search projects..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
             )}
 
             <div className={styles.projectList}>
