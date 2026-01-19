@@ -362,6 +362,14 @@
     color: var(--color-text-primary);
 }
 
+.headerActionsRoot {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+}
+
 .contentArea {
     flex: 1;
     overflow: hidden;

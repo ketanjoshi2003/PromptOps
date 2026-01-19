@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Projects.module.css';
 import { FiSearch, FiTrash2, FiX, FiCheckSquare, FiSquare, FiList, FiEdit2, FiCopy, FiCheck } from 'react-icons/fi';
 
@@ -205,34 +206,43 @@ const Projects = ({ isVisible }) => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.headerRow}>
-                <h1 className={styles.title}>Projects</h1>
-                <div className={styles.actions}>
-                    {isSelectionMode ? (
-                        <>
-                            <button
-                                className={`${styles.actionBtn} ${styles.deleteBtn} ${selectedIds.size === 0 ? styles.disabled : ''}`}
-                                onClick={handleBulkDelete}
-                                disabled={selectedIds.size === 0}
-                            >
-                                <FiTrash2 /> Delete ({selectedIds.size})
-                            </button>
-                            <button className={styles.actionBtn} onClick={toggleSelectAll}>
-                                {selectedIds.size === filteredProjects.length && filteredProjects.length > 0 ? <FiCheckSquare /> : <FiSquare />} All
-                            </button>
-                            <button className={styles.actionBtn} onClick={toggleSelectionMode}>
-                                <FiX /> Cancel
-                            </button>
-                        </>
-                    ) : (
-                        projects.length > 0 && (
-                            <button className={styles.actionBtn} onClick={toggleSelectionMode}>
-                                <FiList /> Select
-                            </button>
-                        )
-                    )}
-                </div>
-            </div>
+            {/* Portal Actions to Header */}
+            {document.getElementById('header-actions-root') && createPortal(
+                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* Left Side: Title or Selection Status */}
+                    <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
+                        {isSelectionMode ? `Selected (${selectedIds.size})` : ''}
+                    </div>
+
+                    {/* Right Side: Actions */}
+                    <div className={styles.actions} style={{ display: 'flex', gap: '8px' }}>
+                        {isSelectionMode ? (
+                            <>
+                                <button
+                                    className={`${styles.actionBtn} ${styles.deleteBtn} ${selectedIds.size === 0 ? styles.disabled : ''}`}
+                                    onClick={handleBulkDelete}
+                                    disabled={selectedIds.size === 0}
+                                >
+                                    <FiTrash2 /> Delete
+                                </button>
+                                <button className={styles.actionBtn} onClick={toggleSelectAll}>
+                                    {selectedIds.size === filteredProjects.length && filteredProjects.length > 0 ? <FiCheckSquare /> : <FiSquare />} All
+                                </button>
+                                <button className={styles.actionBtn} onClick={toggleSelectionMode}>
+                                    <FiX /> Cancel
+                                </button>
+                            </>
+                        ) : (
+                            projects.length > 0 && (
+                                <button className={styles.actionBtn} onClick={toggleSelectionMode}>
+                                    <FiList /> Select
+                                </button>
+                            )
+                        )}
+                    </div>
+                </div>,
+                document.getElementById('header-actions-root')
+            )}
 
             {projects.length > 0 && (
                 <div className={styles.searchContainer}>

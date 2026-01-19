@@ -259,7 +259,7 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    animation: slideUp 0.2s ease-out;
+    animation: modalExpand 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modalHeader {
@@ -362,7 +362,6 @@
     margin-bottom: 5px;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -373,14 +372,14 @@
     }
 }
 
-@keyframes slideUp {
+@keyframes modalExpand {
     from {
-        transform: translateY(20px);
+        transform: translateY(20px) scale(0.96);
         opacity: 0;
     }
 
     to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }

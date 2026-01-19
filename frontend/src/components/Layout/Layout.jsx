@@ -220,82 +220,99 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                 <span className={styles.pipe}>|</span>
                             </div>
                         </div>
-                        <span className={styles.modelName}>PromptOps</span>
+                        {currentView === 'dashboard' && (
+                            <span className={styles.modelName}>PromptOps</span>
+                        )}
+                        {currentView === 'settings' && (
+                            <span className={styles.modelName}>Settings</span>
+                        )}
+                        {currentView === 'chain' && (
+                            <span className={styles.modelName}>Chain</span>
+                        )}
+                        {currentView === 'chat' && (
+                            <span className={styles.modelName}>Chat</span>
+                        )}
+                        {currentView === 'projects' && (
+                            <span className={styles.modelName}>Projects</span>
+                        )}
                     </div>
+                    <div id="header-actions-root" className={styles.headerActionsRoot}></div>
                 </div>
                 <div className={styles.contentArea}>
                     {children}
                 </div>
-            </main>
+            </main >
 
             {/* Auth Modal */}
-            {isAuthOpen && (
-                <div className={styles.modalOverlay} onClick={() => setIsAuthOpen(false)}>
-                    <div className={styles.loginModal} onClick={e => e.stopPropagation()}>
-                        <h2 className={styles.modalTitle}>
-                            {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
-                        </h2>
-                        <p className={styles.modalSubtitle}>
-                            {authMode === 'login'
-                                ? 'Enter your details to access your workspace.'
-                                : 'Join us to start building better prompts.'}
-                        </p>
+            {
+                isAuthOpen && (
+                    <div className={styles.modalOverlay} onClick={() => setIsAuthOpen(false)}>
+                        <div className={styles.loginModal} onClick={e => e.stopPropagation()}>
+                            <h2 className={styles.modalTitle}>
+                                {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+                            </h2>
+                            <p className={styles.modalSubtitle}>
+                                {authMode === 'login'
+                                    ? 'Enter your details to access your workspace.'
+                                    : 'Join us to start building better prompts.'}
+                            </p>
 
-                        {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+                            {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
 
-                        <div key={authMode} className={styles.formFade}>
-                            <div className={styles.inputGroup}>
-                                <input
-                                    type="email"
-                                    placeholder="Email Address"
-                                    className={styles.loginInput}
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
+                            <div key={authMode} className={styles.formFade}>
+                                <div className={styles.inputGroup}>
+                                    <input
+                                        type="email"
+                                        placeholder="Email Address"
+                                        className={styles.loginInput}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className={styles.inputGroup}>
+                                    <input
+                                        type="password"
+                                        placeholder="Password"
+                                        className={styles.loginInput}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+
+                                <button
+                                    className={styles.loginBtn}
+                                    onClick={handleAuthSubmit}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
+                                </button>
                             </div>
 
-                            <div className={styles.inputGroup}>
-                                <input
-                                    type="password"
-                                    placeholder="Password"
-                                    className={styles.loginInput}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
+                            <div className={styles.authSwitch}>
+                                {authMode === 'login' ? (
+                                    <>
+                                        Don't have an account?{' '}
+                                        <span onClick={() => {
+                                            setAuthMode('register');
+                                            setError('');
+                                        }}>Sign up</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        Already have an account?{' '}
+                                        <span onClick={() => {
+                                            setAuthMode('login');
+                                            setError('');
+                                        }}>Sign in</span>
+                                    </>
+                                )}
                             </div>
-
-                            <button
-                                className={styles.loginBtn}
-                                onClick={handleAuthSubmit}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
-                            </button>
-                        </div>
-
-                        <div className={styles.authSwitch}>
-                            {authMode === 'login' ? (
-                                <>
-                                    Don't have an account?{' '}
-                                    <span onClick={() => {
-                                        setAuthMode('register');
-                                        setError('');
-                                    }}>Sign up</span>
-                                </>
-                            ) : (
-                                <>
-                                    Already have an account?{' '}
-                                    <span onClick={() => {
-                                        setAuthMode('login');
-                                        setError('');
-                                    }}>Sign in</span>
-                                </>
-                            )}
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };
 

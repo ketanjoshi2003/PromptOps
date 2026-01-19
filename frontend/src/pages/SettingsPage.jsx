@@ -92,7 +92,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
 
     return (
         <div className={styles.container}>
-            <h1 className={styles.title}>Settings</h1>
+
 
             <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>Appearance</h2>

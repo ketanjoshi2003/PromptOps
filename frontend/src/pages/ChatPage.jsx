@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import { FiMessageSquare, FiSettings, FiRefreshCw, FiArrowUp, FiUser, FiCopy, FiCheck } from 'react-icons/fi';
 import styles from './ChatPage.module.css';
@@ -141,14 +142,21 @@ const ChatPage = () => {
 
     return (
         <div className={styles.chatContainer}>
-            <div className={styles.chatHeader}>
-                <h1>Chat API</h1>
-                <div className={styles.headerActions}>
-                    <button className={styles.headerButton} onClick={handleReset} title="Reset Chat">
+            {/* Portal Actions to Header */}
+            {document.getElementById('header-actions-root') && createPortal(
+                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+                    <button
+                        className={styles.headerButton}
+                        onClick={handleReset}
+                        title="Reset Chat"
+                        style={{ border: '1px solid var(--color-border)', borderRadius: '4px', padding: '6px 12px' }}
+                    >
                         <FiRefreshCw /> Reset Chat
                     </button>
-                </div>
-            </div>
+                </div>,
+                document.getElementById('header-actions-root')
+            )}
 
             <div className={styles.messagesArea}>
                 {messages.length === 0 ? (

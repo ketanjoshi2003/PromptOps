@@ -4,7 +4,7 @@ from openai import OpenAI
 from groq import Groq
 from app.config.settings import settings
 from app.prompt_engine.templates import get_complexity_guidelines, BASE_TEMPLATE
-from app.prompt_engine.instructions import ENHANCER_SYSTEM_PROMPT, CHAT_SYSTEM_PROMPT
+from app.prompt_engine.instructions import ENHANCER_SYSTEM_PROMPT, CHAT_SYSTEM_PROMPT, CHAIN_ENHANCER_SYSTEM_PROMPT
 
 class LLMService:
     def __init__(self):
@@ -95,7 +95,7 @@ class LLMService:
         # Add more specific masking if needed for other providers
         return err_str
 
-    def enhance_prompt(self, content: str, complexity: str = "Medium") -> str:
+    def enhance_prompt(self, content: str, complexity: str = "Medium", is_chain: bool = False) -> str:
         """
         Enhances the generated prompt using available LLMs with failover.
         """
@@ -103,15 +103,20 @@ class LLMService:
         if not providers:
             return content
 
-        # Base instruction (Common)
-        base_instruction = ENHANCER_SYSTEM_PROMPT
+        # Select Base Instruction
+        # Select Base Instruction and Context
+        if is_chain:
+            base_instruction = CHAIN_ENHANCER_SYSTEM_PROMPT
+            template_context = "" 
+            # Chains have their own structure defined in the system prompt
+            guidelines = "" 
+        else:
+            base_instruction = ENHANCER_SYSTEM_PROMPT
+            template_context = f"\n\nHere is the BASE TEMPLATE that defines the required structure, rules, and conditions:\n{BASE_TEMPLATE}\n\n"
+            guidelines = get_complexity_guidelines(complexity)
         
-        # Inject full base template context to ensure rules are followed
-        template_context = f"\n\nHere is the BASE TEMPLATE that defines the required structure, rules, and conditions:\n{BASE_TEMPLATE}\n\n"
-        
-        guidelines = get_complexity_guidelines(complexity)
         system_instruction = base_instruction + template_context + guidelines
-        user_message = f"Please enhance the following project prompt to be more professional and detailed:\n\n{content}"
+        user_message = f"Please enhance the following project prompt/chain to be more professional and detailed:\n\n{content}"
 
         errors = []
 
