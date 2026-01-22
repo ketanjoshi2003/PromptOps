@@ -636,32 +636,45 @@
 @media (max-width: 768px) {
     .suggestionGrid {
         grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
     }
 
     .heroTitle {
         font-size: 1.8rem;
+        margin-top: 1rem;
     }
 
     .heroSubtitle {
-        font-size: 1rem;
+        font-size: 0.9rem;
         padding: 0 var(--spacing-md);
+        margin-bottom: 1.5rem;
     }
 
     .chatHeader {
         padding: var(--spacing-sm) var(--spacing-md);
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
 
     .chatHeader h1 {
-        font-size: 1.1rem;
+        font-size: 1rem;
+    }
+
+    .messagesArea {
+        padding: var(--spacing-md) var(--spacing-sm);
+    }
+
+    .bubble {
+        padding: 10px 16px;
+        font-size: 0.95rem;
     }
 
     .inputArea {
-        padding: 0 var(--spacing-sm) 1rem var(--spacing-sm);
+        padding: 0 var(--spacing-sm) 0.5rem var(--spacing-sm);
     }
 
     .inputWrapper {
-        padding: 8px;
+        padding: 6px;
+        border-radius: 12px;
     }
 
     .headerButton span {
@@ -672,5 +685,9 @@
     .headerButton {
         padding: 8px;
         /* Square button */
+    }
+
+    .suggestionCard {
+        padding: var(--spacing-md);
     }
 }

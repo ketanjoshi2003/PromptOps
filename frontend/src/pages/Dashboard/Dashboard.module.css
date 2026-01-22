@@ -34,7 +34,8 @@
         display: flex;
         flex-direction: column;
         gap: var(--spacing-lg);
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
+        /* Reduced from var(--spacing-md) */
         height: auto;
         overflow: visible;
         grid-template-columns: 1fr;
@@ -44,6 +45,8 @@
         width: 100%;
         overflow: visible;
         padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
         height: auto;
         /* Ensure it doesn't try to scroll internally */
     }
@@ -58,6 +61,11 @@
         overflow: visible;
     }
 
+    .codeEditor {
+        word-break: break-all;
+        padding: var(--spacing-sm);
+    }
+
     .outputArea {
         overflow: visible;
     }
@@ -67,6 +75,7 @@
         /* Disable internal scroll on mobile */
     }
 }
+
 
 .formSection {
     display: flex;

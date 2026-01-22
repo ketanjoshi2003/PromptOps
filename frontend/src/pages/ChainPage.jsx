@@ -242,8 +242,8 @@ const ChainFlow = () => {
         <div className={styles.chainContainer}>
             {/* Portal Actions to Header */}
             {document.getElementById('header-actions-root') && createPortal(
-                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                <div className={styles.headerPortalContainer}>
+                    <div className={styles.headerPortalLeft}>
                         <button className={`${styles.controlButton} ${styles.addBtn}`} onClick={onAddNode}>
                             <FiPlus /> Add Step
                         </button>
@@ -251,8 +251,7 @@ const ChainFlow = () => {
                             <FiTrash2 /> Clear All
                         </button>
                     </div>
-
-                    <div style={{ display: 'flex', gap: '8px' }}>
+                    <div className={styles.headerPortalRight}>
                         <button
                             className={`${styles.controlButton} ${styles.generateBtn}`}
                             onClick={() => onGenerate('template')}
