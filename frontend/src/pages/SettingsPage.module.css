@@ -194,7 +194,9 @@
 }
 
 .passwordInput:focus {
-    border-color: var(--color-accent-primary);
+    border-color: var(--color-border);
+    outline: none;
+    box-shadow: none;
 }
 
 .errorMessage {

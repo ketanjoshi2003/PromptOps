@@ -3,7 +3,7 @@ import { FiZap } from 'react-icons/fi';
 import styles from './ProjectForm.module.css';
 import CustomSelect from '../CustomSelect/CustomSelect';
 
-const ProjectForm = ({ onSubmit }) => {
+const ProjectForm = ({ onSubmit, isSubmitting }) => {
     const [formData, setFormData] = useState({
         title: '',
         type: 'Web Application',
@@ -219,8 +219,8 @@ const ProjectForm = ({ onSubmit }) => {
             </div>
 
             <div className={styles.buttonSection}>
-                <button type="submit" className={styles.getApiBtn}>
-                    <FiZap /> GENERATE PROMPT
+                <button type="submit" className={styles.getApiBtn} disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>
+                    <FiZap /> {isSubmitting ? 'GENERATING...' : 'GENERATE PROMPT'}
                 </button>
             </div>
 

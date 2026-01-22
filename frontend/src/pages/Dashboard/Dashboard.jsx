@@ -24,6 +24,30 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     }, [autoPrompt]);
 
+    // Trigger re-generation when enhancer is toggled
+    useEffect(() => {
+        if (!lastFormData) return;
+
+        if (useEnhancer) {
+            // Switching TO Enhanced: Use current edited text if available
+            const aiMessages = messages.filter(m => m.role === 'ai');
+            const latestContent = aiMessages.length > 0 ? aiMessages[aiMessages.length - 1].content : null;
+
+            if (latestContent) {
+                // Use edited content as the seed for enhancement, do NOT overwrite original form data
+                handleFormSubmit({
+                    ...lastFormData,
+                    additionalInstructions: latestContent
+                }, false);
+            } else {
+                handleFormSubmit(lastFormData, false);
+            }
+        } else {
+            // Switching TO Template: Revert to original goal
+            handleFormSubmit(lastFormData, false); // Don't need to re-save
+        }
+    }, [useEnhancer]);
+
     const PLACEHOLDER_TEXT = "Configure your project parameters and click 'Generate Prompt' to create your tailored technical instruction.";
 
     // Sync latest results to parent for header copy button
@@ -40,12 +64,16 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     }, [messages, onResultChange]);
 
-    const handleFormSubmit = async (formData) => {
+    const handleFormSubmit = async (formData, shouldSaveData = true) => {
+        if (loading) return; // Prevent double submission
+
         // Display representation for user
         const displayGoal = formData.additionalInstructions;
 
-        // Store this valid submission
-        setLastFormData(formData);
+        // Store this valid submission only if it's a new form submission
+        if (shouldSaveData) {
+            setLastFormData(formData);
+        }
 
         const userMessage = { role: 'user', content: displayGoal };
         setMessages([userMessage]); // Only show latest generation
@@ -122,7 +150,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
             <div className={styles.splitGrid}>
                 {/* Left Section: Form */}
                 <div className={styles.formSection}>
-                    <ProjectForm onSubmit={handleFormSubmit} />
+                    <ProjectForm onSubmit={handleFormSubmit} isSubmitting={loading} />
                 </div>
 
                 {/* Right Section: Results */}

@@ -15,6 +15,7 @@ ENHANCER_SYSTEM_PROMPT = (
     "Rewrite where necessary and without contradictions. "
     "Remove ambiguity and make it clear. "
     "Produce a standards-driven technical specification in strict Markdown format.\n\n"
+    "If any required field is undefined or set to 'None', you MUST infer and explicitly define it in the enhanced prompt."
 )
 
 CHAT_SYSTEM_PROMPT = (
