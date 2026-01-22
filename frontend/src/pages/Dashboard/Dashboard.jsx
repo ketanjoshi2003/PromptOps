@@ -24,13 +24,19 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     }, [autoPrompt]);
 
+    const PLACEHOLDER_TEXT = "Configure your project parameters and click 'Generate Prompt' to create your tailored technical instruction.";
+
     // Sync latest results to parent for header copy button
     useEffect(() => {
-        const aiMessage = messages.findLast(m => m.role === 'ai');
-        if (aiMessage && onResultChange) {
-            onResultChange(aiMessage.content);
-        } else if (onResultChange) {
-            onResultChange('');
+        if (!onResultChange) return;
+
+        const aiMessages = messages.filter(m => m.role === 'ai');
+        const lastAiMessage = aiMessages.length > 0 ? aiMessages[aiMessages.length - 1] : null;
+
+        if (lastAiMessage && lastAiMessage.content.trim().length > 0) {
+            onResultChange(lastAiMessage.content);
+        } else {
+            onResultChange(PLACEHOLDER_TEXT);
         }
     }, [messages, onResultChange]);
 
@@ -107,7 +113,9 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     };
 
-
+    const aiMessages = messages.filter(m => m.role === 'ai');
+    const lastAiMessage = aiMessages.length > 0 ? aiMessages[aiMessages.length - 1] : null;
+    const hasContent = lastAiMessage && lastAiMessage.content.trim().length > 0;
 
     return (
         <div className={styles.dashboardContainer}>
@@ -122,11 +130,19 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
 
 
                     <div className={styles.outputArea}>
-                        {messages.length === 0 && !loading ? (
-                            <div className={styles.outputPlaceholder}>
-                                <div className={styles.placeholderIcon}>🔍</div>
-                                <div className={styles.placeholderText}>Generate your project prompt</div>
-                                <div className={styles.placeholderSub}>Configure your project settings to generate a professional prompt</div>
+                        {!hasContent && !loading ? (
+                            <div className={styles.messagesList}>
+                                <div className={styles.message}>
+                                    <div className={styles.messageContent}>
+                                        <textarea
+                                            className={styles.codeEditor}
+                                            value={PLACEHOLDER_TEXT}
+                                            readOnly
+                                            rows={2}
+                                            style={{ cursor: 'default', resize: 'none' }}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         ) : (
                             <div className={styles.messagesList}>
@@ -162,6 +178,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         </div>
     );
 };
+
 
 const AutoResizeTextarea = ({ value, onChange }) => {
     const textareaRef = useRef(null);
