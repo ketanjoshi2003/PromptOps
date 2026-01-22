@@ -48,7 +48,7 @@ const ChatPage = () => {
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
-    // System Prompt State
+    // Role (System Prompt) State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [systemPrompt, setSystemPrompt] = useState('');
     const [tempSystemPrompt, setTempSystemPrompt] = useState('');
@@ -78,7 +78,7 @@ const ChatPage = () => {
         const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
         try {
-            // Construct history with System Prompt if enabled
+            // Construct history with Role if enabled
             let history = [...messages, userMsg];
 
             if (systemPrompt.trim()) {
@@ -147,10 +147,9 @@ const ChatPage = () => {
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
                     <button
-                        className={styles.headerButton}
+                        className={`${styles.headerButton} ${styles.resetBtn}`}
                         onClick={handleReset}
                         title="Reset Chat"
-                        style={{ border: '1px solid var(--color-border)', borderRadius: '4px', padding: '6px 12px' }}
                     >
                         <FiRefreshCw /> Reset Chat
                     </button>
@@ -241,8 +240,8 @@ const ChatPage = () => {
                         />
                     </div>
                     <div className={styles.inputControls}>
-                        <button className={styles.inputActionBtn} onClick={openSettings} title="System Prompt">
-                            <FiSettings /> System Prompt
+                        <button className={styles.inputActionBtn} onClick={openSettings} title="Role">
+                            <FiSettings /> Role
                         </button>
                         <div style={{ flex: 1 }}></div>
                         <button className={styles.sendButton} onClick={() => handleSend()} disabled={loading || !input.trim()}>
@@ -256,10 +255,10 @@ const ChatPage = () => {
             {isSettingsOpen && (
                 <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                        <h3 className={styles.modalTitle}>System Prompt</h3>
+                        <h3 className={styles.modalTitle}>Role</h3>
                         <div className={styles.modalBody}>
                             <label className={styles.modalLabel}>
-                                Customize how the AI behaves. This prompt is sent with every request.
+                                Define the role and behavior of the AI. This is automatically applied to your conversation.
                             </label>
                             <textarea
                                 className={styles.modalTextarea}

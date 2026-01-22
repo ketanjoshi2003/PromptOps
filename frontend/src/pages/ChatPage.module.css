@@ -61,6 +61,25 @@
     color: var(--color-text-primary);
 }
 
+.resetBtn {
+    background: var(--color-bg-tertiary) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text-primary) !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    /* Reverting uppercase */
+    letter-spacing: normal !important;
+}
+
+.resetBtn:hover {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    color: #ff0000 !important;
+}
+
+
+
 .messagesArea {
     flex: 1;
     overflow-y: auto;
@@ -385,9 +404,11 @@
 }
 
 .inputWrapper:focus-within {
-    border-color: #ffffff;
-    box-shadow: 0 0 0 1px #ffffff, 0 8px 30px rgba(0, 0, 0, 0.3);
+    border-color: var(--color-border);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
+
+
 
 .inputMain {
     display: flex;
@@ -527,8 +548,10 @@
 }
 
 .modalTextarea:focus {
-    border-color: var(--color-text-primary);
+    border-color: var(--color-border);
 }
+
+
 
 .modalActions {
     display: flex;
@@ -609,8 +632,8 @@
     background-color: var(--color-bg-secondary);
 }
 
-/* Input Action Button (System Prompt) */
-/* Input Action Button (System Prompt) */
+/* Input Action Button (Role) */
+/* Input Action Button (Role) */
 .inputActionBtn {
     background: var(--color-bg-tertiary);
     border: 1px solid var(--color-border);
@@ -628,8 +651,8 @@
 }
 
 .inputActionBtn:hover {
-    border-color: var(--color-text-muted);
-    background-color: var(--color-bg-secondary);
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
 }
 
 /* Mobile Responsiveness */
