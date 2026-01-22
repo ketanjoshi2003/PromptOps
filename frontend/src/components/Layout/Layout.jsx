@@ -3,14 +3,14 @@ import styles from './Layout.module.css';
 import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers } from 'react-icons/fi';
 import { authService } from '../../services/authService';
 
-const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUser, onUserRefresh }) => {
+const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUser, onUserRefresh, isAuthOpen, setIsAuthOpen, onOpenUpgrade }) => {
     // Initialize based on screen width
     const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
 
     // Auth State
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
-    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    // isAuthOpen is now a prop
     const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
     const [isLoading, setIsLoading] = useState(false);
 
@@ -60,6 +60,16 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Reset form when opened
+    useEffect(() => {
+        if (isAuthOpen) {
+            setAuthMode('login');
+            setError('');
+            setEmail('');
+            setPassword('');
+        }
+    }, [isAuthOpen]);
+
     const handleAuthClick = () => {
         if (isAuthenticated) {
             if (window.confirm("Are you sure you want to sign out?")) {
@@ -69,11 +79,8 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                 if (onUserRefresh) onUserRefresh(); // Notify App
             }
         } else {
-            setAuthMode('login');
+            // Let the effect handle reset
             setIsAuthOpen(true);
-            setError('');
-            setEmail('');
-            setPassword('');
         }
     };
 
@@ -92,6 +99,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
             // Sync via App
             if (onUserRefresh) await onUserRefresh();
 
+            // We can locally update too, but App's effects will trigger setCurrentUser via props
             // We can locally update too, but App's effects will trigger setCurrentUser via props
             setIsAuthOpen(false);
         } catch (err) {
@@ -170,10 +178,10 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                         <div
                             className={styles.usageStats}
                             onClick={() => {
-                                onNavigate('settings');
+                                if (onOpenUpgrade) onOpenUpgrade();
                                 if (window.innerWidth <= 768) setIsSidebarOpen(false);
                             }}
-                            title="Click to manage plan"
+                            title="Click to upgrade plan"
                         >
                             <div className={styles.usageHeader}>
                                 <span className={styles.planLabel}>

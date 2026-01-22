@@ -1,6 +1,6 @@
 .container {
-    padding: 2rem;
-    max-width: 800px;
+    padding: 1.5rem;
+    max-width: 600px;
     margin: 0 auto;
     color: var(--color-text-primary);
 }
@@ -14,47 +14,64 @@
 .section {
     background-color: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 0;
+    border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* transform: translateY(-2px); subtle lift - optional, maybe too much for settings */
 }
 
 .sectionTitle {
     font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-border);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    color: var(--color-text-primary);
+    letter-spacing: -0.025em;
 }
 
 .settingItem {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.25rem 0;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settingItem:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .settingInfo {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .settingName {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 1rem;
+    color: var(--color-text-primary);
 }
 
 .settingDescription {
     color: var(--color-text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 
 .toggleContainer {
     display: flex;
     background-color: var(--color-bg-primary);
     padding: 4px;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
+    /* Matching rounded look */
     border: 1px solid var(--color-border);
 }
 
@@ -67,39 +84,59 @@
     background: transparent;
     color: var(--color-text-secondary);
     cursor: pointer;
-    border-radius: var(--radius-sm);
-    font-weight: 500;
+    border-radius: 8px;
+    font-weight: 600;
     transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
 .themeBtn:hover {
     color: var(--color-text-primary);
+    background-color: rgba(255, 255, 255, 0.03);
 }
 
 .active {
     background-color: var(--color-bg-tertiary);
-    /* Highlight active state */
     color: var(--color-text-primary);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Light mode overrides for active button logic if needed, 
-   but variables should handle it mostly. 
-   Maybe specific active color? */
+/* Light mode override for active button shadow/bg */
+:global([data-theme='light']) .active {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    color: #000000;
+}
+
 .active svg {
     fill: currentColor;
 }
 
 .dangerZone {
-    border-color: rgba(239, 68, 68, 0.3);
+    border-color: rgba(239, 68, 68, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle red gradient for danger zone */
+.dangerZone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ef4444, #f87171);
+    opacity: 0.8;
 }
 
 .deleteBtn {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(239, 68, 68, 0.05);
+    /* Lighter bg */
     color: #ef4444;
-    border: 1px solid #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
     padding: 8px 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s;
@@ -109,6 +146,8 @@
 .deleteBtn:hover {
     background-color: #ef4444;
     color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
 }
 
 /* Modal Styles */
@@ -236,4 +275,127 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+.featureList {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: var(--color-bg-primary);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+}
+
+.featureItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.featureIcon {
+    color: var(--color-success);
+    flex-shrink: 0;
+}
+
+/* .viewDetailsBtn removed */
+
+
+
+/* Upgrade Modal Styles */
+.upgradeModalContent {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 95%;
+    max-width: 900px;
+    /* Wide for 3 columns */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.planGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.planCard {
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.planCard:hover {
+    border-color: var(--color-border-hover);
+}
+
+.planHeader {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.planTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-text-primary);
+}
+
+.planPrice {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+}
+
+.planPrice span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+}
+
+.planFeatures {
+    flex: 1;
+    /* Pushes button down */
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.planBtn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.planBtn:hover:not(:disabled) {
+    background-color: var(--color-bg-secondary);
+    border-color: var(--color-text-primary);
+}
+
+/* .btnPrimary styles removed to match default planBtn */
+
+.planCard.planDev {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 1px var(--color-accent-primary);
 }

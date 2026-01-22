@@ -6,11 +6,14 @@ import ChatPage from './pages/ChatPage';
 import ChainPage from './pages/ChainPage';
 import SettingsPage from './pages/SettingsPage';
 import { authService } from './services/authService';
+import UpgradeModal from './components/UpgradeModal/UpgradeModal';
 
 function App() {
     const [currentView, setCurrentView] = useState('dashboard');
     const [user, setUser] = useState(null);
     const [autoPrompt, setAutoPrompt] = useState(null);
+    const [isAuthOpen, setIsAuthOpen] = useState(false);
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     // Initialize theme from localStorage or default to 'dark'
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
@@ -54,30 +57,48 @@ function App() {
     const handlePromptHandled = () => setAutoPrompt(null);
 
     return (
-        <Layout
-            currentView={currentView}
-            onNavigate={setCurrentView}
-            externalUser={user}
-            onUserRefresh={handleUserRefresh}
-        >
-            {currentView === 'dashboard' && (
-                <Dashboard
-                    autoPrompt={autoPrompt}
-                    onPromptHandled={handlePromptHandled}
-                    onUsageUpdate={handleUserRefresh}
-                />
-            )}
-            {currentView === 'projects' && <Projects isVisible={currentView === 'projects'} />}
-            {currentView === 'chat' && <ChatPage />}
-            {currentView === 'chain' && <ChainPage />}
-            {currentView === 'settings' && (
-                <SettingsPage
-                    onUserRefresh={handleUserRefresh}
-                    theme={theme}
-                    setTheme={setTheme}
-                />
-            )}
-        </Layout>
+        <>
+            <Layout
+                currentView={currentView}
+                onNavigate={setCurrentView}
+                externalUser={user}
+                onUserRefresh={handleUserRefresh}
+                isAuthOpen={isAuthOpen}
+                setIsAuthOpen={setIsAuthOpen}
+                onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
+            >
+                {currentView === 'dashboard' && (
+                    <Dashboard
+                        autoPrompt={autoPrompt}
+                        onPromptHandled={handlePromptHandled}
+                        onUsageUpdate={handleUserRefresh}
+                    />
+                )}
+                {currentView === 'projects' && <Projects isVisible={currentView === 'projects'} />}
+                {currentView === 'chat' && <ChatPage />}
+                {currentView === 'chain' && <ChainPage />}
+                {currentView === 'settings' && (
+                    <SettingsPage
+                        onUserRefresh={handleUserRefresh}
+                        theme={theme}
+                        setTheme={setTheme}
+                        onOpenAuth={() => setIsAuthOpen(true)}
+                        currentUser={user}
+                        onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
+                    />
+                )}
+            </Layout>
+
+            <UpgradeModal
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+                currentUser={user}
+                onUpgradeSuccess={(updatedUser) => {
+                    setUser(updatedUser);
+                    handleUserRefresh();
+                }}
+            />
+        </>
     );
 }
 

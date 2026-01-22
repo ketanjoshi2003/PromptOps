@@ -1,22 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SettingsPage.module.css';
-import { FiMoon, FiSun, FiCloud } from 'react-icons/fi';
+import { FiMoon, FiSun, FiCloud, FiCheck } from 'react-icons/fi';
 
-const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
+const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser, onOpenUpgrade }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showPlanModal, setShowPlanModal] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [password, setPassword] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState('');
     const [userData, setUserData] = useState({ plan: 'free', generation_count: 0 });
-    const [loading, setLoading] = useState(false);
 
+    // Sync with global user state
     useEffect(() => {
-        fetchUserData();
-    }, []);
+        if (currentUser) {
+            setIsLoggedIn(true);
+            setUserData(currentUser);
+        } else {
+            // Fallback: check token if currentUser is null (maybe App hasn't fetched yet?)
+            // But App fetches on mount. 
+            // If currentUser is explicitly null, we might be logged out.
+            // Let's rely on fetchUserData ONLY if currentUser is inactive/undefined initially 
+            // or we want double check.
+            // Actually, best to just rely on props if provided.
+            const token = localStorage.getItem('token');
+            if (token && !currentUser) {
+                // Potential race condition or refresh gap, let's fetch
+                fetchUserData();
+            } else {
+                setIsLoggedIn(false);
+                setUserData({ plan: 'free', generation_count: 0 });
+            }
+        }
+    }, [currentUser]);
 
     const fetchUserData = async () => {
         const token = localStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+            setIsLoggedIn(false);
+            setUserData({ plan: 'free', generation_count: 0 });
+            return;
+        }
+        // setIsLoggedIn(true); // Don't set true immediately, wait for success
 
         try {
             const response = await fetch('http://localhost:8000/api/auth/me', {
@@ -25,35 +50,17 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
             if (response.ok) {
                 const data = await response.json();
                 setUserData(data);
+                setIsLoggedIn(true);
+            } else {
+                setIsLoggedIn(false);
             }
         } catch (err) {
             console.error("Failed to fetch user data", err);
+            setIsLoggedIn(false);
         }
     };
 
-    const handleUpgrade = async () => {
-        setLoading(true);
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/auth/upgrade', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
 
-            if (response.ok) {
-                await fetchUserData(); // Refresh local data
-                if (onUserRefresh) onUserRefresh(); // Refresh global app state (Sidebar)
-                alert("Successfully upgraded to Dev plan!");
-            }
-        } catch (err) {
-            console.error("Upgrade failed", err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleDeleteAccount = async () => {
         if (!password) return;
@@ -129,15 +136,27 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
                         <span className={styles.settingDescription}>
                             Usage: {userData.generation_count} / {limit} generations used
                         </span>
+
                     </div>
-                    {userData.plan !== 'dev' && (
+                    {!isLoggedIn ? (
                         <button
                             className={styles.themeBtn}
                             style={{ border: '1px solid var(--color-border)' }}
-                            onClick={handleUpgrade}
-                            disabled={loading}
+                            onClick={() => {
+                                if (onOpenAuth) onOpenAuth();
+                            }}
                         >
-                            {loading ? 'Upgrading...' : 'Upgrade to Dev'}
+                            Login to start premium plans
+                        </button>
+                    ) : (
+                        <button
+                            className={styles.themeBtn}
+                            style={{ border: '1px solid var(--color-border)' }}
+                            onClick={() => {
+                                if (onOpenUpgrade) onOpenUpgrade();
+                            }}
+                        >
+                            Upgrade Plan
                         </button>
                     )}
                 </div>
@@ -161,6 +180,56 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Plan Details Modal */}
+            {showPlanModal && (
+                <div className={styles.modalOverlay} onClick={() => setShowPlanModal(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <h3 className={styles.modalTitle}>Plan Details: {userData.plan === 'dev' ? 'Dev (Pro)' : 'Free'}</h3>
+
+                        <div className={styles.featureList}>
+                            {userData.plan === 'dev' ? (
+                                <>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> 50 Generations per cycle
+                                    </div>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> Fast Generation Speed
+                                    </div>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> Priority Support
+                                    </div>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> Access to Advanced Models
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> 5 Generations per cycle
+                                    </div>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> Standard Generation Speed
+                                    </div>
+                                    <div className={styles.featureItem}>
+                                        <FiCheck className={styles.featureIcon} /> Basic Support
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        <div className={styles.modalActions}>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => setShowPlanModal(false)}
+                                style={{ width: '100%', textAlign: 'center' }}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Delete Account Modal */}
             {showDeleteModal && (
@@ -208,6 +277,8 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh }) => {
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 };

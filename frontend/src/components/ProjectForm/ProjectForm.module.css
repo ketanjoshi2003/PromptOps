@@ -56,7 +56,7 @@
 .getApiBtn {
     background-color: rgba(239, 68, 68, 0.1);
     color: #ef4444;
-    border: 1px solid #ef4444;
+    border: none;
     border-radius: var(--radius-sm);
     padding: 6px 12px;
     font-size: 0.75rem;

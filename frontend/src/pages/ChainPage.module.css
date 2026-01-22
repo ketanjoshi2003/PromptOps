@@ -175,7 +175,6 @@
 .clearBtn:hover {
     background-color: rgba(255, 82, 82, 0.1);
     color: #FF5252;
-    border-color: #FF5252;
 }
 
 .edgeButton {
