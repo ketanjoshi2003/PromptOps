@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import ProjectForm from '../../components/ProjectForm/ProjectForm';
+import PipedLoading from '../../components/PipedLoading/PipedLoading';
 
-const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
+const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, onResultChange }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [copied, setCopied] = useState(false);
     const messagesEndRef = useRef(null);
-    const [useEnhancer, setUseEnhancer] = useState(true);
     const [lastFormData, setLastFormData] = useState(null);
 
     const scrollToBottom = () => {
@@ -25,21 +24,15 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
         }
     }, [autoPrompt]);
 
-    // Effect to trigger enhancement when toggling "Enhanced" on
+    // Sync latest results to parent for header copy button
     useEffect(() => {
-        if (useEnhancer && messages.length > 0 && lastFormData) {
-            // Get the last message (which is expected to be the generated prompt, edited or not)
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.role === 'ai' && lastMessage.content) {
-                // Use the CURRENT content (including edits) as the input instruction
-                const enhancedFormData = {
-                    ...lastFormData,
-                    additionalInstructions: lastMessage.content
-                };
-                handleFormSubmit(enhancedFormData);
-            }
+        const aiMessage = messages.findLast(m => m.role === 'ai');
+        if (aiMessage && onResultChange) {
+            onResultChange(aiMessage.content);
+        } else if (onResultChange) {
+            onResultChange('');
         }
-    }, [useEnhancer]);
+    }, [messages, onResultChange]);
 
     const handleFormSubmit = async (formData) => {
         // Display representation for user
@@ -114,15 +107,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
         }
     };
 
-    const handleCopy = async (text) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
-        }
-    };
+
 
     return (
         <div className={styles.dashboardContainer}>
@@ -134,23 +119,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
 
                 {/* Right Section: Results */}
                 <div className={styles.chatSection}>
-                    <div className={styles.resultsHeader}>
-                        <div className={styles.segmentedControl}>
-                            <div className={`${styles.slidingBackground} ${useEnhancer ? styles.slideRight : styles.slideLeft}`}></div>
-                            <button
-                                className={`${styles.segmentOption} ${!useEnhancer ? styles.textActive : ''}`}
-                                onClick={() => setUseEnhancer(false)}
-                            >
-                                Template
-                            </button>
-                            <button
-                                className={`${styles.segmentOption} ${useEnhancer ? styles.textActive : ''}`}
-                                onClick={() => setUseEnhancer(true)}
-                            >
-                                Enhanced
-                            </button>
-                        </div>
-                    </div>
+
 
                     <div className={styles.outputArea}>
                         {messages.length === 0 && !loading ? (
@@ -167,12 +136,6 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
                                     return (
                                         <div key={index} className={styles.message}>
                                             <div className={styles.messageContent}>
-                                                <button
-                                                    className={styles.copyBtn}
-                                                    onClick={() => handleCopy(msg.content)}
-                                                >
-                                                    {copied ? 'COPIED' : 'COPY'}
-                                                </button>
                                                 <AutoResizeTextarea
                                                     value={msg.content}
                                                     onChange={(newText) => {
@@ -187,10 +150,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate }) => {
                                 })}
                                 {loading && (
                                     <div className={styles.loadingContainer}>
-                                        <div className={styles.loadingBarBox}>
-                                            <div className={styles.loadingBarFill}></div>
-                                        </div>
-                                        <div className={styles.loadingText}>Generating intelligent prompt...</div>
+                                        <PipedLoading text="Generating intelligent prompt..." />
                                     </div>
                                 )}
                                 <div ref={messagesEndRef} />

@@ -257,7 +257,6 @@ const ChainFlow = () => {
                             className={`${styles.controlButton} ${styles.generateBtn}`}
                             onClick={() => onGenerate('template')}
                             disabled={isGenerating}
-                            style={{ backgroundColor: 'var(--color-bg-secondary)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
                             title="Generate just the combined prompt template"
                         >
                             <FiPlay /> Generate Template

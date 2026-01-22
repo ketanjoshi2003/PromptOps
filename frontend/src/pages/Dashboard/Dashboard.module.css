@@ -101,15 +101,7 @@
     padding: 0;
 }
 
-.resultsHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: var(--spacing-sm);
-    margin-top: 0;
-    padding-top: var(--spacing-lg);
-    /* Added padding for spacing */
-}
+
 
 .resultsTitle {
     font-size: var(--font-size-xl);
@@ -225,33 +217,8 @@
     border-color: var(--color-text-primary);
 }
 
-.copyBtn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    text-transform: uppercase;
-    opacity: 0;
-    transition: opacity 0.2s ease, background-color 0.2s, color 0.2s;
-    z-index: 10;
-}
-
-.messageContent:hover .copyBtn {
-    opacity: 1;
-}
-
-.copyBtn:hover,
-.copyBtn:active {
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    border-color: var(--color-text-muted);
-    opacity: 1;
+.messageContent:hover {
+    cursor: default;
 }
 
 .loadingContainer {
@@ -266,32 +233,31 @@
     margin-top: var(--spacing-xl);
 }
 
-.loadingBarBox {
-    width: 100%;
-    max-width: 300px;
-    height: 3px;
-    background-color: var(--color-bg-tertiary);
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-}
 
-.loadingBarFill {
+.loadingPipe {
+    flex: 1;
     height: 100%;
-    width: 50%;
-    background: linear-gradient(90deg, transparent, var(--color-accent-primary), transparent);
-    position: absolute;
-    left: -50%;
-    animation: loadingMove 1.2s infinite ease-in-out;
+    background-color: rgba(255, 0, 0, 0.1);
+    border-radius: 1px;
+    animation: scanningPipe 2s infinite ease-in-out;
 }
 
-@keyframes loadingMove {
-    0% {
-        left: -50%;
+/* Distribute animation delays for a scanning effect */
+.loadingPipe:nth-child(n) {
+    animation-delay: calc(var(--i) * 0.05s);
+}
+
+@keyframes scanningPipe {
+
+    0%,
+    100% {
+        background-color: rgba(255, 0, 0, 0.1);
+        box-shadow: none;
     }
 
-    100% {
-        left: 150%;
+    50% {
+        background-color: #ff0000;
+        box-shadow: 0 0 8px #ff0000;
     }
 }
 
@@ -316,82 +282,4 @@
     100% {
         opacity: 0.5;
     }
-}
-
-/* SEGMENTED CONTROL TOGGLE */
-.toggleContainer {
-    display: flex;
-    align-items: center;
-    margin-right: auto;
-}
-
-.segmentedControl {
-    display: flex;
-    background-color: var(--color-bg-secondary);
-    padding: 2px;
-    border-radius: 6px;
-    border: none;
-    position: relative;
-    isolation: isolate;
-}
-
-.slidingBackground {
-    position: absolute;
-    top: 2px;
-    bottom: 2px;
-    left: 2px;
-    width: calc(50% - 2px);
-    background-color: #1f1111;
-    /* Dark reddish black background */
-    border: none;
-    border-radius: 4px;
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    z-index: 1;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    /* Card-like shadow */
-}
-
-/* Light Mode Override */
-:global([data-theme='light']) .slidingBackground {
-    background-color: #fee2e2;
-    /* Light Pink/Rose-100 */
-    box-shadow: 0 2px 4px rgba(255, 0, 0, 0.1);
-}
-
-.slideLeft {
-    transform: translateX(0);
-}
-
-.slideRight {
-    transform: translateX(100%);
-}
-
-.segmentOption {
-    flex: 1;
-    padding: 4px 12px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: color 0.2s ease;
-    font-family: var(--font-family-sans);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    z-index: 2;
-    text-align: center;
-}
-
-.segmentOption:not(.textActive):hover {
-    color: var(--color-text-primary) !important;
-}
-
-/* Active text uses red */
-.textActive {
-    color: #ff0000 !important;
-    text-shadow: none;
-    /* Removed glow to match flat card style */
-    font-weight: 700;
 }

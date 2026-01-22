@@ -50,13 +50,11 @@
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.planCard:hover {
-    border-color: var(--color-border-hover);
-}
+
 
 .planCard.currentPlan {
-    border-color: var(--color-accent-primary);
-    box-shadow: 0 0 0 1px var(--color-accent-primary);
+    border-color: var(--color-text-primary);
+    box-shadow: 0 0 0 1px var(--color-text-primary);
 }
 
 .planHeader {
@@ -120,7 +118,6 @@
 
 .planBtn:hover:not(:disabled) {
     background-color: var(--color-bg-secondary);
-    border-color: var(--color-text-primary);
 }
 
 .modalActions {

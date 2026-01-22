@@ -8,16 +8,16 @@
   --color-text-secondary: #999999;
   --color-text-muted: #666666;
 
-  --color-accent-primary: #ff5c35;
-  /* Orange accent from image */
-  --color-accent-hover: #ff7554;
-  --color-accent-glow: rgba(255, 92, 53, 0.15);
+  --color-accent-primary: #ff0000;
+  /* Red accent */
+  --color-accent-hover: #ff3333;
+  --color-accent-glow: rgba(255, 0, 0, 0.15);
 
   --color-selection-border: #ff0000;
 
   --color-border: #2e2e2e;
   --color-success: #34d399;
-  --color-error: #ff5c35;
+  --color-error: #ff0000;
   /* Use orange for errors too for consistency */
 
   /* Typography - Clean & Technical */
@@ -79,7 +79,7 @@
   --color-border: #d4d4d8;
 
   /* Keep accents similar but maybe less glowing */
-  --color-accent-glow: rgba(255, 92, 53, 0.05);
+  --color-accent-glow: rgba(255, 0, 0, 0.05);
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }

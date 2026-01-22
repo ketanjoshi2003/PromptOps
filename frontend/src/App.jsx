@@ -7,6 +7,8 @@ import ChainPage from './pages/ChainPage';
 import SettingsPage from './pages/SettingsPage';
 import { authService } from './services/authService';
 import UpgradeModal from './components/UpgradeModal/UpgradeModal';
+import PipedLoading from './components/PipedLoading/PipedLoading';
+import loadingStyles from './components/PipedLoading/PipedLoading.module.css';
 
 function App() {
     const [currentView, setCurrentView] = useState('dashboard');
@@ -14,6 +16,9 @@ function App() {
     const [autoPrompt, setAutoPrompt] = useState(null);
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [useEnhancer, setUseEnhancer] = useState(true);
+    const [latestResult, setLatestResult] = useState('');
+    const [isAppLoading, setIsAppLoading] = useState(true);
     // Initialize theme from localStorage or default to 'dark'
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
@@ -28,6 +33,13 @@ function App() {
 
     useEffect(() => {
         fetchUser();
+
+        // Ensure loading shows for a minimum amount of time for smoothness
+        const timer = setTimeout(() => {
+            setIsAppLoading(false);
+        }, 1500);
+
+        return () => clearTimeout(timer);
     }, []);
 
     // Theme Effect
@@ -58,6 +70,11 @@ function App() {
 
     return (
         <>
+            {isAppLoading && (
+                <div className={loadingStyles.fullPageOverlay}>
+                    <PipedLoading text="Initializing PromptOps..." />
+                </div>
+            )}
             <Layout
                 currentView={currentView}
                 onNavigate={setCurrentView}
@@ -66,12 +83,17 @@ function App() {
                 isAuthOpen={isAuthOpen}
                 setIsAuthOpen={setIsAuthOpen}
                 onOpenUpgrade={() => setIsUpgradeModalOpen(true)}
+                useEnhancer={useEnhancer}
+                setUseEnhancer={setUseEnhancer}
+                latestResult={latestResult}
             >
                 {currentView === 'dashboard' && (
                     <Dashboard
                         autoPrompt={autoPrompt}
                         onPromptHandled={handlePromptHandled}
                         onUsageUpdate={handleUserRefresh}
+                        useEnhancer={useEnhancer}
+                        onResultChange={setLatestResult}
                     />
                 )}
                 {currentView === 'projects' && <Projects isVisible={currentView === 'projects'} />}

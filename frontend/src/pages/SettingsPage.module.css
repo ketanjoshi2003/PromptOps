@@ -118,17 +118,7 @@
     overflow: hidden;
 }
 
-/* Subtle red gradient for danger zone */
-.dangerZone::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #ff0000, #f87171);
-    opacity: 0.8;
-}
+
 
 .deleteBtn {
     background-color: rgba(255, 0, 0, 0.05);
@@ -337,9 +327,7 @@
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.planCard:hover {
-    border-color: var(--color-border-hover);
-}
+
 
 .planHeader {
     text-align: center;
@@ -390,7 +378,6 @@
 
 .planBtn:hover:not(:disabled) {
     background-color: var(--color-bg-secondary);
-    border-color: var(--color-text-primary);
 }
 
 /* .btnPrimary styles removed to match default planBtn */

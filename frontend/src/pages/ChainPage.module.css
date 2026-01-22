@@ -173,16 +173,41 @@
 }
 
 .clearBtn:hover {
-    background-color: rgba(255, 0, 0, 0.1);
-    color: #ff0000;
+    background-color: var(--color-accent-glow);
+    color: var(--color-accent-primary);
+}
+
+.generateBtn {
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+}
+
+.generateBtn:hover {
+    background-color: var(--color-border);
+}
+
+.generateBtn:active {
+    opacity: 0.8;
 }
 
 .edgeButton {
     width: 24px;
     height: 24px;
     background: var(--color-bg-primary);
-    color: #ff0000;
-    border: 2px solid #ff0000;
+    color: var(--color-accent-primary);
+    border: 2px solid var(--color-accent-primary);
     cursor: pointer;
     border-radius: 50%;
     font-size: 14px;
@@ -196,31 +221,34 @@
 }
 
 .edgeButton:hover {
-    background-color: #ff0000;
+    background-color: var(--color-accent-primary);
     color: white;
     transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.4);
+    box-shadow: 0 4px 8px var(--color-accent-glow);
 }
 
 .generateEnhancedBtn {
     background-color: rgba(255, 0, 0, 0.1);
     color: #ff0000;
-    border: 1px solid #ff0000;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
-    font-weight: 600;
     letter-spacing: 0.5px;
+    cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .generateEnhancedBtn:hover {
     background-color: rgba(255, 0, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-    transform: translateY(-1px);
     color: #ff0000;
-    border-color: #ff0000;
 }
 
 .generateEnhancedBtn:active {
-    transform: translateY(0);
+    opacity: 0.8;
 }

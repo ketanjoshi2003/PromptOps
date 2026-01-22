@@ -211,9 +211,11 @@ const Projects = ({ isVisible }) => {
                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     {/* Left Side: Title or Selection Status + Search */}
                     <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                        <div style={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', minWidth: isSelectionMode ? 'auto' : '0' }}>
-                            {isSelectionMode ? `Selected (${selectedIds.size})` : ''}
-                        </div>
+                        {isSelectionMode && (
+                            <div style={{ fontWeight: 'bold', fontSize: '1.1rem', whiteSpace: 'nowrap', marginRight: '16px' }}>
+                                Selected ({selectedIds.size})
+                            </div>
+                        )}
 
                         {!isSelectionMode && projects.length > 0 && (
                             <div className={styles.headerSearchContainer}>

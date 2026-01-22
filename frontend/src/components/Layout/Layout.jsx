@@ -3,7 +3,7 @@ import styles from './Layout.module.css';
 import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers } from 'react-icons/fi';
 import { authService } from '../../services/authService';
 
-const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUser, onUserRefresh, isAuthOpen, setIsAuthOpen, onOpenUpgrade }) => {
+const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUser, onUserRefresh, isAuthOpen, setIsAuthOpen, onOpenUpgrade, useEnhancer, setUseEnhancer, latestResult }) => {
     // Initialize based on screen width
     const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
 
@@ -18,6 +18,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [headerCopied, setHeaderCopied] = useState(false);
 
     // Sync with external user
     useEffect(() => {
@@ -106,6 +107,17 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
             setError(err.message);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleHeaderCopy = async () => {
+        if (!latestResult) return;
+        try {
+            await navigator.clipboard.writeText(latestResult);
+            setHeaderCopied(true);
+            setTimeout(() => setHeaderCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
         }
     };
 
@@ -217,34 +229,66 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                 </div>
             </aside>
             <main className={styles.main}>
-                <div className={styles.topBar}>
-                    <div
-                        className={styles.logoContainer}
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        title="Toggle Sidebar"
-                    >
-                        <div className={styles.logoMark}>
-                            <div className={styles.redCircle}>
-                                <span className={styles.pipe}>|</span>
+                <div className={`${styles.topBar} ${currentView === 'dashboard' ? styles.topBarDashboard : ''}`}>
+                    <div className={styles.logoArea}>
+                        <div
+                            className={styles.logoContainer}
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            title="Toggle Sidebar"
+                        >
+                            <div className={styles.logoMark}>
+                                <div className={styles.redCircle}>
+                                    <span className={styles.pipe}>|</span>
+                                </div>
                             </div>
+                            {currentView === 'dashboard' && (
+                                <span className={styles.modelName}>PromptOps</span>
+                            )}
+                            {currentView === 'settings' && (
+                                <span className={styles.modelName}>Settings</span>
+                            )}
+                            {currentView === 'chain' && (
+                                <span className={styles.modelName}>Chain</span>
+                            )}
+                            {currentView === 'chat' && (
+                                <span className={styles.modelName}>Chat</span>
+                            )}
+                            {currentView === 'projects' && (
+                                <span className={styles.modelName}>Projects</span>
+                            )}
                         </div>
+                    </div>
+
+                    <div className={styles.headerActionsArea}>
                         {currentView === 'dashboard' && (
-                            <span className={styles.modelName}>PromptOps</span>
+                            <div className={styles.headerToggle}>
+                                <div className={styles.segmentedControl}>
+                                    <div className={`${styles.slidingBackground} ${useEnhancer ? styles.slideRight : styles.slideLeft}`}></div>
+                                    <button
+                                        className={`${styles.segmentOption} ${!useEnhancer ? styles.textActive : ''}`}
+                                        onClick={() => setUseEnhancer(false)}
+                                    >
+                                        Template
+                                    </button>
+                                    <button
+                                        className={`${styles.segmentOption} ${useEnhancer ? styles.textActive : ''}`}
+                                        onClick={() => setUseEnhancer(true)}
+                                    >
+                                        Enhanced
+                                    </button>
+                                </div>
+                            </div>
                         )}
-                        {currentView === 'settings' && (
-                            <span className={styles.modelName}>Settings</span>
-                        )}
-                        {currentView === 'chain' && (
-                            <span className={styles.modelName}>Chain</span>
-                        )}
-                        {currentView === 'chat' && (
-                            <span className={styles.modelName}>Chat</span>
-                        )}
-                        {currentView === 'projects' && (
-                            <span className={styles.modelName}>Projects</span>
+                        <div id="header-actions-root" className={styles.headerActionsRoot}></div>
+                        {currentView === 'dashboard' && latestResult && (
+                            <button
+                                className={styles.headerCopyBtn}
+                                onClick={handleHeaderCopy}
+                            >
+                                {headerCopied ? 'COPIED' : 'COPY'}
+                            </button>
                         )}
                     </div>
-                    <div id="header-actions-root" className={styles.headerActionsRoot}></div>
                 </div>
                 <div className={styles.contentArea}>
                     {children}
