@@ -50,12 +50,12 @@
 }
 
 .requiredStar {
-    color: var(--color-accent-primary);
+    color: #ff0000;
 }
 
 .getApiBtn {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
     border: none;
     border-radius: var(--radius-sm);
     padding: 6px 12px;
@@ -71,8 +71,8 @@
 }
 
 .getApiBtn:hover {
-    background-color: #ef4444;
-    color: #ffffff;
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #ff0000;
 }
 
 

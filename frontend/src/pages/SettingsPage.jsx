@@ -163,7 +163,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
             </div>
 
             <div className={`${styles.section} ${styles.dangerZone}`}>
-                <h2 className={styles.sectionTitle} style={{ color: '#ef4444' }}>Danger Zone</h2>
+                <h2 className={styles.sectionTitle} style={{ color: '#ff0000' }}>Danger Zone</h2>
                 <div className={styles.settingItem}>
                     <div className={styles.settingInfo}>
                         <span className={styles.settingName}>Delete Account</span>

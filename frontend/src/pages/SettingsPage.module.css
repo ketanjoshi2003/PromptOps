@@ -113,7 +113,7 @@
 }
 
 .dangerZone {
-    border-color: rgba(239, 68, 68, 0.2);
+    border-color: rgba(255, 0, 0, 0.2);
     position: relative;
     overflow: hidden;
 }
@@ -126,15 +126,15 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #ef4444, #f87171);
+    background: linear-gradient(90deg, #ff0000, #f87171);
     opacity: 0.8;
 }
 
 .deleteBtn {
-    background-color: rgba(239, 68, 68, 0.05);
+    background-color: rgba(255, 0, 0, 0.05);
     /* Lighter bg */
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #ff0000;
+    border: 1px solid rgba(255, 0, 0, 0.2);
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
@@ -144,10 +144,10 @@
 }
 
 .deleteBtn:hover {
-    background-color: #ef4444;
+    background-color: #ff0000;
     color: #ffffff;
-    border-color: #ef4444;
-    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+    border-color: #ff0000;
+    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
 }
 
 /* Modal Styles */
@@ -208,10 +208,10 @@
 }
 
 .errorMessage {
-    color: #ef4444;
+    color: #ff0000;
     font-size: 0.9rem;
     margin-bottom: 1rem;
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(255, 0, 0, 0.1);
     padding: 8px;
     border-radius: 4px;
 }
@@ -238,7 +238,7 @@
 
 .confirmDeleteBtn {
     padding: 8px 16px;
-    background-color: #ef4444;
+    background-color: #ff0000;
     color: white;
     border: none;
     border-radius: 6px;
