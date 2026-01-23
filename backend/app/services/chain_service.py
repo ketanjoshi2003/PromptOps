@@ -61,24 +61,32 @@ class ChainService:
         # Build Combined "Chain Prompt" using Template
         # This instructs the eventual consumer (AI) on how to execute the chain
         
+        # Create a map of node_id to step number (1-based)
+        node_to_step = {node_id: idx + 1 for idx, node_id in enumerate(execution_order)}
+        
         steps_text = []
         for idx, node_id in enumerate(execution_order):
             node = nodes[node_id]
-            label = node.get('data', {}).get('label', f'Step {idx+1}')
+            # label = node.get('data', {}).get('label', f'Step {idx+1}') # User wants structured STEP_N:
             prompt = results.get(node_id, '')
             
             # Identify dependencies
             parent_ids = [edge['source'] for edge in edges if edge['target'] == node_id]
             
-            context_instruction = ""
+            context_block = ""
             if parent_ids:
-                parent_labels = [nodes[pid].get('data', {}).get('label', f'Node {pid}') for pid in parent_ids]
-                context_instruction = f"**Input Context**: Use the output from [{', '.join(parent_labels)}] as input for this step.\n"
+                for pid in parent_ids:
+                    p_step = node_to_step.get(pid, '?')
+                    # Using the exact format requested: CONTEXT_FROM_STEP_X:
+                    context_block += f"CONTEXT_FROM_STEP_{p_step}:\n(Output from Step {p_step})\n\n"
             
             step_text = (
-                f"## Step {idx + 1}: {label}\n"
-                f"{context_instruction}"
-                f"**Instruction**:\n{prompt}\n"
+                f"STEP_{idx + 1}:\n"
+                f"{context_block}"
+                f"TASK:\n"
+                f"{prompt}\n\n"
+                f"OUTPUT_FORMAT:\n"
+                f"Markdown"
             )
             steps_text.append(step_text)
             
@@ -86,7 +94,7 @@ class ChainService:
             "# Prompt Chain Instructions\n\n"
             "Please execute the following steps in sequence. "
             "Pass the output of each step as context/input to the next step(s) as specified.\n\n"
-            f"{chr(10).join(steps_text)}"
+            f"{(chr(10) + chr(10) + '---' + chr(10) + chr(10)).join(steps_text)}"
         )
         
         final_output = combined_template

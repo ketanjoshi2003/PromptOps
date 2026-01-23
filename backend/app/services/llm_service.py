@@ -87,12 +87,14 @@ class LLMService:
         Sanitizes error messages to remove sensitive information like API keys.
         """
         err_str = str(error)
-        # Simple heuristic: if it looks like an API key (sk-...), mask it
+        import re
+        # Mask typical OpenAI keys (sk-...)
         if "sk-" in err_str:
-            # Mask typical OpenAI keys
-            import re
             err_str = re.sub(r"sk-[a-zA-Z0-9]{20,}", "sk-********************", err_str)
-        # Add more specific masking if needed for other providers
+        # Mask typical Google/Gemini keys (AIza...)
+        if "AIza" in err_str:
+            err_str = re.sub(r"AIza[a-zA-Z0-9_-]{35,}", "AIza********************", err_str)
+        
         return err_str
 
     def enhance_prompt(self, content: str, complexity: str = "Medium", is_chain: bool = False) -> str:

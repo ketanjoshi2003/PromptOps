@@ -166,23 +166,25 @@
 }
 
 /* --- MESSAGES --- */
-.message {
-    display: flex;
-    width: 100%;
-    gap: 1rem;
-    animation: fadeIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-@keyframes fadeIn {
+@keyframes slideUpFade {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
+        transform: translateY(0);
     }
+}
+
+.message {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+    animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .user {

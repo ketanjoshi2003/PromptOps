@@ -82,6 +82,16 @@ const ChatPage = () => {
         setInput('');
         setLoading(true);
 
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "Authentication error. Please log in to continue."
+            }]);
+            setLoading(false);
+            return;
+        }
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
 
@@ -95,23 +105,39 @@ const ChatPage = () => {
 
             const response = await fetch('http://localhost:8000/api/chat/message', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ messages: history }),
                 signal: controller.signal
             });
 
             clearTimeout(timeoutId);
 
-            if (!response.ok) throw new Error('Failed to fetch');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Session expired. Please log in again.');
+                }
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || 'Failed to fetch');
+            }
 
             const data = await response.json();
             const aiMsg = { role: 'assistant', content: data.response };
             setMessages(prev => [...prev, aiMsg]);
         } catch (error) {
             console.error(error);
-            const errorMessage = error.name === 'AbortError'
-                ? "Error: Request timed out. Please check your backend connection."
-                : "Error: Could not connect to AI service.";
+            let errorMessage = "Error: Could not connect to AI service.";
+
+            if (error.name === 'AbortError') {
+                errorMessage = "Error: Request timed out. Please check your backend connection.";
+            } else if (error.message.includes('expired') || error.message.includes('Authentication')) {
+                errorMessage = error.message;
+            } else if (error.message.includes('limit')) {
+                errorMessage = "Usage limit reached. Please upgrade your plan.";
+            }
+
             setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
         } finally {
             setLoading(false);

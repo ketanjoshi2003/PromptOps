@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import Dict, Any, List
 from pydantic import BaseModel
 from app.services.chain_service import chain_service
+from app.utils.security import get_current_user
+from app.db.models import User
 
 router = APIRouter()
 
@@ -23,7 +25,7 @@ class ChainRequest(BaseModel):
     mode: str = "template" # "template" or "enhanced"
 
 @router.post("/execute")
-async def execute_chain(request: ChainRequest):
+async def execute_chain(request: ChainRequest, current_user: User = Depends(get_current_user)):
     try:
         # Convert pydantic models to dict for service
         chain_data = request.model_dump()

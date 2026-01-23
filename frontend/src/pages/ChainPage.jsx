@@ -117,6 +117,124 @@ const initialNodes = [
     },
 ];
 
+const AutoResizeTextarea = ({ value, onChange, isNotification, readOnly }) => {
+    const textareaRef = useRef(null);
+    const shadowRef = useRef(null);
+
+    React.useEffect(() => {
+        if (textareaRef.current && shadowRef.current) {
+            shadowRef.current.value = value;
+            const newHeight = shadowRef.current.scrollHeight;
+            textareaRef.current.style.height = `${newHeight}px`;
+        }
+    }, [value]);
+
+    const renderHighlights = (text) => {
+        if (!text) return null;
+        const lines = text.split('\n');
+        return lines.map((line, i) => {
+            const headerMatch = line.match(/^((#+)\s)(.*)/);
+            const bulletMatch = line.match(/^(-\s)(.*)/);
+            const numberMatch = line.match(/^(\d+[\.\)]\s)(.*)/);
+
+            let content;
+            if (headerMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{headerMatch[1]}</span>
+                        {headerMatch[3]}
+                    </>
+                );
+            } else if (bulletMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{bulletMatch[1]}</span>
+                        {bulletMatch[2]}
+                    </>
+                );
+            } else if (numberMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{numberMatch[1]}</span>
+                        {numberMatch[2]}
+                    </>
+                );
+            } else {
+                content = line;
+            }
+
+            return (
+                <React.Fragment key={i}>
+                    {content}
+                    {i < lines.length - 1 && '\n'}
+                </React.Fragment>
+            );
+        });
+    };
+
+    return (
+        <div style={{ position: 'relative', width: '100%' }}>
+            <textarea
+                ref={shadowRef}
+                className={styles.codeEditor}
+                value={value}
+                readOnly
+                tabIndex={-1}
+                aria-hidden="true"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    visibility: 'hidden',
+                    height: '0',
+                    overflow: 'hidden',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    zIndex: -100
+                }}
+            />
+            <div
+                className={styles.codeEditor}
+                aria-hidden="true"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    color: isNotification ? 'var(--color-accent-primary)' : 'var(--color-text-primary)',
+                    background: 'var(--color-bg-secondary)',
+                    pointerEvents: 'none',
+                    borderColor: 'transparent',
+                    zIndex: 0,
+                    overflow: 'hidden'
+                }}
+            >
+                {renderHighlights(value)}
+            </div>
+
+            <textarea
+                ref={textareaRef}
+                className={styles.codeEditor}
+                value={value}
+                onChange={(e) => onChange && onChange(e.target.value)}
+                readOnly={readOnly}
+                rows={1}
+                style={{
+                    overflow: 'hidden',
+                    color: 'transparent',
+                    background: 'transparent',
+                    caretColor: 'var(--color-text-primary)',
+                    position: 'relative',
+                    zIndex: 1
+                }}
+                spellCheck={false}
+                autoCorrect="off"
+            />
+        </div>
+    );
+};
+
 const ChainFlow = () => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState([]);
@@ -197,6 +315,7 @@ const ChainFlow = () => {
 
     const [executionResults, setExecutionResults] = useState(null);
     const [combinedOutput, setCombinedOutput] = useState(null);
+    const [isNotification, setIsNotification] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
 
     const onGenerate = useCallback(async (mode = 'template') => {
@@ -211,6 +330,15 @@ const ChainFlow = () => {
         setIsGenerating(true);
         setExecutionResults(null);
         setCombinedOutput(null);
+        setIsNotification(false);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setCombinedOutput("Authentication error. Please log in.");
+            setIsNotification(true);
+            setIsGenerating(false);
+            return;
+        }
 
         try {
             const result = await chainService.executeChain(payload);
@@ -220,18 +348,28 @@ const ChainFlow = () => {
                 // The backend now returns { step_results, enhanced_output }
                 // We handle both the old format (for safety) and the new format
                 if (result.results.step_results) {
-                    setExecutionResults(result.results.step_results);
+                    // setExecutionResults(result.results.step_results); // Hidden as per request
                 } else {
                     // Fallback if backend structure differs
-                    setExecutionResults(result.results);
+                    // setExecutionResults(result.results);
                 }
 
                 if (result.results.enhanced_output) {
                     setCombinedOutput(result.results.enhanced_output);
+                    setIsNotification(false);
                 }
             }
         } catch (error) {
-            alert(`Execution failed: ${error.message}`);
+            console.error(error);
+            setIsNotification(true);
+            if (error.message.includes('401') || error.message.includes('Session expired')) {
+                setCombinedOutput("Session expired. Please log in again.");
+                // Optionally clear token here if you want: localStorage.removeItem('token');
+            } else if (error.message.includes('403') || error.message.includes('Usage limit')) {
+                setCombinedOutput("Usage limit reached. Please upgrade to the Dev plan.");
+            } else {
+                setCombinedOutput(`Execution failed: ${error.message}`);
+            }
         } finally {
             setIsGenerating(false);
         }
@@ -293,38 +431,34 @@ const ChainFlow = () => {
 
                 {(executionResults || combinedOutput) && (
                     <div className={styles.resultsSidebar}>
-                        <h3 style={{ marginBottom: '16px', color: 'var(--color-text-primary)' }}>Chain Results</h3>
+
 
                         {/* Combined Output Section */}
                         {combinedOutput && (
                             <div className={styles.resultItem} style={{ borderLeft: '4px solid var(--color-primary)' }}>
                                 <div className={styles.resultHeader}>
-                                    <strong>Combined Output</strong>
+                                    <strong>Chained Prompt</strong>
                                 </div>
-                                <div className={styles.resultContent} style={{ whiteSpace: 'pre-wrap' }}>
-                                    {combinedOutput}
+                                <div className={styles.resultContent} style={{ padding: 0 }}>
+                                    <AutoResizeTextarea
+                                        value={combinedOutput}
+                                        onChange={(val) => {
+                                            setCombinedOutput(val);
+                                            if (!val || val.trim() === '') {
+                                                setCombinedOutput(null);
+                                                setExecutionResults(null);
+                                            }
+                                        }}
+                                        readOnly={false}
+                                        isNotification={isNotification}
+                                    />
                                 </div>
                             </div>
                         )}
 
-                        <hr style={{ margin: '16px 0', borderColor: 'var(--color-border)', opacity: 0.3 }} />
 
-                        {/* Individual Step Results */}
-                        {executionResults && nodes.map(node => {
-                            const result = executionResults[node.id];
-                            if (!result) return null;
-                            return (
-                                <div key={node.id} className={styles.resultItem}>
-                                    <div className={styles.resultHeader}>
-                                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--color-accent)' }}></span>
-                                        {node.data.label}
-                                    </div>
-                                    <div className={styles.resultContent}>
-                                        {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-                                    </div>
-                                </div>
-                            );
-                        })}
+
+
                     </div>
                 )}
             </div>
