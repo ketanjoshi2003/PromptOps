@@ -97,8 +97,8 @@ function App() {
                     />
                 )}
                 {currentView === 'projects' && <Projects isVisible={currentView === 'projects'} />}
-                {currentView === 'chat' && <ChatPage />}
-                {currentView === 'chain' && <ChainPage />}
+                {currentView === 'chat' && <ChatPage onUsageUpdate={handleUserRefresh} />}
+                {currentView === 'chain' && <ChainPage onUsageUpdate={handleUserRefresh} />}
                 {currentView === 'settings' && (
                     <SettingsPage
                         onUserRefresh={handleUserRefresh}

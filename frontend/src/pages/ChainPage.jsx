@@ -235,7 +235,7 @@ const AutoResizeTextarea = ({ value, onChange, isNotification, readOnly }) => {
     );
 };
 
-const ChainFlow = () => {
+const ChainFlow = ({ onUsageUpdate }) => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState([]);
 
@@ -358,6 +358,8 @@ const ChainFlow = () => {
                     setCombinedOutput(result.results.enhanced_output);
                     setIsNotification(false);
                 }
+
+                if (onUsageUpdate) onUsageUpdate();
             }
         } catch (error) {
             console.error(error);
@@ -466,10 +468,10 @@ const ChainFlow = () => {
     );
 };
 
-const ChainPage = () => {
+const ChainPage = ({ onUsageUpdate }) => {
     return (
         <ReactFlowProvider>
-            <ChainFlow />
+            <ChainFlow onUsageUpdate={onUsageUpdate} />
         </ReactFlowProvider>
     );
 };

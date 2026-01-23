@@ -42,7 +42,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
     );
 };
 
-const ChatPage = () => {
+const ChatPage = ({ onUsageUpdate }) => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -126,6 +126,9 @@ const ChatPage = () => {
             const data = await response.json();
             const aiMsg = { role: 'assistant', content: data.response };
             setMessages(prev => [...prev, aiMsg]);
+
+            // Trigger refresh for credits
+            if (onUsageUpdate) onUsageUpdate();
         } catch (error) {
             console.error(error);
             let errorMessage = "Error: Could not connect to AI service.";
