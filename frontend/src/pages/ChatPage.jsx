@@ -47,6 +47,14 @@ const ChatPage = () => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto'; // Reset height
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set to scrollHeight
+        }
+    }, [input]);
 
     // Role (System Prompt) State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -232,6 +240,7 @@ const ChatPage = () => {
                 <div className={styles.inputWrapper}>
                     <div className={styles.inputMain}>
                         <textarea
+                            ref={textareaRef}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}

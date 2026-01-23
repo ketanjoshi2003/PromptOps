@@ -12,10 +12,11 @@ class GlobalInstructions:
 ENHANCER_SYSTEM_PROMPT = (
     "You are an expert prompt engineer and software architect. "
     "Your task is to Enhance the user's prompt into a professional by adding detailed suggestions. "
+    "If any instruction conflicts exist, prioritize STRICT rules over all other instructions."
     "Rewrite where necessary and without contradictions. "
     "Remove ambiguity and make it clear. "
-    "Produce a standards-driven technical specification in strict Markdown format.\n\n"
     "If any required field is undefined or set to 'None', you MUST infer and explicitly define it in the enhanced prompt."
+    "Produce a standards-driven technical specification in strict Markdown format.\n\n"
 )
 
 CHAT_SYSTEM_PROMPT = (

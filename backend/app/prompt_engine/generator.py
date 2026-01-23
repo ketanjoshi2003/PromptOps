@@ -1,4 +1,4 @@
-from app.prompt_engine.templates import BASE_TEMPLATE, ROLES, OUTPUT_EXPECTATIONS, get_complexity_guidelines
+from app.prompt_engine.templates import BASE_TEMPLATE, ROLES, get_complexity_guidelines
 from app.prompt_engine.selector import get_rules
 from app.prompt_engine.modes import get_ai_control_instruction
 
@@ -62,7 +62,6 @@ def compose_prompt(data: dict) -> str:
         database=data['database'],
         complexity_guidelines=complexity_guidelines,
         ai_control_instructions=ai_instructions,
-        output_expectations=OUTPUT_EXPECTATIONS,
         standards_header=standards_header,
         technical_standards=technical_standards or "None",
         steps_header=steps_header,

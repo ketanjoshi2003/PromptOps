@@ -1,4 +1,4 @@
-from .base_template import BASE_TEMPLATE, ROLES, OUTPUT_EXPECTATIONS
+from .base_template import BASE_TEMPLATE, ROLES
 
 
 def get_complexity_guidelines(complexity: str) -> str:

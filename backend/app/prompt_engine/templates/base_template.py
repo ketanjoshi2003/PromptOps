@@ -23,7 +23,7 @@ BASE_TEMPLATE = """
 - Backend: {backend_stack}
 - Database: {database}
 
-# Critical Instructions for Code Generation
+# Critical Instructions for Implementation
 1. **Code Quality**: Write clean, maintainable, and production-ready code. Follow DRY (Don't Repeat Yourself) and SOLID principles.
 2. **Modularity**: Break down complex logic into small, reusable functions or components.
 3. **Error Handling**: Implement robust error handling (try/catch blocks, distinct error types) and input validation.
@@ -36,15 +36,6 @@ BASE_TEMPLATE = """
 
 {steps_header}
 {steps}
-
-# Output Expectations
-{output_expectations}
-
-# Response Format
-- Provide a brief high-level summary of the approach.
-- Present each file in a standard Markdown code block.
-- Precede each code block with the **Relative File Path** (e.g., `frontend/src/App.jsx`).
-- Ensure all imports work given the project structure.
 """
 
 ROLES = {
@@ -54,5 +45,3 @@ ROLES = {
     "backend": "Senior Backend Systems Engineer & API Specialist",
     "web": "Modern Web Application Architect (React/Next.js/Vue)"
 }
-
-OUTPUT_EXPECTATIONS = "Production-ready code, modular structure, and clear implementation plan."
