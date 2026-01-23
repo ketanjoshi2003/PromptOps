@@ -52,8 +52,7 @@
     padding: 12px 16px;
     padding-left: 40px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border: none;
     color: var(--color-text-primary);
     font-size: 1rem;
     outline: none;
@@ -84,7 +83,7 @@
     padding: 8px 12px;
     padding-left: 36px;
     background-color: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: 0.9rem;
@@ -107,7 +106,7 @@
 
 .projectItem {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s;
@@ -223,7 +222,7 @@
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: 4px;
     background: var(--color-bg-secondary);
     color: var(--color-text-primary);
@@ -274,7 +273,7 @@
 
 .modalContent {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 800px;

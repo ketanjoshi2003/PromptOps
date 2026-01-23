@@ -174,7 +174,7 @@
     /* Space for copy button */
     /* border-radius: var(--radius-md); Removed for square look */
     border-radius: 0;
-    border: 1px solid var(--color-border);
+    border: none;
     font-family: var(--font-family-mono, monospace);
     font-size: 0.8rem;
     white-space: pre-wrap;
@@ -192,9 +192,7 @@
     /* Hide scrollbars */
 }
 
-.codeEditor:focus {
-    border-color: var(--color-text-primary);
-}
+
 
 .messageContent:hover {
     cursor: default;

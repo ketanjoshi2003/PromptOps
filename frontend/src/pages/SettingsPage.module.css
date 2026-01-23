@@ -13,7 +13,7 @@
 
 .section {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -72,7 +72,7 @@
     padding: 4px;
     border-radius: 12px;
     /* Matching rounded look */
-    border: 1px solid var(--color-border);
+    border: none;
 }
 
 .themeBtn {
@@ -124,7 +124,7 @@
     background-color: rgba(255, 0, 0, 0.05);
     /* Lighter bg */
     color: #ff0000;
-    border: 1px solid rgba(255, 0, 0, 0.2);
+    border: none;
     padding: 8px 16px;
     border-radius: 8px;
     cursor: pointer;
@@ -183,7 +183,7 @@
 .passwordInput {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-sm);
     background-color: var(--color-bg-primary);
     color: var(--color-text-primary);
@@ -194,7 +194,7 @@
 }
 
 .passwordInput:focus {
-    border-color: var(--color-border);
+
     outline: none;
     box-shadow: none;
 }
@@ -217,7 +217,7 @@
 .cancelBtn {
     padding: 8px 16px;
     background: transparent;
-    border: 1px solid var(--color-border);
+    border: none;
     color: var(--color-text-primary);
     border-radius: 6px;
     cursor: pointer;
@@ -277,7 +277,7 @@
     background-color: var(--color-bg-primary);
     padding: 1rem;
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: none;
 }
 
 .featureItem {
@@ -321,7 +321,7 @@
 
 .planCard {
     background-color: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: 12px;
     padding: 1.5rem;
     display: flex;
@@ -370,7 +370,7 @@
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: none;
     background: transparent;
     color: var(--color-text-primary);
     font-weight: 600;

@@ -81,7 +81,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
 
         const token = localStorage.getItem('token');
         if (!token) {
-            setMessages(prev => [...prev, { role: 'ai', content: 'Authentication error. Please log in.' }]);
+            setMessages(prev => [...prev, { role: 'ai', content: 'Authentication error. Please log in.', type: 'notification' }]);
             setLoading(false);
             return;
         }
@@ -109,7 +109,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
             if (response.status === 401) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userEmail');
-                setMessages(prev => [...prev, { role: 'ai', content: 'Session expired. Please log in again.' }]);
+                setMessages(prev => [...prev, { role: 'ai', content: 'Session expired. Please log in again.', type: 'notification' }]);
                 setLoading(false);
                 return;
             }
@@ -117,7 +117,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
             if (response.status === 403) {
                 const errData = await response.json().catch(() => ({}));
                 const msg = errData.detail || 'Usage limit reached. Please upgrade to the Dev plan in Settings.';
-                setMessages(prev => [...prev, { role: 'ai', content: msg }]);
+                setMessages(prev => [...prev, { role: 'ai', content: msg, type: 'notification' }]);
                 setLoading(false);
                 return;
             }
@@ -135,7 +135,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
             const aiMessage = { role: 'ai', content: data.generated_instruction };
             setMessages(prev => [...prev, aiMessage]);
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'ai', content: error.message || 'Connection error. Please ensure the backend is running.' }]);
+            setMessages(prev => [...prev, { role: 'ai', content: error.message || 'Connection error. Please ensure the backend is running.', type: 'notification' }]);
         } finally {
             setLoading(false);
         }
@@ -167,7 +167,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
                                             value={PLACEHOLDER_TEXT}
                                             readOnly
                                             rows={2}
-                                            style={{ cursor: 'default', resize: 'none' }}
+                                            style={{ cursor: 'default', resize: 'none', color: 'var(--color-accent-primary)' }}
                                         />
                                     </div>
                                 </div>
@@ -182,6 +182,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
                                             <div className={styles.messageContent}>
                                                 <AutoResizeTextarea
                                                     value={msg.content}
+                                                    isNotification={msg.type === 'notification'}
                                                     onChange={(newText) => {
                                                         setMessages(prev => prev.map((m, i) =>
                                                             i === index ? { ...m, content: newText } : m
@@ -208,7 +209,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
 };
 
 
-const AutoResizeTextarea = ({ value, onChange }) => {
+const AutoResizeTextarea = ({ value, onChange, isNotification }) => {
     const textareaRef = useRef(null);
     const shadowRef = useRef(null);
 
@@ -220,6 +221,50 @@ const AutoResizeTextarea = ({ value, onChange }) => {
             textareaRef.current.style.height = `${newHeight}px`;
         }
     }, [value]);
+
+    const renderHighlights = (text) => {
+        if (!text) return null;
+        // Split text into lines to apply highlighting line by line
+        const lines = text.split('\n');
+        return lines.map((line, i) => {
+            const headerMatch = line.match(/^((#+)\s)(.*)/);
+            const bulletMatch = line.match(/^(-\s)(.*)/);
+            const numberMatch = line.match(/^(\d+[\.\)]\s)(.*)/);
+
+            let content;
+            if (headerMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{headerMatch[1]}</span>
+                        {headerMatch[3]}
+                    </>
+                );
+            } else if (bulletMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{bulletMatch[1]}</span>
+                        {bulletMatch[2]}
+                    </>
+                );
+            } else if (numberMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{numberMatch[1]}</span>
+                        {numberMatch[2]}
+                    </>
+                );
+            } else {
+                content = line;
+            }
+
+            return (
+                <React.Fragment key={i}>
+                    {content}
+                    {i < lines.length - 1 && '\n'}
+                </React.Fragment>
+            );
+        });
+    };
 
     return (
         <div style={{ position: 'relative', width: '100%' }}>
@@ -243,14 +288,44 @@ const AutoResizeTextarea = ({ value, onChange }) => {
                     zIndex: -100
                 }}
             />
-            {/* Visible textarea */}
+            {/* Backdrop for highlights */}
+            <div
+                className={styles.codeEditor}
+                aria-hidden="true"
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    color: isNotification ? 'var(--color-accent-primary)' : 'var(--color-text-primary)',
+                    background: 'var(--color-bg-secondary)', // Visible background
+                    pointerEvents: 'none',
+                    borderColor: 'transparent', // Let textarea handle border
+                    zIndex: 0,
+                    overflow: 'hidden' // Match textarea
+                }}
+            >
+                {renderHighlights(value)}
+            </div>
+
+            {/* Visible Input Textarea */}
             <textarea
                 ref={textareaRef}
                 className={styles.codeEditor}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 rows={1}
-                style={{ overflow: 'hidden' }}
+                style={{
+                    overflow: 'hidden',
+                    color: 'transparent',
+                    background: 'transparent',
+                    caretColor: 'var(--color-text-primary)',
+                    position: 'relative',
+                    zIndex: 1
+                }}
+                spellCheck={false}
+                autoCorrect="off"
             />
         </div>
     );

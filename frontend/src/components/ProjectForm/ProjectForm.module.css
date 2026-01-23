@@ -93,7 +93,7 @@
     width: 100%;
     min-height: 100px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     padding: var(--spacing-md);
@@ -105,9 +105,7 @@
     box-sizing: border-box;
 }
 
-.textarea:focus {
-    border-color: var(--color-text-muted);
-}
+
 
 .rowInputs {
     display: grid;
@@ -154,7 +152,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);

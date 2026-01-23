@@ -7,7 +7,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -19,9 +19,7 @@
     transition: border-color 0.2s;
 }
 
-.selectHeader:hover {
-    border-color: var(--color-text-muted);
-}
+
 
 .arrow {
     font-size: 0.8em;
@@ -40,7 +38,7 @@
     width: 100%;
     margin-top: 4px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: var(--radius-md);
     box-shadow: 0 4px 12px var(--shadow-sm);
     /* Use theme shadow */

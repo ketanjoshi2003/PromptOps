@@ -564,7 +564,7 @@
     background-color: var(--color-bg-secondary);
     padding: 2px;
     border-radius: 6px;
-    border: 1px solid var(--color-border);
+    border: none;
     position: relative;
     isolation: isolate;
 }
@@ -624,7 +624,7 @@
 
 .headerCopyBtn {
     background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
+    border: none;
     color: var(--color-text-secondary);
     padding: 2px 8px;
     font-size: 0.65rem;

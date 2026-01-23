@@ -37,11 +37,7 @@
 
 .headerButton {
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    color: var(--color-text-primary);
-    /* Ensure text is visible */
-    border-color: var(--color-text-muted);
-    /* Better default border */
+    border: 1px solid transparent;
     padding: 8px 16px;
     font-size: 0.8rem;
     border-radius: 24px;
@@ -63,7 +59,7 @@
 
 .resetBtn {
     background: var(--color-bg-tertiary) !important;
-    border: 1px solid var(--color-border) !important;
+    border: none !important;
     color: var(--color-text-primary) !important;
     padding: 6px 12px !important;
     border-radius: 6px !important;
@@ -131,7 +127,7 @@
 
 .suggestionCard {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     padding: var(--spacing-lg);
     border-radius: 12px;
     cursor: pointer;
@@ -395,7 +391,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: 16px;
     padding: var(--spacing-sm);
     transition: all 0.2s ease;
@@ -404,7 +400,7 @@
 }
 
 .inputWrapper:focus-within {
-    border-color: var(--color-border);
+
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -502,7 +498,7 @@
 
 .modalContent {
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: none;
     border-radius: 12px;
     padding: var(--spacing-lg);
     width: 90%;
@@ -535,7 +531,7 @@
 
 .modalTextarea {
     background-color: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
+    border: none;
     color: var(--color-text-primary);
     border-radius: 8px;
     padding: 10px;
@@ -547,9 +543,7 @@
     line-height: 1.5;
 }
 
-.modalTextarea:focus {
-    border-color: var(--color-border);
-}
+.modalTextarea:focus {}
 
 
 
@@ -562,7 +556,7 @@
 
 .cancelBtn {
     background: transparent;
-    border: 1px solid var(--color-border);
+    border: none;
     color: var(--color-text-primary);
     padding: 8px 16px;
     border-radius: 6px;
@@ -577,7 +571,7 @@
 
 .saveBtn {
     background-color: #ffffff;
-    border: 1px solid var(--color-border);
+    border: none;
     color: #000000;
     padding: 8px 16px;
     border-radius: 6px;
@@ -588,7 +582,7 @@
 
 .saveBtn:hover {
     background-color: #f0f0f0;
-    border-color: #f0f0f0;
+
     transform: translateY(-1px);
 }
 
@@ -636,7 +630,7 @@
 /* Input Action Button (Role) */
 .inputActionBtn {
     background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
+    border: none;
     color: var(--color-text-primary);
     /* Highlighted */
     padding: 6px 12px;
