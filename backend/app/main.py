@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import prompt_routes, chat_routes, auth_routes, chain_routes
+from app.api import auth_routes, prompt_routes, chat_routes, chain_routes, plan_routes
 
 app = FastAPI()
 
@@ -26,6 +26,7 @@ app.include_router(auth_routes.router, prefix="/api/auth", tags=["auth"])
 app.include_router(prompt_routes.router, prefix="/api", tags=["prompts"])
 app.include_router(chat_routes.router, prefix="/api/chat", tags=["chat"])
 app.include_router(chain_routes.router, prefix="/api/chain", tags=["chain"])
+app.include_router(plan_routes.router, prefix="/api/plan", tags=["plan"])
 
 @app.get("/")
 def read_root():

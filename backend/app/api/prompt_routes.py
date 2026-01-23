@@ -28,17 +28,10 @@ async def generate_prompt(
     print(f"DEBUG: enhance_prompt flag received as: {request.enhance_prompt} (Type: {type(request.enhance_prompt)})")
     try:
         # USAGE LIMIT CHECK
-        LIMITS = {
-            "free": 5,
-            "dev": 50
-        }
-        
-        current_limit = LIMITS.get(current_user.plan, 5) # Default to free
-        
-        if current_user.generation_count >= current_limit:
+        if current_user.credits <= 0:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Usage limit reached for {current_user.plan} plan ({current_limit} generations). Please upgrade."
+                detail="Insufficient credits. Please upgrade your plan."
             )
 
         # Prepare data for PromptService
@@ -74,8 +67,8 @@ async def generate_prompt(
         )
         db.add(new_prompt)
         
-        # Increment usage
-        current_user.generation_count += 1
+        # Decrement credits
+        current_user.credits -= 1
         db.add(current_user)
         
         await db.commit()
@@ -85,8 +78,7 @@ async def generate_prompt(
             "generated_instruction": generated_content,
             "status": "success",
             "id": new_prompt.id,
-            "usage": current_user.generation_count,
-            "limit": current_limit
+            "credits_remaining": current_user.credits
         }
     except HTTPException:
         raise

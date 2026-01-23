@@ -15,7 +15,7 @@ class UserResponse(UserBase):
     id: int
     is_active: bool
     plan: str
-    generation_count: int
+    credits: int
     created_at: datetime
 
     class Config:

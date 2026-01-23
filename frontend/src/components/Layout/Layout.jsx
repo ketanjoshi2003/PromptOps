@@ -200,14 +200,14 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                     {currentUser.plan === 'dev' ? 'Dev Plan' : 'Free Plan'}
                                 </span>
                                 <span className={styles.usageCount}>
-                                    {Math.max(0, (currentUser.plan === 'dev' ? 50 : 5) - currentUser.generation_count)} <span className={styles.usageUnit}>left</span>
+                                    {currentUser.credits} <span className={styles.usageUnit}>left</span>
                                 </span>
                             </div>
                             <div className={styles.usageBar}>
                                 {[...Array(currentUser.plan === 'dev' ? 50 : 5)].map((_, i) => (
                                     <div
                                         key={i}
-                                        className={`${styles.usagePipe} ${i < (currentUser.plan === 'dev' ? 50 : 5) - currentUser.generation_count ? styles.usagePipeActive : ''}`}
+                                        className={`${styles.usagePipe} ${i < currentUser.credits ? styles.usagePipeActive : ''}`}
                                     />
                                 ))}
                             </div>

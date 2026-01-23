@@ -26,7 +26,7 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     plan = Column(String, default="free") # 'free' or 'dev'
-    generation_count = Column(Integer, default=0)
+    credits = Column(Integer, default=5)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationship with Cascade Delete

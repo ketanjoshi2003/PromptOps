@@ -9,7 +9,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
     const [password, setPassword] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState('');
-    const [userData, setUserData] = useState({ plan: 'free', generation_count: 0 });
+    const [userData, setUserData] = useState({ plan: 'free', credits: 5 });
 
     // Sync with global user state
     useEffect(() => {
@@ -29,7 +29,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 fetchUserData();
             } else {
                 setIsLoggedIn(false);
-                setUserData({ plan: 'free', generation_count: 0 });
+                setUserData({ plan: 'free', credits: 5 });
             }
         }
     }, [currentUser]);
@@ -38,7 +38,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
         const token = localStorage.getItem('token');
         if (!token) {
             setIsLoggedIn(false);
-            setUserData({ plan: 'free', generation_count: 0 });
+            setUserData({ plan: 'free', credits: 5 });
             return;
         }
         // setIsLoggedIn(true); // Don't set true immediately, wait for success
@@ -134,7 +134,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                     <div className={styles.settingInfo}>
                         <span className={styles.settingName}>Current Plan: {userData.plan === 'dev' ? 'Dev (Pro)' : 'Free'}</span>
                         <span className={styles.settingDescription}>
-                            Usage: {userData.generation_count} / {limit} generations used
+                            Generations Remaining: {userData.credits} / {limit}
                         </span>
 
                     </div>

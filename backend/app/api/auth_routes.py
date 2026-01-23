@@ -78,7 +78,7 @@ async def upgrade_plan(
 ):
     # Mock Payment Logic
     current_user.plan = "dev"
-    current_user.generation_count = 0
+    current_user.credits += 50  # Add 50 generations
     db.add(current_user)
     await db.commit()
     await db.refresh(current_user)
