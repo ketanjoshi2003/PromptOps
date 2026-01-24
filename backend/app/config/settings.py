@@ -11,8 +11,11 @@ class Settings:
     PROJECT_NAME: str = "PromptOps"
     VERSION: str = "1.0.0"
     database_url = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:password@localhost:5432/promptops")
-    if database_url and database_url.startswith("postgres://"):
-        database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    if database_url:
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif database_url.startswith("postgresql://"):
+            database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
     
     DATABASE_URL: str = database_url
     OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
