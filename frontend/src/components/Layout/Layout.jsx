@@ -40,12 +40,25 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
 
     // Check for existing session - Initial Mount
     useEffect(() => {
-        // If App manages usage, we rely on it.
-        // But Layout also did its own fetch.
-        // Let's defer to onUserRefresh if present.
         if (onUserRefresh) {
             onUserRefresh();
         }
+
+        // Real-world SaaS: Poll for updates (e.g. credits) and refresh on focus
+        const pollInterval = setInterval(() => {
+            if (onUserRefresh && !document.hidden) onUserRefresh();
+        }, 30000); // 30 seconds
+
+        const handleFocus = () => {
+            if (onUserRefresh) onUserRefresh();
+        };
+
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            clearInterval(pollInterval);
+            window.removeEventListener('focus', handleFocus);
+        };
     }, []);
 
     // Auto-close on resize to mobile
