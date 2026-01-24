@@ -3,6 +3,8 @@ import styles from './Layout.module.css';
 import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers } from 'react-icons/fi';
 import { authService } from '../../services/authService';
 
+import { GoogleLogin } from '@react-oauth/google';
+
 const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUser, onUserRefresh, isAuthOpen, setIsAuthOpen, onOpenUpgrade, useEnhancer, setUseEnhancer, latestResult }) => {
     // Initialize based on screen width
     const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
@@ -11,14 +13,16 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     // isAuthOpen is now a prop
-    const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+    const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'otp'
     const [isLoading, setIsLoading] = useState(false);
 
     // Form State
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [otp, setOtp] = useState('');
     const [error, setError] = useState('');
     const [headerCopied, setHeaderCopied] = useState(false);
+    const [showEmailForm, setShowEmailForm] = useState(false);
 
     // Sync with external user
     useEffect(() => {
@@ -26,15 +30,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
             setIsAuthenticated(true);
             setCurrentUser(externalUser);
         } else if (externalUser === null && authService.getCurrentUser()) {
-            // If external is null (not yet fetched or empty) but authService has user
-            // Wait for app fetch? OR use authService fallback
-            // Better: if App passes user=null but we have token, App is likely loading or failed.
-            // If App passes user=null vs user=undefined?
-            // Let's assume externalUser drives the state if passed.
-            // Actually, if externalUser is null, it means no authenticated user from App's perspective
-
-            // BUT App initializes with null.
-            // Let's stick to: if externalUser updates, we update.
+            // Logic handled by App
         }
     }, [externalUser]);
 
@@ -81,6 +77,8 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
             setError('');
             setEmail('');
             setPassword('');
+            setOtp('');
+            setShowEmailForm(false);
         }
     }, [isAuthOpen]);
 
@@ -105,16 +103,32 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
         try {
             if (authMode === 'login') {
                 await authService.login({ email, password });
-            } else {
+                // Sync via App
+                if (onUserRefresh) await onUserRefresh();
+                setIsAuthOpen(false);
+            } else if (authMode === 'register') {
                 await authService.register({ email, password });
-                await authService.login({ email, password });
+                // If success, switch to OTP (don't login yet)
+                setAuthMode('otp');
+                // Don't close modal
+            } else if (authMode === 'otp') {
+                await authService.verifyOTP(email, otp);
+                if (onUserRefresh) await onUserRefresh();
+                setIsAuthOpen(false);
             }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-            // Sync via App
+    const handleGoogleSuccess = async (credentialResponse) => {
+        setIsLoading(true);
+        setError('');
+        try {
+            await authService.googleLogin(credentialResponse.credential);
             if (onUserRefresh) await onUserRefresh();
-
-            // We can locally update too, but App's effects will trigger setCurrentUser via props
-            // We can locally update too, but App's effects will trigger setCurrentUser via props
             setIsAuthOpen(false);
         } catch (err) {
             setError(err.message);
@@ -315,44 +329,100 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                     <div className={styles.modalOverlay} onClick={() => setIsAuthOpen(false)}>
                         <div className={styles.loginModal} onClick={e => e.stopPropagation()}>
                             <h2 className={styles.modalTitle}>
-                                {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+                                {authMode === 'login' ? 'Welcome Back' : (authMode === 'register' ? 'Create Account' : 'Verify Email')}
                             </h2>
                             <p className={styles.modalSubtitle}>
                                 {authMode === 'login'
                                     ? 'Enter your details to access your workspace.'
-                                    : 'Join us to start building better prompts.'}
+                                    : (authMode === 'register' ? 'Join us to start building better prompts.' : 'Enter the OTP sent to your email.')}
                             </p>
 
                             {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
 
                             <div key={authMode} className={styles.formFade}>
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="email"
-                                        placeholder="Email Address"
-                                        className={styles.loginInput}
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                </div>
+                                {(authMode === 'login' || authMode === 'register') && !showEmailForm ? (
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
+                                            <GoogleLogin
+                                                onSuccess={handleGoogleSuccess}
+                                                onError={() => {
+                                                    console.log('Login Failed');
+                                                    setError("Google Login Failed");
+                                                }}
+                                                theme="filled_black"
+                                                size="large"
+                                                width="100%"
+                                                text="continue_with"
+                                            />
+                                        </div>
 
-                                <div className={styles.inputGroup}>
-                                    <input
-                                        type="password"
-                                        placeholder="Password"
-                                        className={styles.loginInput}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+                                            <div style={{ height: '1px', flex: 1, backgroundColor: 'var(--color-border)' }}></div>
+                                            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>OR</span>
+                                            <div style={{ height: '1px', flex: 1, backgroundColor: 'var(--color-border)' }}></div>
+                                        </div>
 
-                                <button
-                                    className={styles.loginBtn}
-                                    onClick={handleAuthSubmit}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
-                                </button>
+                                        <button
+                                            className={styles.loginBtn}
+                                            onClick={() => setShowEmailForm(true)}
+                                            style={{ marginTop: 0, backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
+                                        >
+                                            Continue with Email
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        {authMode !== 'otp' && (
+                                            <>
+                                                <div className={styles.inputGroup}>
+                                                    <input
+                                                        type="email"
+                                                        placeholder="Email Address"
+                                                        className={styles.loginInput}
+                                                        value={email}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                        autoFocus
+                                                    />
+                                                </div>
+
+                                                <div className={styles.inputGroup}>
+                                                    <input
+                                                        type="password"
+                                                        placeholder="Password"
+                                                        className={styles.loginInput}
+                                                        value={password}
+                                                        onChange={(e) => setPassword(e.target.value)}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+
+                                        {authMode === 'otp' && (
+                                            <div className={styles.inputGroup}>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter 6-digit OTP"
+                                                    className={styles.loginInput}
+                                                    value={otp}
+                                                    onChange={(e) => setOtp(e.target.value)}
+                                                    maxLength={6}
+                                                    autoFocus
+                                                />
+                                            </div>
+                                        )}
+
+                                        <button
+                                            className={styles.loginBtn}
+                                            onClick={handleAuthSubmit}
+                                            disabled={isLoading}
+                                        >
+                                            {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : (authMode === 'register' ? 'Create Account' : 'Verify OTP'))}
+                                        </button>
+
+                                        {/* Google Login is now on the selection screen for both login and register */}
+                                    </>
+                                )}
+
                             </div>
 
                             <div className={styles.authSwitch}>
@@ -362,15 +432,28 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                         <span onClick={() => {
                                             setAuthMode('register');
                                             setError('');
+                                            setShowEmailForm(false);
                                         }}>Sign up</span>
                                     </>
                                 ) : (
                                     <>
-                                        Already have an account?{' '}
-                                        <span onClick={() => {
-                                            setAuthMode('login');
-                                            setError('');
-                                        }}>Sign in</span>
+                                        {authMode === 'register' && (
+                                            <>
+                                                Already have an account?{' '}
+                                                <span onClick={() => {
+                                                    setAuthMode('login');
+                                                    setError('');
+                                                    setShowEmailForm(false);
+                                                }}>Sign in</span>
+                                            </>
+                                        )}
+                                        {authMode === 'otp' && (
+                                            <span onClick={() => {
+                                                setAuthMode('register');
+                                                setError('');
+                                                setOtp('');
+                                            }}>Back to Register</span>
+                                        )}
                                     </>
                                 )}
                             </div>

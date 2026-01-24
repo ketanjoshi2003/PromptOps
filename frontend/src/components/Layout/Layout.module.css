@@ -219,6 +219,7 @@
 .userInfo {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .authMenu {
@@ -264,11 +265,15 @@
     font-weight: bold;
     color: white;
     font-size: 0.8rem;
+    flex-shrink: 0;
 }
 
 .username {
     font-size: 0.9rem;
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .main {

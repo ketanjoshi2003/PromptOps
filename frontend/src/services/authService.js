@@ -23,6 +23,77 @@ export const authService = {
         }
     },
 
+    async verifyOTP(email, otp) {
+        try {
+            const response = await fetch(`${API_URL}/verify-otp`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, otp }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'OTP Verification failed');
+            }
+
+            const data = await response.json();
+            if (data.access_token) {
+                localStorage.setItem('token', data.access_token);
+                localStorage.setItem('userEmail', email);
+            }
+            if (data.refresh_token) {
+                localStorage.setItem('refreshToken', data.refresh_token);
+            }
+            return data;
+        } catch (error) {
+            console.error('OTP Verification Error:', error);
+            throw error;
+        }
+    },
+
+    async googleLogin(credential) {
+        try {
+            const response = await fetch(`${API_URL}/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ credential }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Google Login failed');
+            }
+
+            const data = await response.json();
+            if (data.access_token) {
+                const decoded = this.parseJwt(data.access_token);
+                localStorage.setItem('token', data.access_token);
+                if (decoded && decoded.sub) {
+                    localStorage.setItem('userEmail', decoded.sub);
+                }
+            }
+            if (data.refresh_token) {
+                localStorage.setItem('refreshToken', data.refresh_token);
+            }
+            return data;
+        } catch (error) {
+            console.error('Google Login Error:', error);
+            throw error;
+        }
+    },
+
+    parseJwt(token) {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (e) {
+            return null;
+        }
+    },
+
     async login(credentials) {
         try {
             const response = await fetch(`${API_URL}/token`, {

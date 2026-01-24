@@ -27,6 +27,8 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     plan = Column(String, default="free") # 'free' or 'dev'
     credits = Column(Integer, default=5)
+    google_id = Column(String, unique=True, nullable=True)
+    is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationship with Cascade Delete
@@ -61,3 +63,12 @@ class ChatSession(Base):
     # User Relationship
     user_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="chat_sessions")
+
+class OTP(Base):
+    __tablename__ = "otps"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, index=True)
+    otp_code = Column(String)
+    expires_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

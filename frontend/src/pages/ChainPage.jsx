@@ -112,7 +112,7 @@ const initialNodes = [
     {
         id: '1',
         type: 'promptNode',
-        position: { x: 50, y: 50 },
+        position: { x: 20, y: 20 },
         data: { label: 'Start Prompt', prompt: '' },
     },
 ];
@@ -248,6 +248,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
     const [edges, setEdges] = useState([]);
     const [chainId, setChainId] = useState(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isClearing, setIsClearing] = useState(false);
     const isLoaded = useRef(false);
 
     // Initial Load
@@ -280,6 +281,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
     useEffect(() => {
         if (!isLoaded.current) return;
         if (!localStorage.getItem('token')) return;
+        if (isClearing) return; // Don't auto-save if we are in the middle of clearing
 
         const timer = setTimeout(async () => {
             setIsSaving(true);
@@ -307,7 +309,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
         }, 2000); // 2s debounce
 
         return () => clearTimeout(timer);
-    }, [nodes, edges, chainId]);
+    }, [nodes, edges, chainId, isClearing]);
 
     // ... (handlers remain mostly same, just update onConnect)
 
@@ -359,7 +361,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
     );
 
     const onAddNode = useCallback(() => {
-        const id = `${nodes.length + 1}`;
+        const id = `${Date.now()}`;
         const lastNode = nodes.length > 0 ? nodes[nodes.length - 1] : { position: { x: 0, y: 0 } };
         const newNode = {
             id,
@@ -369,19 +371,44 @@ const ChainFlow = ({ onUsageUpdate }) => {
                 x: lastNode.position.x + 350,
                 y: lastNode.position.y
             },
-            data: { label: `Step ${id}`, prompt: '' },
+            data: { label: `Step ${nodes.length + 1}`, prompt: '' },
         };
         setNodes((nds) => nds.concat(newNode));
     }, [nodes]);
 
-    const onClearAll = useCallback(() => {
-        if (window.confirm('Are you sure you want to clear all steps?')) {
-            setNodes([]);
+
+
+    const onClearAll = useCallback(async () => {
+        if (!window.confirm('Are you sure you want to clear all steps?')) return;
+
+        setIsClearing(true);
+        setIsSaving(true);
+
+        try {
+            // 1. Clear local state
+            // Deep clone to prevent reference issues if ReactFlow mutates objects
+            const resetNodes = JSON.parse(JSON.stringify(initialNodes));
+            setNodes(resetNodes);
             setEdges([]);
             setExecutionResults(null);
             setCombinedOutput(null);
+
+            // 2. Force save if chain exists
+            if (chainId) {
+                // Save clone as well to be safe
+                const saveNodes = JSON.parse(JSON.stringify(initialNodes));
+                await chainService.updateChain(chainId, { nodes: saveNodes, edges: [] });
+                console.log("Chain cleared and saved.");
+            }
+        } catch (e) {
+            console.error("Failed to clear chain:", e);
+            setCombinedOutput("Failed to save changes. Please try again.");
+            setIsNotification(true);
+        } finally {
+            setIsSaving(false);
+            setIsClearing(false);
         }
-    }, []);
+    }, [chainId]);
 
     const [executionResults, setExecutionResults] = useState(null);
     const [combinedOutput, setCombinedOutput] = useState(null);

@@ -113,6 +113,13 @@ const ChatPage = ({ onUsageUpdate }) => {
         }
     }, [input]);
 
+    // Focus on mount
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, []);
+
     // Role (System Prompt) State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [systemPrompt, setSystemPrompt] = useState('');
@@ -383,6 +390,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                             onKeyDown={handleKeyDown}
                             placeholder="Send a message..."
                             rows={1}
+                            autoFocus
                         />
                     </div>
                     <div className={styles.inputControls}>

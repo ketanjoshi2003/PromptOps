@@ -112,33 +112,7 @@
     fill: currentColor;
 }
 
-.dangerZone {
-    border-color: rgba(255, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-}
 
-
-
-.deleteBtn {
-    background-color: rgba(255, 0, 0, 0.05);
-    /* Lighter bg */
-    color: #ff0000;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-
-.deleteBtn:hover {
-    background-color: #ff0000;
-    color: #ffffff;
-    border-color: #ff0000;
-    box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
-}
 
 /* Modal Styles */
 .modalOverlay {
@@ -180,33 +154,7 @@
     line-height: 1.5;
 }
 
-.passwordInput {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: var(--radius-sm);
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
 
-.passwordInput:focus {
-
-    outline: none;
-    box-shadow: none;
-}
-
-.errorMessage {
-    color: #ff0000;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    background-color: rgba(255, 0, 0, 0.1);
-    padding: 8px;
-    border-radius: 4px;
-}
 
 .modalActions {
     display: flex;
@@ -228,24 +176,7 @@
     background-color: rgba(255, 255, 255, 0.05);
 }
 
-.confirmDeleteBtn {
-    padding: 8px 16px;
-    background-color: #ff0000;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-}
 
-.confirmDeleteBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.confirmDeleteBtn:not(:disabled):hover {
-    background-color: #dc2626;
-}
 
 @keyframes fadeIn {
     from {

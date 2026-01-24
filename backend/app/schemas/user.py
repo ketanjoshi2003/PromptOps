@@ -31,3 +31,11 @@ class TokenData(BaseModel):
 
 class UserDelete(BaseModel):
     password: str
+
+class OTPVerify(BaseModel):
+    email: EmailStr
+    otp: str
+
+class GoogleLogin(BaseModel):
+    credential: str
+

@@ -4,12 +4,8 @@ import { FiMoon, FiSun, FiCloud, FiCheck } from 'react-icons/fi';
 import { authService } from '../services/authService';
 
 const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser, onOpenUpgrade }) => {
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showPlanModal, setShowPlanModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [password, setPassword] = useState('');
-    const [isDeleting, setIsDeleting] = useState(false);
-    const [error, setError] = useState('');
     const [userData, setUserData] = useState({ plan: 'free', credits: 5 });
 
     // Sync with global user state
@@ -60,37 +56,6 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
     };
 
 
-
-    const handleDeleteAccount = async () => {
-        if (!password) return;
-
-        setIsDeleting(true);
-        setError('');
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/auth/me', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ password })
-            });
-
-            if (response.ok) {
-                localStorage.removeItem('token');
-                window.location.reload();
-            } else {
-                const data = await response.json();
-                setError(data.detail || "Failed to delete account. Incorrect password.");
-                setIsDeleting(false);
-            }
-        } catch (err) {
-            console.error(err);
-            setError("Connection error. Please try again.");
-            setIsDeleting(false);
-        }
-    };
 
     const getLimit = (plan) => plan === 'dev' ? 50 : 5;
     const limit = getLimit(userData.plan);
@@ -160,24 +125,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 </div>
             </div>
 
-            <div className={`${styles.section} ${styles.dangerZone}`}>
-                <h2 className={styles.sectionTitle} style={{ color: '#ff0000' }}>Danger Zone</h2>
-                <div className={styles.settingItem}>
-                    <div className={styles.settingInfo}>
-                        <span className={styles.settingName}>Delete Account</span>
-                        <span className={styles.settingDescription}>
-                            Permanently delete your account and all data
-                        </span>
-                    </div>
 
-                    <button
-                        className={styles.deleteBtn}
-                        onClick={() => setShowDeleteModal(true)}
-                    >
-                        Delete Account
-                    </button>
-                </div>
-            </div>
 
             {/* Plan Details Modal */}
             {showPlanModal && (
@@ -229,52 +177,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 </div>
             )}
 
-            {/* Delete Account Modal */}
-            {showDeleteModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modalContent}>
-                        <h3 className={styles.modalTitle}>Confirm Account Deletion</h3>
-                        <p className={styles.modalDescription}>
-                            Please enter your password to confirm. This action is irreversible and will permanently delete all your projects and data.
-                        </p>
 
-                        <input
-                            type="password"
-                            className={styles.passwordInput}
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleDeleteAccount();
-                            }}
-                            autoFocus
-                        />
-
-                        {error && <div className={styles.errorMessage}>{error}</div>}
-
-                        <div className={styles.modalActions}>
-                            <button
-                                className={styles.cancelBtn}
-                                onClick={() => {
-                                    setShowDeleteModal(false);
-                                    setPassword('');
-                                    setError('');
-                                }}
-                                disabled={isDeleting}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className={styles.confirmDeleteBtn}
-                                onClick={handleDeleteAccount}
-                                disabled={isDeleting || !password}
-                            >
-                                {isDeleting ? 'Deleting...' : 'Delete Forever'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
 
         </div>

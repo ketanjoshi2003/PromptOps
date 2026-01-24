@@ -25,6 +25,7 @@ class ChainService:
         # Build dependency graph
         adjacency = {node_id: [] for node_id in nodes}
         in_degree = {node_id: 0 for node_id in nodes}
+        out_degree = {node_id: 0 for node_id in nodes}
         
         for edge in edges:
             source = edge['source']
@@ -32,9 +33,17 @@ class ChainService:
             if source in adjacency and target in adjacency:
                 adjacency[source].append(target)
                 in_degree[target] += 1
+                out_degree[source] += 1
                 
         # Topological sort (Kahn's algorithm)
-        queue = [node_id for node_id, degree in in_degree.items() if degree == 0]
+        # Filter: Only start from 'Start Prompt' (ID 1) OR nodes that initiate a chain (out_degree > 0).
+        # This excludes floating nodes (in=0, out=0) unless it is the default Start node.
+        queue = []
+        for node_id, degree in in_degree.items():
+            if degree == 0:
+                if node_id == '1' or out_degree[node_id] > 0:
+                    queue.append(node_id)
+                    
         execution_order = []
         
         while queue:
@@ -47,7 +56,9 @@ class ChainService:
                     queue.append(neighbor)
                     
         # Check for cycles
-        if len(execution_order) != len(nodes):
+        # Instead of comparing lengths (which fails if we skipped orphans),
+        # we check if any node still has unresolved dependencies.
+        if any(degree > 0 for degree in in_degree.values()):
             raise ValueError("Cycle detected in prompt chain")
             
         # Execute prompts (In this mode, we just collect text, acting as a Prompt Builder)
