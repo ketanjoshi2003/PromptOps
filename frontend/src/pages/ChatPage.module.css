@@ -255,15 +255,15 @@
 }
 
 .user .bubble {
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
     font-weight: 500;
 }
 
-/* Light Mode Override: Black bg, White text */
+/* Light Mode Override: Slightly darker than bg-secondary */
 :global([data-theme='light']) .user .bubble {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #f0f0f0;
+    color: #000000;
 }
 
 .aiContent {
@@ -374,9 +374,33 @@
     background-color: transparent;
 }
 
-.typingIndicator {
-    font-style: italic;
-    color: var(--color-text-muted);
+/* Loading Bar */
+.loadingBar {
+    height: 6px;
+    width: 40px;
+    background-color: var(--color-text-muted);
+    border-radius: 3px;
+    animation: loadingPulse 1.2s infinite ease-in-out;
+    margin-top: 6px;
+    opacity: 0.7;
+}
+
+@keyframes loadingPulse {
+    0% {
+        width: 40px;
+        opacity: 0.5;
+    }
+
+    50% {
+        width: 60px;
+        opacity: 1;
+        background-color: var(--color-text-primary);
+    }
+
+    100% {
+        width: 40px;
+        opacity: 0.5;
+    }
 }
 
 /* --- INPUT AREA --- */
@@ -545,10 +569,6 @@
     line-height: 1.5;
 }
 
-.modalTextarea:focus {}
-
-
-
 .modalActions {
     display: flex;
     justify-content: flex-end;
@@ -709,4 +729,100 @@
     .suggestionCard {
         padding: var(--spacing-md);
     }
+}
+
+/* Chat History Styles */
+.historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+    /* for scrollbar */
+}
+
+.historyItem {
+    padding: 12px;
+    background-color: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.historyItem:hover {
+    background-color: var(--color-bg-tertiary);
+    border-color: var(--color-text-muted);
+}
+
+.activeSession {
+    background-color: var(--color-bg-tertiary);
+    /* Neutral highlight */
+    border-color: var(--color-border);
+}
+
+.historyInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.historyTitle {
+    font-weight: 500;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.95rem;
+}
+
+.historyDate {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.emptyHistory {
+    color: var(--color-text-muted);
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.historyBtn {
+    background: var(--color-bg-tertiary) !important;
+    border: none !important;
+    color: var(--color-text-primary) !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+.historyBtn:hover {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    color: #ff0000 !important;
+}
+
+.deleteChatBtn {
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin-left: 8px;
+}
+
+.deleteChatBtn:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
 }

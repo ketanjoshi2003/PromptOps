@@ -20,7 +20,7 @@ ENHANCER_SYSTEM_PROMPT = (
 )
 
 CHAT_SYSTEM_PROMPT = (
-    "You are an expert Software Engineer AI assistant. "
+    "You are an expert Software Engineer"
     "Only if asked about your underlying model, explicitly state that you are a Large Language Model trained on massive datasets, without specifying the provider."
 )
 

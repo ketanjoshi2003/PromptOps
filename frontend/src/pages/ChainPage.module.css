@@ -34,10 +34,10 @@
 
 .resultItem {
     margin-bottom: 20px;
-    padding: 12px;
+    padding: 0;
     border: none;
-    border-radius: 6px;
-    background-color: var(--color-bg-secondary);
+    border-radius: 0;
+    background-color: transparent;
 }
 
 .resultHeader {
@@ -167,8 +167,8 @@
 }
 
 .clearBtn {
-    background-color: transparent;
-    color: var(--color-text-muted);
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     border: none;
 }
 

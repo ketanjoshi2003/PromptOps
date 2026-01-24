@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Projects.module.css';
 import { FiSearch, FiTrash2, FiX, FiCheckSquare, FiSquare, FiList, FiEdit2, FiCopy, FiCheck } from 'react-icons/fi';
+import { authService } from '../../services/authService';
 
 const Projects = ({ isVisible }) => {
     const [projects, setProjects] = useState([]);
@@ -28,15 +29,7 @@ const Projects = ({ isVisible }) => {
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/projects', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userEmail');
-                return;
-            }
+            const response = await authService.fetchWithAuth('http://localhost:8000/api/projects');
 
             if (response.ok) {
                 const data = await response.json();
@@ -75,9 +68,8 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/projects/${id}`, {
+            const response = await authService.fetchWithAuth(`http://localhost:8000/api/projects/${id}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 setProjects(prev => prev.filter(p => p.id !== id));
@@ -114,11 +106,10 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://localhost:8000/api/projects/${selectedProject.id}`, {
+            const response = await authService.fetchWithAuth(`http://localhost:8000/api/projects/${selectedProject.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(editForm),
             });
@@ -177,11 +168,10 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await fetch('http://localhost:8000/api/projects', {
+            const response = await authService.fetchWithAuth('http://localhost:8000/api/projects', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(Array.from(selectedIds))
             });

@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
-import { FiMessageSquare, FiSettings, FiRefreshCw, FiArrowUp, FiUser, FiCopy, FiCheck } from 'react-icons/fi';
+import { FiMessageSquare, FiSettings, FiRefreshCw, FiArrowUp, FiUser, FiCopy, FiCheck, FiTrash2 } from 'react-icons/fi';
 import styles from './ChatPage.module.css';
+import { authService } from '../services/authService';
+import { chatService } from '../services/chatService';
 
 // Custom Code Block Component
 const CodeBlock = ({ inline, className, children, ...props }) => {
@@ -46,8 +48,63 @@ const ChatPage = ({ onUsageUpdate }) => {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
+    const [sessionId, setSessionId] = useState(null);
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
+
+    // Load latest session on mount
+    useEffect(() => {
+        if (!localStorage.getItem('token')) return;
+        const restoreSession = async () => {
+            try {
+                const sessions = await chatService.getSessions();
+                if (sessions && sessions.length > 0) {
+                    // Sort by updated_at? Backend sorts by updated_at desc already.
+                    const latest = sessions[0];
+                    setSessionId(latest.id);
+                    if (latest.messages && latest.messages.length > 0) {
+                        setMessages(latest.messages);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to restore session", err);
+            }
+        };
+        restoreSession();
+    }, []);
+
+    // If new messages are added, update history
+    // Since handleSend is async and adds user -> API -> AI, we can hook into handleSend result to save.
+    // Or use useEffect on messages.
+    // useEffect approach ensures any change (user or ai) is captured.
+    useEffect(() => {
+        if (!localStorage.getItem('token') || messages.length === 0) return;
+
+        const saveHistory = async () => {
+            try {
+                if (sessionId) {
+                    await chatService.updateSession(sessionId, null, messages);
+                } else {
+                    // Create new Only if we have at least one valid exchange or user msg
+                    const firstMsg = messages[0];
+                    if (firstMsg) {
+                        const title = firstMsg.content.slice(0, 30) + (firstMsg.content.length > 30 ? "..." : "");
+                        const session = await chatService.createSession(title, messages);
+                        setSessionId(session.id);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to auto-save chat:", err);
+            }
+        };
+        // Debounce slightly to catch rapid updates (like user msg + wait + ai msg)
+        // Wait, immediate save on user message might race with creation for AI message.
+        // If sessionId is null, user message triggers create. 
+        // Then AI message comes, triggers update. This is fine.
+        // A small timeout helps avoid double save on immediate state updates.
+        const timer = setTimeout(saveHistory, 1000);
+        return () => clearTimeout(timer);
+    }, [messages, sessionId]);
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -74,6 +131,23 @@ const ChatPage = ({ onUsageUpdate }) => {
 
     useEffect(scrollToBottom, [messages]);
 
+    const handleDeleteSession = async (e, id) => {
+        e.stopPropagation(); // Prevent opening the chat
+        if (!window.confirm("Delete this chat?")) return;
+
+        try {
+            await chatService.deleteSession(id);
+            setChatHistory(prev => prev.filter(s => s.id !== id));
+            // If deleted active session, clear view
+            if (id === sessionId) {
+                setMessages([]);
+                setSessionId(null);
+            }
+        } catch (err) {
+            console.error("Failed to delete session:", err);
+        }
+    };
+
     const handleSend = async (text = input) => {
         if (!text.trim()) return;
 
@@ -82,8 +156,7 @@ const ChatPage = ({ onUsageUpdate }) => {
         setInput('');
         setLoading(true);
 
-        const token = localStorage.getItem('token');
-        if (!token) {
+        if (!localStorage.getItem('token')) {
             setMessages(prev => [...prev, {
                 role: 'assistant',
                 content: "Authentication error. Please log in to continue."
@@ -103,11 +176,10 @@ const ChatPage = ({ onUsageUpdate }) => {
                 history = [{ role: 'system', content: systemPrompt }, ...history];
             }
 
-            const response = await fetch('http://localhost:8000/api/chat/message', {
+            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/chat/message', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ messages: history }),
                 signal: controller.signal
@@ -116,9 +188,6 @@ const ChatPage = ({ onUsageUpdate }) => {
             clearTimeout(timeoutId);
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Session expired. Please log in again.');
-                }
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.detail || 'Failed to fetch');
             }
@@ -129,6 +198,7 @@ const ChatPage = ({ onUsageUpdate }) => {
 
             // Trigger refresh for credits
             if (onUsageUpdate) onUsageUpdate();
+
         } catch (error) {
             console.error(error);
             let errorMessage = "Error: Could not connect to AI service.";
@@ -137,8 +207,11 @@ const ChatPage = ({ onUsageUpdate }) => {
                 errorMessage = "Error: Request timed out. Please check your backend connection.";
             } else if (error.message.includes('expired') || error.message.includes('Authentication')) {
                 errorMessage = error.message;
-            } else if (error.message.includes('limit')) {
-                errorMessage = "Usage limit reached. Please upgrade your plan.";
+            } else if (error.message.includes('limit') || error.message.includes('Insufficient credits')) {
+                errorMessage = "Usage limit reached. Please upgrade your plan or top up credits.";
+            } else {
+                // Append actual error message for debugging if it's not one of the above
+                errorMessage = `Error: ${error.message}`;
             }
 
             setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
@@ -170,6 +243,34 @@ const ChatPage = ({ onUsageUpdate }) => {
         setIsSettingsOpen(false);
     };
 
+    // History State
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+    const [chatHistory, setChatHistory] = useState([]);
+
+    const openHistory = async () => {
+        setIsHistoryOpen(true);
+        try {
+            const sessions = await chatService.getSessions();
+            setChatHistory(sessions);
+        } catch (err) {
+            console.error("Failed to load history:", err);
+        }
+    };
+
+    const loadSession = async (id) => {
+        try {
+            setLoading(true);
+            setIsHistoryOpen(false);
+            const session = await chatService.getSession(id);
+            setSessionId(session.id);
+            setMessages(session.messages || []);
+        } catch (err) {
+            console.error("Failed to load session:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const suggestions = [
         { title: "SaaS Boilerplate", desc: "FastAPI + React setup with auth" },
         { title: "Portfolio Website", desc: "Modern showcase with galleries" },
@@ -181,18 +282,25 @@ const ChatPage = ({ onUsageUpdate }) => {
         <div className={styles.chatContainer}>
             {/* Portal Actions to Header */}
             {document.getElementById('header-actions-root') && createPortal(
-                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-
+                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
                     <button
                         className={`${styles.headerButton} ${styles.resetBtn}`}
                         onClick={handleReset}
                         title="Reset Chat"
                     >
-                        <FiRefreshCw /> Reset Chat
+                        <FiRefreshCw /> Reset
+                    </button>
+                    <button
+                        className={`${styles.headerButton} ${styles.historyBtn}`}
+                        onClick={openHistory}
+                        title="View Chat History"
+                    >
+                        <FiMessageSquare /> Chats
                     </button>
                 </div>,
                 document.getElementById('header-actions-root')
-            )}
+            )
+            }
 
             <div className={styles.messagesArea}>
                 {messages.length === 0 ? (
@@ -255,7 +363,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                                 </div>
                                 <div className={styles.messageContent}>
                                     <div className={styles.aiContent}>
-                                        <div className={styles.typingIndicator}>Thinking...</div>
+                                        <div className={styles.loadingBar}></div>
                                     </div>
                                 </div>
                             </div>
@@ -290,24 +398,75 @@ const ChatPage = ({ onUsageUpdate }) => {
             </div>
 
             {/* SETTINGS MODAL */}
-            {isSettingsOpen && (
-                <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
-                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                        <h3 className={styles.modalTitle}>Role</h3>
-                        <div className={styles.modalBody}>
-                            <label className={styles.modalLabel}>
-                                Define the role and behavior of the AI. This is automatically applied to your conversation.
-                            </label>
-                            <textarea
-                                className={styles.modalTextarea}
-                                value={tempSystemPrompt}
-                                onChange={(e) => setTempSystemPrompt(e.target.value)}
-                                placeholder="e.g., You are a strict code reviewer..."
-                            />
+            {
+                isSettingsOpen && (
+                    <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
+                        <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                            <h3 className={styles.modalTitle}>Role</h3>
+                            <div className={styles.modalBody}>
+                                <label className={styles.modalLabel}>
+                                    Define the role and behavior of the AI. This is automatically applied to your conversation.
+                                </label>
+                                <textarea
+                                    className={styles.modalTextarea}
+                                    value={tempSystemPrompt}
+                                    onChange={(e) => setTempSystemPrompt(e.target.value)}
+                                    placeholder="e.g., You are a strict code reviewer..."
+                                />
+                            </div>
+                            <div className={styles.modalActions}>
+                                <button className={styles.cancelBtn} onClick={() => setIsSettingsOpen(false)}>Cancel</button>
+                                <button className={styles.saveBtn} onClick={saveSettings}>Save</button>
+                            </div>
                         </div>
-                        <div className={styles.modalActions}>
-                            <button className={styles.cancelBtn} onClick={() => setIsSettingsOpen(false)}>Cancel</button>
-                            <button className={styles.saveBtn} onClick={saveSettings}>Save</button>
+                    </div>
+                )
+            }
+
+            {/* HISTORY MODAL */}
+            {isHistoryOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsHistoryOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <h3 className={styles.modalTitle}>Your Chats</h3>
+                        <div className={styles.historyList}>
+                            {Array.isArray(chatHistory) && chatHistory.length === 0 ? (
+                                <p className={styles.emptyHistory}>No previous chats found.</p>
+                            ) : (
+                                (chatHistory || []).map((session) => (
+                                    <div
+                                        key={session.id}
+                                        className={`${styles.historyItem} ${session.id === sessionId ? styles.activeSession : ''}`}
+                                        onClick={() => loadSession(session.id)}
+                                    >
+                                        <div className={styles.historyInfo}>
+                                            <span className={styles.historyTitle}>{session.title || 'Untitled Chat'}</span>
+                                            <span className={styles.historyDate}>
+                                                {new Date(session.updated_at || session.created_at || Date.now()).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={(e) => handleDeleteSession(e, session.id)}
+                                            className={styles.deleteChatBtn}
+                                            title="Delete Chat"
+                                        >
+                                            <FiTrash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className={styles.modalActions} style={{ justifyContent: 'space-between' }}>
+                            <button
+                                className={styles.saveBtn}
+                                onClick={() => {
+                                    setMessages([]);
+                                    setSessionId(null);
+                                    setIsHistoryOpen(false);
+                                }}
+                            >
+                                + New Chat
+                            </button>
+                            <button className={styles.cancelBtn} onClick={() => setIsHistoryOpen(false)}>Close</button>
                         </div>
                     </div>
                 </div>

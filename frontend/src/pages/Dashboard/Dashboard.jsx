@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import ProjectForm from '../../components/ProjectForm/ProjectForm';
 import PipedLoading from '../../components/PipedLoading/PipedLoading';
+import { authService } from '../../services/authService';
 
 const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, onResultChange }) => {
     const [messages, setMessages] = useState([]);
@@ -87,11 +88,10 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
 
         try {
-            const response = await fetch('http://localhost:8000/api/generate', {
+            const response = await authService.fetchWithAuth('http://localhost:8000/api/generate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     user_intent: formData.additionalInstructions,
@@ -106,13 +106,6 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
                     enhance_prompt: useEnhancer
                 }),
             });
-            if (response.status === 401) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userEmail');
-                setMessages(prev => [...prev, { role: 'ai', content: 'Session expired. Please log in again.', type: 'notification' }]);
-                setLoading(false);
-                return;
-            }
 
             if (response.status === 403) {
                 const errData = await response.json().catch(() => ({}));

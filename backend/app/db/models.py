@@ -31,3 +31,33 @@ class User(Base):
     
     # Relationship with Cascade Delete
     prompts = relationship("Prompt", back_populates="owner", cascade="all, delete")
+    chains = relationship("Chain", back_populates="owner", cascade="all, delete")
+    chat_sessions = relationship("ChatSession", back_populates="owner", cascade="all, delete")
+
+class Chain(Base):
+    __tablename__ = "chains"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    description = Column(String, nullable=True)
+    nodes = Column(Text) # JSON string
+    edges = Column(Text) # JSON string
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # User Relationship
+    user_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="chains")
+
+class ChatSession(Base):
+    __tablename__ = "chat_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    messages = Column(Text) # JSON string of list of objects
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # User Relationship
+    user_id = Column(Integer, ForeignKey("users.id"))
+    owner = relationship("User", back_populates="chat_sessions")

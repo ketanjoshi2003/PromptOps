@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './UpgradeModal.module.css';
 import { FiCheck } from 'react-icons/fi';
+import { authService } from '../../services/authService';
 
 const UpgradeModal = ({ isOpen, onClose, currentUser, onUpgradeSuccess }) => {
     const [loading, setLoading] = useState(false);
@@ -11,10 +12,9 @@ const UpgradeModal = ({ isOpen, onClose, currentUser, onUpgradeSuccess }) => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/auth/upgrade', {
+            const response = await authService.fetchWithAuth('http://localhost:8000/api/auth/upgrade', {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });

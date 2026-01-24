@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
     ReactFlow,
@@ -136,6 +136,7 @@ const AutoResizeTextarea = ({ value, onChange, isNotification, readOnly }) => {
             const headerMatch = line.match(/^((#+)\s)(.*)/);
             const bulletMatch = line.match(/^(-\s)(.*)/);
             const numberMatch = line.match(/^(\d+[\.\)]\s)(.*)/);
+            const stepMatch = line.match(/^((Step[_\s]+\d+:?)\s*)(.*)/i); // Added Step Match (underscore or space)
 
             let content;
             if (headerMatch) {
@@ -157,6 +158,13 @@ const AutoResizeTextarea = ({ value, onChange, isNotification, readOnly }) => {
                     <>
                         <span style={{ color: 'var(--color-accent-primary)' }}>{numberMatch[1]}</span>
                         {numberMatch[2]}
+                    </>
+                );
+            } else if (stepMatch) {
+                content = (
+                    <>
+                        <span style={{ color: 'var(--color-accent-primary)' }}>{stepMatch[1]}</span>
+                        {stepMatch[3]}
                     </>
                 );
             } else {
@@ -238,6 +246,68 @@ const AutoResizeTextarea = ({ value, onChange, isNotification, readOnly }) => {
 const ChainFlow = ({ onUsageUpdate }) => {
     const [nodes, setNodes] = useState(initialNodes);
     const [edges, setEdges] = useState([]);
+    const [chainId, setChainId] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const isLoaded = useRef(false);
+
+    // Initial Load
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const chains = await chainService.getChains();
+                if (chains.length > 0) {
+                    // Sort by updated_at descending
+                    chains.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+                    const latest = chains[0];
+                    setChainId(latest.id);
+                    setNodes(latest.nodes);
+                    setEdges(latest.edges);
+                }
+            } catch (err) {
+                console.error("Failed to load chains:", err);
+            } finally {
+                isLoaded.current = true; // Mark as loaded so auto-save can start
+            }
+        };
+        if (localStorage.getItem('token')) {
+            loadData();
+        } else {
+            isLoaded.current = true;
+        }
+    }, []);
+
+    // Auto-Save Effect
+    useEffect(() => {
+        if (!isLoaded.current) return;
+        if (!localStorage.getItem('token')) return;
+
+        const timer = setTimeout(async () => {
+            setIsSaving(true);
+            try {
+                if (chainId) {
+                    await chainService.updateChain(chainId, { nodes, edges });
+                } else {
+                    // Create new
+                    // Only create if there's meaningful content (more than initial node or modified initial)
+                    const isDefault = nodes.length === 1 && nodes[0].data.prompt === '' && edges.length === 0;
+                    if (!isDefault) {
+                        const newChain = await chainService.createChain({
+                            title: `Chain ${new Date().toLocaleString()}`,
+                            nodes,
+                            edges
+                        });
+                        setChainId(newChain.id);
+                    }
+                }
+            } catch (err) {
+                console.error("Auto-save failed:", err);
+            } finally {
+                setIsSaving(false);
+            }
+        }, 2000); // 2s debounce
+
+        return () => clearTimeout(timer);
+    }, [nodes, edges, chainId]);
 
     // ... (handlers remain mostly same, just update onConnect)
 
@@ -409,6 +479,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
                         >
                             <FiZap /> Generate Enhanced
                         </button>
+                        {isSaving && <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Saving...</span>}
                     </div>
                 </div>,
                 document.getElementById('header-actions-root')
@@ -437,7 +508,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
 
                         {/* Combined Output Section */}
                         {combinedOutput && (
-                            <div className={styles.resultItem} style={{ borderLeft: '4px solid var(--color-primary)' }}>
+                            <div className={styles.resultItem}>
                                 <div className={styles.resultHeader}>
                                     <strong>Chained Prompt</strong>
                                 </div>

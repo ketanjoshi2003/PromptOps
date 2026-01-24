@@ -204,7 +204,8 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                 </span>
                             </div>
                             <div className={styles.usageBar}>
-                                {[...Array(currentUser.plan === 'dev' ? 50 : 5)].map((_, i) => (
+                                {/* Show max(credits, plan_limit) but cap at 50 visually to prevent overflow */}
+                                {[...Array(Math.min(50, Math.max(currentUser.credits, currentUser.plan === 'dev' ? 50 : 5)))].map((_, i) => (
                                     <div
                                         key={i}
                                         className={`${styles.usagePipe} ${i < currentUser.credits ? styles.usagePipeActive : ''}`}

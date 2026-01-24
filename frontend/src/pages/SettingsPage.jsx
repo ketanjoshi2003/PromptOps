@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SettingsPage.module.css';
 import { FiMoon, FiSun, FiCloud, FiCheck } from 'react-icons/fi';
+import { authService } from '../services/authService';
 
 const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser, onOpenUpgrade }) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -44,9 +45,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
         // setIsLoggedIn(true); // Don't set true immediately, wait for success
 
         try {
-            const response = await fetch('http://localhost:8000/api/auth/me', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/auth/me');
             if (response.ok) {
                 const data = await response.json();
                 setUserData(data);
@@ -70,10 +69,9 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/auth/me', {
+            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/auth/me', {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ password })

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000/api/auth';
+const API_URL = 'http://127.0.0.1:8000/api/auth';
 
 export const authService = {
     async register(userData) {
@@ -44,6 +44,9 @@ export const authService = {
                 // Also store user email for display
                 localStorage.setItem('userEmail', credentials.email);
             }
+            if (data.refresh_token) {
+                localStorage.setItem('refreshToken', data.refresh_token);
+            }
 
             return data;
         } catch (error) {
@@ -54,18 +57,75 @@ export const authService = {
 
     logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('userEmail');
+        window.location.href = '/login'; // Force redirect
+    },
+
+    async refreshToken() {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) throw new Error('No refresh token available');
+
+        try {
+            const response = await fetch(`${API_URL}/refresh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ refresh_token: refreshToken }),
+            });
+
+            if (!response.ok) {
+                this.logout();
+                throw new Error('Failed to refresh token');
+            }
+
+            const data = await response.json();
+            if (data.access_token) {
+                localStorage.setItem('token', data.access_token);
+            }
+            if (data.refresh_token) {
+                localStorage.setItem('refreshToken', data.refresh_token);
+            }
+            return data;
+        } catch (error) {
+            console.error('Refresh Token Error:', error);
+            this.logout();
+            throw error;
+        }
+    },
+
+    async fetchWithAuth(url, options = {}) {
+        let token = localStorage.getItem('token');
+        if (!token) throw new Error('No token found');
+
+        const headers = {
+            ...options.headers,
+            'Authorization': `Bearer ${token}`
+        };
+
+        let response = await fetch(url, { ...options, headers });
+
+        if (response.status === 401) {
+            try {
+                const data = await this.refreshToken();
+                // Retry with new token
+                const newHeaders = {
+                    ...options.headers,
+                    'Authorization': `Bearer ${data.access_token}`
+                };
+                response = await fetch(url, { ...options, headers: newHeaders });
+            } catch (error) {
+                throw new Error('Session expired. Please login again.');
+            }
+        }
+
+        return response;
     },
 
     async getProfile() {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('No token found');
-
-        const response = await fetch(`${API_URL}/me`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        // Use the new fetchWithAuth for automatic refreshing
+        const response = await this.fetchWithAuth(`${API_URL}/me`);
 
         if (!response.ok) {
             throw new Error('Failed to fetch profile');
