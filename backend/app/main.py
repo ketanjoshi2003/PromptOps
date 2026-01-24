@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
 from app.api import auth_routes, prompt_routes, chat_routes, chain_routes, plan_routes
 
 app = FastAPI()
@@ -12,6 +13,9 @@ origins = [
     "http://127.0.0.1:5174",
     "http://localhost:5175",
     "http://127.0.0.1:5175",
+    # Add production frontend URL
+    os.getenv("FRONTEND_URL", ""),
+    "https://promptops-frontend.onrender.com", # Guessed pattern, or user can update
 ]
 
 app.add_middleware(
