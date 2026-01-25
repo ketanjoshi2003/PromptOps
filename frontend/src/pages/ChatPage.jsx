@@ -183,7 +183,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                 history = [{ role: 'system', content: systemPrompt }, ...history];
             }
 
-            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/chat/message', {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/chat/message`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

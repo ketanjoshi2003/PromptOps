@@ -1,6 +1,6 @@
 import { authService } from './authService';
 
-const API_URL = 'http://127.0.0.1:8000/api/chat/sessions';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/chat/sessions`;
 
 export const chatService = {
     async getSessions() {
