@@ -29,7 +29,7 @@ const Projects = ({ isVisible }) => {
         }
 
         try {
-            const response = await authService.fetchWithAuth('http://localhost:8000/api/projects');
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/projects`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -68,7 +68,7 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await authService.fetchWithAuth(`http://localhost:8000/api/projects/${id}`, {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/projects/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -106,7 +106,7 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await authService.fetchWithAuth(`http://localhost:8000/api/projects/${selectedProject.id}`, {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/projects/${selectedProject.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ const Projects = ({ isVisible }) => {
         if (!token) return;
 
         try {
-            const response = await authService.fetchWithAuth('http://localhost:8000/api/projects', {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/projects`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

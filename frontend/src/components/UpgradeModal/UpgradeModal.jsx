@@ -12,7 +12,7 @@ const UpgradeModal = ({ isOpen, onClose, currentUser, onUpgradeSuccess }) => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await authService.fetchWithAuth('http://localhost:8000/api/auth/upgrade', {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth/upgrade`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

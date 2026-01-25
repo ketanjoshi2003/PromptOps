@@ -88,7 +88,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
 
         try {
-            const response = await authService.fetchWithAuth('http://localhost:8000/api/generate', {
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
