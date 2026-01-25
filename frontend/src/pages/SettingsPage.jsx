@@ -41,7 +41,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
         // setIsLoggedIn(true); // Don't set true immediately, wait for success
 
         try {
-            const response = await authService.fetchWithAuth('http://127.0.0.1:8000/api/auth/me');
+            const response = await authService.fetchWithAuth(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'}/api/auth/me`);
             if (response.ok) {
                 const data = await response.json();
                 setUserData(data);
