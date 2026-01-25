@@ -173,7 +173,7 @@ const ChatPage = ({ onUsageUpdate }) => {
         }
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+        const timeoutId = setTimeout(() => controller.abort(), 180000); // 180s timeout (3 mins) for cold starts
 
         try {
             // Construct history with Role if enabled
@@ -211,7 +211,7 @@ const ChatPage = ({ onUsageUpdate }) => {
             let errorMessage = "Error: Could not connect to AI service.";
 
             if (error.name === 'AbortError') {
-                errorMessage = "Error: Request timed out. Please check your backend connection.";
+                errorMessage = "Error: Request timed out. The backend might be waking up (cold start) or there is a connection issue. Please try again in a moment.";
             } else if (error.message.includes('expired') || error.message.includes('Authentication')) {
                 errorMessage = error.message;
             } else if (error.message.includes('limit') || error.message.includes('Insufficient credits')) {
