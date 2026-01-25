@@ -138,6 +138,9 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
     const lastAiMessage = aiMessages.length > 0 ? aiMessages[aiMessages.length - 1] : null;
     const hasContent = lastAiMessage && lastAiMessage.content.trim().length > 0;
 
+    // DEBUG: Check API URL
+    console.log("Current API URL:", import.meta.env.VITE_API_URL);
+
     return (
         <div className={styles.dashboardContainer}>
             <div className={styles.splitGrid}>
