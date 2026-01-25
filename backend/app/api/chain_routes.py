@@ -43,7 +43,7 @@ async def execute_chain(
 
         # Convert pydantic models to dict for service
         chain_data = request.model_dump()
-        results = chain_service.execute_chain(chain_data)
+        results = await chain_service.execute_chain(chain_data)
 
         # Decrement credits
         current_user.credits -= 1

@@ -3,7 +3,7 @@ from app.services.llm_service import llm_service
 from app.prompt_engine.templates import BASE_TEMPLATE
 
 class ChainService:
-    def execute_chain(self, chain_data: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_chain(self, chain_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Executes a chain of prompts based on nodes and edges.
         
@@ -113,7 +113,7 @@ class ChainService:
         
         if mode == 'enhanced':
             try:
-                final_output = llm_service.enhance_prompt(combined_template, is_chain=True)
+                final_output = await llm_service.enhance_prompt(combined_template, is_chain=True)
             except Exception as e:
                 final_output = f"Error during enhancement: {str(e)}"
             

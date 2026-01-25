@@ -34,7 +34,7 @@ async def chat_endpoint(
             )
         # Convert Pydantic models to dicts
         msgs = [{"role": m.role, "content": m.content} for m in request.messages]
-        response = llm_service.chat(msgs)
+        response = await llm_service.chat(msgs)
         # Decrement credit count
         current_user.credits -= 1
         await db.commit()

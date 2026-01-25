@@ -25,11 +25,13 @@ class LLMService:
 
         # Initialize OpenAI
         if self.openai_key:
-            self.openai_client = self._init_client("OpenAI", OpenAI, self.openai_key)
+            from openai import AsyncOpenAI
+            self.openai_client = self._init_client("OpenAI", AsyncOpenAI, self.openai_key)
 
         # Initialize Groq
         if self.groq_key:
-            self.groq_client = self._init_client("Groq", Groq, self.groq_key)
+            from groq import AsyncGroq
+            self.groq_client = self._init_client("Groq", AsyncGroq, self.groq_key)
 
     def _init_gemini(self):
         """Helper to safely initialize Gemini."""
@@ -97,20 +99,18 @@ class LLMService:
         
         return err_str
 
-    def enhance_prompt(self, content: str, complexity: str = "Medium", is_chain: bool = False) -> str:
+    async def enhance_prompt(self, content: str, complexity: str = "Medium", is_chain: bool = False) -> str:
         """
-        Enhances the generated prompt using available LLMs with failover.
+        Enhances the generated prompt using available LLMs with failover (Async).
         """
         providers = self._get_providers()
         if not providers:
             return content
 
         # Select Base Instruction
-        # Select Base Instruction and Context
         if is_chain:
             base_instruction = CHAIN_ENHANCER_SYSTEM_PROMPT
             template_context = "" 
-            # Chains have their own structure defined in the system prompt
             guidelines = "" 
         else:
             base_instruction = ENHANCER_SYSTEM_PROMPT
@@ -132,7 +132,7 @@ class LLMService:
                     {"role": "user", "content": user_message}
                 ]
                 
-                result = self._chat_with_provider(provider, messages)
+                result = await self._chat_with_provider(provider, messages)
                 print(f"DEBUG: {provider} returned: {result[:100] if result else 'EMPTY LINK/NONE'}")
                 return result
 
@@ -144,9 +144,9 @@ class LLMService:
         print("All providers failed for enhance_prompt.")
         return f"Error reporting: All providers failed. Details: {' | '.join(errors)}"
 
-    def chat(self, messages: List[Dict[str, str]]) -> str:
+    async def chat(self, messages: List[Dict[str, str]]) -> str:
         """
-        Handles a general chat conversation with failover.
+        Handles a general chat conversation with failover (Async).
         """
         providers = self._get_providers()
         if not providers:
@@ -157,7 +157,7 @@ class LLMService:
         for provider in providers:
             try:
                 print(f"Attempting chat with {provider}...")
-                return self._chat_with_provider(provider, messages)
+                return await self._chat_with_provider(provider, messages)
             except Exception as e:
                 print(f"Error with {provider}: {e}")
                 errors.append(f"{provider}: {self._sanitize_error(e)}")
@@ -173,9 +173,9 @@ class LLMService:
             )
         return f"Error encountered: All providers failed. Details: {all_errors_str}"
 
-    def _chat_with_provider(self, provider: str, messages: List[Dict[str, str]], system_prompt: Optional[str] = None) -> str:
+    async def _chat_with_provider(self, provider: str, messages: List[Dict[str, str]], system_prompt: Optional[str] = None) -> str:
         """
-        Internal method to execute chat with a specific provider.
+        Internal method to execute chat with a specific provider (Async).
         """
         # Use provided system_prompt or fallback to default global
         if not system_prompt:
@@ -192,8 +192,7 @@ class LLMService:
             # Construct history for Gemini
             current_history = []
             
-            # Add system prompt as user message (common workaround) or using 1.5 features
-            # Simple prepend approach:
+            # Add system prompt as user message (common workaround)
             current_history.append({"role": "user", "parts": [f"System: {system_prompt}"]})
             
             # Map messages
@@ -201,17 +200,14 @@ class LLMService:
                 role = "user" if msg['role'] == 'user' else "model"
                 current_history.append({"role": role, "parts": [msg['content']]})
             
-            # Ensure history alternates correctly. If logic above failed, simple fix:
-            # (Gemini strictness might require more robust handling, but this is a decent start)
-            
-            response = self.gemini_model.generate_content(current_history)
+            response = await self.gemini_model.generate_content_async(current_history)
             return response.text
 
         elif provider == 'openai':
             openai_messages = [{"role": "system", "content": system_prompt}]
             openai_messages.extend(messages[start_index:])
             
-            response = self.openai_client.chat.completions.create(
+            response = await self.openai_client.chat.completions.create(
                 model="gpt-4o",
                 messages=openai_messages,
                 temperature=0.7
@@ -222,7 +218,7 @@ class LLMService:
             groq_messages = [{"role": "system", "content": system_prompt}]
             groq_messages.extend(messages[start_index:])
             
-            response = self.groq_client.chat.completions.create(
+            response = await self.groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=groq_messages,
                 temperature=0.7

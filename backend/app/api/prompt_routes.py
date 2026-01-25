@@ -49,7 +49,7 @@ async def generate_prompt(
         }
 
         
-        generated_content = create_prompt(input_data)
+        generated_content = await create_prompt(input_data)
         
         # DEBUG LOG
         print(f"Generated Content Type: {type(generated_content)}")
