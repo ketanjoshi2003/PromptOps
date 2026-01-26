@@ -198,31 +198,21 @@
 /* LOGO AVATAR STYLES */
 .logoMark {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    width: fit-content;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
     flex-shrink: 0;
     margin-top: 4px;
 }
 
-.redCircle {
-    width: 28px;
-    height: 28px;
-    background-color: #ff0000;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.logoImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.pipe {
-    font-size: 1rem;
-    line-height: 1;
-    font-weight: 300;
-    color: #ffffff;
-    padding-bottom: 2px;
-    margin: 0;
-}
+
 
 .messageContent {
     flex: 1;

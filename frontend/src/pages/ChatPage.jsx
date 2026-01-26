@@ -333,9 +333,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                             <div key={index} className={`${styles.message} ${msg.role === 'user' ? styles.user : styles.ai}`}>
                                 {msg.role === 'assistant' && (
                                     <div className={styles.logoMark}>
-                                        <div className={styles.redCircle}>
-                                            <span className={styles.pipe}>|</span>
-                                        </div>
+                                        <img src="/favicon.svg" alt="PromptOps Logo" className={styles.logoImage} />
                                     </div>
                                 )}
                                 <div className={styles.messageContent}>
@@ -365,9 +363,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                         {loading && (
                             <div className={`${styles.message} ${styles.ai}`}>
                                 <div className={styles.logoMark}>
-                                    <div className={styles.redCircle}>
-                                        <span className={styles.pipe}>|</span>
-                                    </div>
+                                    <img src="/favicon.svg" alt="PromptOps Logo" className={styles.logoImage} />
                                 </div>
                                 <div className={styles.messageContent}>
                                     <div className={styles.aiContent}>

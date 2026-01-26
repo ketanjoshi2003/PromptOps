@@ -265,9 +265,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                             title="Toggle Sidebar"
                         >
                             <div className={styles.logoMark}>
-                                <div className={styles.redCircle}>
-                                    <span className={styles.pipe}>|</span>
-                                </div>
+                                <img src="/favicon.svg" alt="PromptOps Logo" className={styles.logoImage} />
                             </div>
                             {currentView === 'dashboard' && (
                                 <span className={styles.modelName}>PromptOps</span>
