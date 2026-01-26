@@ -19,29 +19,30 @@ BASE_TEMPLATE = """
 {project_type}
 
 {tech_stack_header}
-- Frontend: {frontend_stack}
-- Backend: {backend_stack}
-- Database: {database}
+{tech_stack_section}
 
 # Critical Instructions for Implementation
-1. **Code Quality**: Write clean, maintainable, and production-ready code. Follow DRY (Don't Repeat Yourself) and SOLID principles.
-2. **Modularity**: Break down complex logic into small, reusable functions or components.
-3. **Error Handling**: Implement robust error handling (try/catch blocks, distinct error types) and input validation.
-4. **Security**: Ensure no sensitive data is exposed. Use environment variables for secrets. Validate all user inputs.
-5. **Comments**: Add meaningful comments for complex logic, but avoid stating the obvious.
-6. **Modern Standards**: Use the latest stable features of the selected languages/frameworks (e.g., React Hooks, ES6+, Python 3.10+ types).
+1. **Code Quality**: Write clean, maintainable, and production-ready code. Apply DRY principles and use SOLID concepts only where they add clarity (avoid unnecessary abstractions).
+2. **Modularity**: Decompose logic into small, focused, reusable functions, components, or services.
+3. **Error Handling**: Implement robust, idiomatic error handling appropriate to the chosen language or framework, including input validation and meaningful error responses.
+4. **Security**: Do not expose sensitive data. Use environment variables or secure configuration for secrets. Validate and sanitize all user inputs.
+5. **Comments**: Add comments only for non-obvious or complex logic. Avoid redundant or self-explanatory comments.
+6. **Modern Standards**: Use the latest stable language and framework features while keeping implementations simple and efficient.
 
 {standards_header}
 {technical_standards}
 
 {steps_header}
 {steps}
+
+
+
 """
 
 ROLES = {
 
     "generic": "Expert Full-Stack Software Engineer",
-    "mobile": "Senior Mobile Application Architect (iOS & Android)",
+    "web": "Modern Web Application Architect (React/Next.js/Vue)",
     "backend": "Senior Backend Systems Engineer & API Specialist",
-    "web": "Modern Web Application Architect (React/Next.js/Vue)"
+    "mobile": "Senior Mobile Application Architect (iOS & Android)",
 }

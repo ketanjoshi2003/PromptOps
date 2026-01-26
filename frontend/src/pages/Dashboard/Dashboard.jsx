@@ -20,7 +20,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
 
     useEffect(() => {
         if (autoPrompt) {
-            handleFormSubmit({ additionalInstructions: autoPrompt, type: 'Web Application', backendStack: ['FastAPI'], complexity: 'Medium', frontendStack: [], database: 'None', aiControl: 'Strict' });
+            handleFormSubmit({ additionalInstructions: autoPrompt, type: 'Web Application', backendStack: ['FastAPI'], complexity: 'Medium', frontendStack: [], database: 'None', aiControl: 'Controlled' });
             onPromptHandled();
         }
     }, [autoPrompt]);
@@ -99,7 +99,12 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
                     project_title: formData.title,
                     project_type: formData.type,
                     frontend_stack: formData.frontendStack,
+                    frontend_styling: formData.frontendStyling,
+                    mobile_stack: formData.mobileStack,
                     backend_stack: formData.backendStack,
+                    auth: formData.auth,
+                    api: formData.api,
+                    dev_ops: formData.devOps,
                     database: formData.database,
                     complexity: formData.complexity,
                     ai_control: formData.aiControl,

@@ -90,7 +90,7 @@ function App() {
                 setUseEnhancer={setUseEnhancer}
                 latestResult={latestResult}
             >
-                {currentView === 'dashboard' && (
+                <div style={{ display: currentView === 'dashboard' ? 'block' : 'none' }}>
                     <Dashboard
                         autoPrompt={autoPrompt}
                         onPromptHandled={handlePromptHandled}
@@ -98,7 +98,7 @@ function App() {
                         useEnhancer={useEnhancer}
                         onResultChange={setLatestResult}
                     />
-                )}
+                </div>
                 {currentView === 'projects' && <Projects isVisible={currentView === 'projects'} />}
                 {currentView === 'chat' && <ChatPage onUsageUpdate={handleUserRefresh} />}
                 {currentView === 'chain' && <ChainPage onUsageUpdate={handleUserRefresh} />}

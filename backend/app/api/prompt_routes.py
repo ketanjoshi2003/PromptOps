@@ -38,9 +38,23 @@ async def generate_prompt(
         input_data = {
             "goal": request.user_intent,
             "project_title": request.project_title,
-            "frontend_stack": request.frontend_stack,
-            "backend_stack": request.backend_stack,
+            "frontend_stack": request.frontend_stack, # Builder expects explicit key mapping in builder.py (which I updated to camelCase "frontendStack"?? No wait, builder.py uses input_data.get("frontendStack"))
+            # WAIT. builder.py I updated to use "frontendStack". 
+            # So I must map request.frontend_stack -> "frontendStack" here if I want builder to find it.
+            # OR I update builder.py to use snake_case. 
+            # Reviewing builder.py content from previous step:
+            # "frontend_stack": [s.strip() for s in input_data.get("frontendStack", []) if s],
+            # Yes, it looks for "frontendStack".
+            
+            # Let's map to what builder.py currently expects (camelCase inputs from dict):
+            "frontendStack": request.frontend_stack,
+            "frontendStyling": request.frontend_styling,
+            "mobileStack": request.mobile_stack,
+            "backendStack": request.backend_stack,
             "database": request.database,
+            "auth": request.auth,
+            "api": request.api,
+            "devOps": request.dev_ops,
             "ai_target": request.target_tool, # Pass through the tool selection
             "project_type": request.project_type,
             "complexity": request.complexity,

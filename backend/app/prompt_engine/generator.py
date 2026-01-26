@@ -25,7 +25,7 @@ def compose_prompt(data: dict) -> str:
     technical_standards = "\n".join([f"- {rule}" for rule in rules])
     
     complexity_guidelines = get_complexity_guidelines(data.get('complexity', 'Medium'))
-    ai_instructions = get_ai_control_instruction(data.get('ai_control', 'Strict'))
+    ai_instructions = get_ai_control_instruction(data.get('ai_control', 'Controlled'))
     
 
     # Dynamic steps based on complexity
@@ -50,6 +50,30 @@ def compose_prompt(data: dict) -> str:
         steps_header = "# Implementation Steps"
         steps_text = "1. Setup Environment\n2. Develop Backend API\n3. Build Frontend UI\n4. Integrate & Test"
 
+    # Build Tech Stack Section Dynamically
+    stack_items = [
+        ("Frontend", ", ".join(data['frontend_stack'])),
+        ("Styling", ", ".join(data['frontend_styling'])),
+        ("Mobile", ", ".join(data['mobile_stack'])),
+        ("Backend", ", ".join(data['backend_stack'])),
+        ("Database", data['database']),
+        ("Auth", ", ".join(data['auth'])),
+        ("API/Protocol", ", ".join(data['api'])),
+        ("Dev & Quality", ", ".join(data['dev_ops'])),
+    ]
+
+    # Filter out empty or "None" values
+    tech_stack_lines = []
+    for label, value in stack_items:
+        if value and value.lower() != "none" and value.strip() != "":
+            tech_stack_lines.append(f"- {label}: {value}")
+    
+    # Fallback if everything is empty
+    if not tech_stack_lines:
+        tech_stack_lines.append("- None specified")
+    
+    tech_stack_section = "\n".join(tech_stack_lines)
+
     return BASE_TEMPLATE.format(
         role=role,
         project_title=data['project_title'],
@@ -57,9 +81,7 @@ def compose_prompt(data: dict) -> str:
         goal_header=goal_header,
         goal=data['goal'],
         tech_stack_header=tech_stack_header,
-        frontend_stack=", ".join(data['frontend_stack']) or "None",
-        backend_stack=", ".join(data['backend_stack']) or "None",
-        database=data['database'],
+        tech_stack_section=tech_stack_section,
         complexity_guidelines=complexity_guidelines,
         ai_control_instructions=ai_instructions,
         standards_header=standards_header,

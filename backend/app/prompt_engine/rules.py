@@ -13,11 +13,12 @@ WEB_RULES = [
 ]
 
 GENERAL_RULES = [
-    "Include unit tests for core logic.",
-    "Use type hints for all functions.",
-    "Document complex functions with docstrings.",
-    "Follow industry-standard naming conventions."
+    "Include lightweight unit tests only if they add clear value to core logic.",
+    "Use type annotations only when the chosen language or framework supports them (e.g., TypeScript, Kotlin, Python).",
+    "Document only complex or non-obvious logic; avoid redundant documentation.",
+    "Follow industry-standard naming conventions and consistent code style."
 ]
+
 
 ANDROID_RULES = [
     "Use Modern Android Development (MAD) skills.",

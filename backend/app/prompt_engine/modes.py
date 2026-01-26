@@ -1,7 +1,7 @@
 
 AI_CONTROL_PROMPTS = {
-    "Strict": """
-AI CONTROL MODE: STRICT
+    "Controlled": """
+AI CONTROL MODE: CONTROLLED
 
 Rules:
 - Follow the provided requirements exactly.
@@ -67,4 +67,4 @@ def get_ai_control_instruction(mode: str) -> str:
     """Returns the instruction set for the specified AI Control Mode."""
     # Normalize input (e.g., "strict" -> "Strict")
     normalized_mode = mode.capitalize()
-    return AI_CONTROL_PROMPTS.get(normalized_mode, AI_CONTROL_PROMPTS["Strict"])
+    return AI_CONTROL_PROMPTS.get(normalized_mode, AI_CONTROL_PROMPTS["Controlled"])

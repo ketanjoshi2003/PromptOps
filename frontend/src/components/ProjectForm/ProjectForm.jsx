@@ -6,65 +6,90 @@ import CustomSelect from '../CustomSelect/CustomSelect';
 const ProjectForm = ({ onSubmit, isSubmitting }) => {
     const [formData, setFormData] = useState({
         title: '',
-        type: 'Web Application',
+        type: 'Web App',
         frontendStack: [],
+        frontendStyling: [],
+        mobileStack: [],
         backendStack: [],
         database: 'None',
+        auth: [],
+        api: [],
+        devOps: [],
         complexity: 'Medium',
-        aiControl: 'Strict',
+        aiControl: 'Controlled',
         additionalInstructions: ''
     });
 
-
     const [errors, setErrors] = useState({});
 
-    // Configuration for each project type
-    const PROJECT_DATA = {
-        'Web Application': {
-            frontend: ['React', 'Next.js', 'Vue', 'Angular', 'None'],
-            backend: ['FastAPI', 'Node.js (Express)', 'Django', 'Spring Boot']
-        },
-        'Mobile Application': {
-            frontend: ['React Native', 'Flutter', 'Expo', 'Ionic', 'Kotlin', 'Java', 'Jetpack Compose', 'XML'],
-            backend: ['FastAPI', 'Node.js (Express)', 'Firebase', 'Supabase', 'Spring Boot']
-        },
-        'Backend API': {
-            frontend: ['None'],
-            backend: ['FastAPI', 'Node.js (Express)', 'Django', 'Spring Boot', 'Go (Gin)']
-        }
-    };
+    // 1️⃣ Canonical Tech Stack Categories
 
-    const projectTypes = Object.keys(PROJECT_DATA);
+    // A. Application Type
+    const APP_TYPES = [
+        'Web App', 'Mobile App', 'Full-Stack App',
+        'Backend API', 'SaaS Platform', 'Admin Dashboard',
+        'Landing Page', 'CLI Tool', 'Microservice', 'AI-powered App'
+    ];
 
-    // Dynamic options based on selected type
-    const currentType = formData.type || 'Web Application';
-    const frontendOptions = PROJECT_DATA[currentType]?.frontend || [];
-    const backendOptions = PROJECT_DATA[currentType]?.backend || [];
-    const databaseOptions = ['PostgreSQL', 'MySQL', 'MongoDB', 'None'];
+    // B. Frontend Stack (Only if app type involves UI)
+    const FRONTEND_FRAMEWORKS = [
+        'React', 'Next.js', 'Vue', 'Nuxt',
+        'Angular', 'Svelte / SvelteKit', 'Flutter (web/mobile)', 'None'
+    ];
+    const STYLING_OPTIONS = [
+        'CSS', 'Tailwind CSS', 'Material UI',
+        'Ant Design', 'Bootstrap', 'Chakra UI'
+    ];
+
+    // C. Mobile Stack (Only if Mobile App is selected)
+    const MOBILE_STACK = [
+        'React Native', 'Flutter', 'SwiftUI (iOS)',
+        'Kotlin (Android)', 'Expo'
+    ];
+
+    // D. Backend Stack (API & business logic)
+    const BACKEND_STACK = [
+        'Node.js (Express)', 'Node.js (NestJS)', 'FastAPI',
+        'Django', 'Django REST Framework', 'Spring Boot',
+        '.NET Web API', 'Ruby on Rails', 'Go (Gin / Fiber)',
+        'None (Frontend-only)'
+    ];
+
+    // E. Database (Persistence layer)
+    const DATABASE_OPTIONS = [
+        'None', 'PostgreSQL', 'MySQL', 'SQLite', 'SQL Server', // SQL
+        'MongoDB', 'Redis', 'DynamoDB', 'Firestore' // NoSQL
+    ];
+
+    // F. Authentication
+    const AUTH_OPTIONS = [
+        'Email + Password', 'JWT', 'OAuth (Google, GitHub)',
+        'Session-based', 'None'
+    ];
+
+    // G. API / Communication
+    const API_OPTIONS = [
+        'REST', 'GraphQL', 'WebSockets', 'gRPC'
+    ];
+
+    // H. Dev & Quality (Advanced)
+    const DEVOPS_OPTIONS = [
+        'Unit tests', 'Integration tests', 'TypeScript',
+        'Linting', 'Docker', 'CI/CD'
+    ];
+
     const complexityLevels = ['Low', 'Medium', 'High'];
-    const aiControlOptions = ['Strict', 'Balanced', 'Exploratory'];
+    const aiControlOptions = ['Controlled', 'Balanced', 'Exploratory'];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const handleCustomSelectChange = (name, value) => {
-        setFormData(prev => {
-            const updates = { [name]: value };
-            // Reset stacks if project type changes to avoid invalid selections
-            if (name === 'type') {
-                updates.frontendStack = [];
-                updates.backendStack = [];
-            }
-            return { ...prev, ...updates };
-        });
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const handleCheckboxChange = (group, value) => {
@@ -78,16 +103,28 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
             }
             return { ...prev, [group]: current };
         });
-        if (errors[group]) {
-            setErrors(prev => ({ ...prev, [group]: '' }));
-        }
+        if (errors[group]) setErrors(prev => ({ ...prev, [group]: '' }));
+    };
+
+    const handleRadioChange = (name, value) => {
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    };
+
+    // Helper to determine if UI stack should be shown
+    const showFrontend = () => {
+        const noUiTypes = ['Backend API', 'CLI Tool', 'Microservice'];
+        return !noUiTypes.includes(formData.type);
+    };
+
+    // Helper to determine if Mobile stack should be shown
+    const showMobile = () => {
+        return ['Mobile App', 'Full-Stack App', 'AI-powered App'].includes(formData.type);
     };
 
     const validate = () => {
         const newErrors = {};
         if (!formData.additionalInstructions.trim()) newErrors.additionalInstructions = 'Objective description is required';
-        // Backend stack is now optional
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -102,9 +139,7 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
     return (
         <form className={styles.formContainer} onSubmit={handleSubmit}>
             <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>
-                    Project Title
-                </div>
+                <div className={styles.fieldLabel}>Project Title</div>
                 <input
                     type="text"
                     name="title"
@@ -134,22 +169,28 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                 {errors.additionalInstructions && <span className={styles.errorText}>{errors.additionalInstructions}</span>}
             </div>
 
+            {/* A. Application Type - Radio Buttons */}
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>Application Type</div>
+                <div className={styles.checkboxGroup}> {/* Reusing checkboxGroup style for grid layout */}
+                    {APP_TYPES.map(type => (
+                        <label key={type} className={styles.checkboxLabel}>
+                            <input
+                                type="radio"
+                                name="type"
+                                value={type}
+                                checked={formData.type === type}
+                                onChange={() => handleRadioChange('type', type)}
+                            />
+                            {type}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
             <div className={styles.rowInputs}>
                 <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>
-                        Project Type <div className={styles.infoIcon}>i</div>
-                    </div>
-                    <CustomSelect
-                        options={projectTypes}
-                        value={formData.type}
-                        onChange={(val) => handleCustomSelectChange('type', val)}
-                        placeholder="Select Type"
-                    />
-                </div>
-                <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>
-                        Complexity Level <div className={styles.infoIcon}>i</div>
-                    </div>
+                    <div className={styles.fieldLabel}>Complexity Level</div>
                     <CustomSelect
                         options={complexityLevels}
                         value={formData.complexity}
@@ -157,64 +198,144 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                         placeholder="Select Complexity"
                     />
                 </div>
+                <div className={styles.fieldSection}>
+                    <div className={styles.fieldLabel}>AI Control Mode</div>
+                    <CustomSelect
+                        options={aiControlOptions}
+                        value={formData.aiControl}
+                        onChange={(val) => handleCustomSelectChange('aiControl', val)}
+                        placeholder="Select Control"
+                    />
+                </div>
             </div>
 
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>
-                    AI Control Mode <div className={styles.infoIcon}>i</div>
+            {/* B. Frontend Stack */}
+            {showFrontend() && (
+                <div className={styles.fieldSection}>
+                    <div className={styles.fieldLabel}>Frontend Frameworks</div>
+                    <div className={styles.checkboxGroup}>
+                        {FRONTEND_FRAMEWORKS.map(opt => (
+                            <label key={opt} className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.frontendStack.includes(opt)}
+                                    onChange={() => handleCheckboxChange('frontendStack', opt)}
+                                />
+                                {opt}
+                            </label>
+                        ))}
+                    </div>
+                    <div className={styles.fieldLabel} style={{ marginTop: '10px' }}>Styling</div>
+                    <div className={styles.checkboxGroup}>
+                        {STYLING_OPTIONS.map(opt => (
+                            <label key={opt} className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.frontendStyling.includes(opt)}
+                                    onChange={() => handleCheckboxChange('frontendStyling', opt)}
+                                />
+                                {opt}
+                            </label>
+                        ))}
+                    </div>
                 </div>
+            )}
+
+            {/* C. Mobile Stack */}
+            {showMobile() && (
+                <div className={styles.fieldSection}>
+                    <div className={styles.fieldLabel}>Mobile Stack</div>
+                    <div className={styles.checkboxGroup}>
+                        {MOBILE_STACK.map(opt => (
+                            <label key={opt} className={styles.checkboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.mobileStack.includes(opt)}
+                                    onChange={() => handleCheckboxChange('mobileStack', opt)}
+                                />
+                                {opt}
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* D. Backend Stack */}
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>Backend Stack</div>
+                <div className={styles.checkboxGroup}>
+                    {BACKEND_STACK.map(opt => (
+                        <label key={opt} className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={formData.backendStack.includes(opt)}
+                                onChange={() => handleCheckboxChange('backendStack', opt)}
+                            />
+                            {opt}
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            {/* E. Database */}
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>Database</div>
                 <CustomSelect
-                    options={aiControlOptions}
-                    value={formData.aiControl}
-                    onChange={(val) => handleCustomSelectChange('aiControl', val)}
-                    placeholder="Select AI Control Mode"
+                    options={DATABASE_OPTIONS}
+                    value={formData.database}
+                    onChange={(val) => handleCustomSelectChange('database', val)}
+                    placeholder="Select Database"
                 />
             </div>
 
+            {/* F. Authentication */}
             <div className={styles.fieldSection}>
-                <div className={styles.advancedContent}>
-                    <div className={styles.fieldSection}>
-                        <div className={styles.fieldLabel}>Frontend Stack</div>
-                        <div className={styles.checkboxGroup}>
-                            {frontendOptions.map(option => (
-                                <label key={option} className={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.frontendStack.includes(option)}
-                                        onChange={() => handleCheckboxChange('frontendStack', option)}
-                                    />
-                                    {option}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
+                <div className={styles.fieldLabel}>Authentication</div>
+                <div className={styles.checkboxGroup}>
+                    {AUTH_OPTIONS.map(opt => (
+                        <label key={opt} className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={formData.auth.includes(opt)}
+                                onChange={() => handleCheckboxChange('auth', opt)}
+                            />
+                            {opt}
+                        </label>
+                    ))}
+                </div>
+            </div>
 
-                    <div className={styles.fieldSection}>
-                        <div className={styles.fieldLabel}>Backend Stack</div>
-                        <div className={styles.checkboxGroup}>
-                            {backendOptions.map(option => (
-                                <label key={option} className={styles.checkboxLabel}>
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.backendStack.includes(option)}
-                                        onChange={() => handleCheckboxChange('backendStack', option)}
-                                    />
-                                    {option}
-                                </label>
-                            ))}
-                        </div>
-                        {errors.backendStack && <span className={styles.errorText}>{errors.backendStack}</span>}
-                    </div>
+            {/* G. API / Communication */}
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>API / Communication</div>
+                <div className={styles.checkboxGroup}>
+                    {API_OPTIONS.map(opt => (
+                        <label key={opt} className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={formData.api.includes(opt)}
+                                onChange={() => handleCheckboxChange('api', opt)}
+                            />
+                            {opt}
+                        </label>
+                    ))}
+                </div>
+            </div>
 
-                    <div className={styles.fieldSection}>
-                        <div className={styles.fieldLabel}>Database</div>
-                        <CustomSelect
-                            options={databaseOptions}
-                            value={formData.database}
-                            onChange={(val) => handleCustomSelectChange('database', val)}
-                            placeholder="Select Database"
-                        />
-                    </div>
+            {/* H. Dev & Quality */}
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>Dev & Quality (Advanced)</div>
+                <div className={styles.checkboxGroup}>
+                    {DEVOPS_OPTIONS.map(opt => (
+                        <label key={opt} className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                checked={formData.devOps.includes(opt)}
+                                onChange={() => handleCheckboxChange('devOps', opt)}
+                            />
+                            {opt}
+                        </label>
+                    ))}
                 </div>
             </div>
 
