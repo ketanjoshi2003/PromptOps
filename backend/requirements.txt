@@ -14,3 +14,4 @@ python-multipart
 google-auth
 requests
 email-validator
+aiosmtplib

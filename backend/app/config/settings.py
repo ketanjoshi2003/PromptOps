@@ -22,5 +22,12 @@ class Settings:
     GOOGLE_API_KEY: str | None = os.getenv("GOOGLE_API_KEY")
     GROQ_API_KEY: str | None = os.getenv("GROQ_API_KEY")
     LLM_PROVIDER: str | None = os.getenv("LLM_PROVIDER") # 'openai', 'gemini', 'groq', or None (auto)
+    
+    # Email Settings
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@promptops.com")
 
 settings = Settings()

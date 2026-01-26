@@ -10,10 +10,13 @@ import random
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks
+from app.utils.email import send_otp_email
+
 router = APIRouter()
 
 @router.post("/register")
-async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
+async def register(user: UserCreate, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     # Check if user exists
     result = await db.execute(select(User).where(User.email == user.email))
     existing_user = result.scalar_one_or_none()
@@ -45,8 +48,9 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(new_user)
     
-    # LOG OTP (Simulation)
-    print(f"------------ OTP for {user.email}: {otp_code} ------------")
+    # Send OTP Email (Background Task)
+    print(f"------------ OTP for {user.email}: {otp_code} ------------") # Keep log for debugging
+    background_tasks.add_task(send_otp_email, user.email, otp_code)
     
     return {"message": "OTP sent to email", "email": user.email}
 
