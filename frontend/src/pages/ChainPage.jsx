@@ -506,7 +506,7 @@ const ChainFlow = ({ onUsageUpdate }) => {
                         >
                             <FiZap /> Generate Enhanced
                         </button>
-                        {isSaving && <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Saving...</span>}
+
                     </div>
                 </div>,
                 document.getElementById('header-actions-root')
