@@ -32,9 +32,14 @@ BASE_TEMPLATE = """
 {standards_header}
 {technical_standards}
 
+# Expected Output
+- Provide backend and frontend code separately
+- Include folder structure
+- Use code blocks only
+- Avoid explanations unless necessary
+
 {steps_header}
 {steps}
-
 
 
 """

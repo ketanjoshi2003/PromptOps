@@ -90,7 +90,7 @@ function App() {
                 setUseEnhancer={setUseEnhancer}
                 latestResult={latestResult}
             >
-                <div style={{ display: currentView === 'dashboard' ? 'block' : 'none' }}>
+                <div style={{ display: currentView === 'dashboard' ? 'block' : 'none', height: '100%' }}>
                     <Dashboard
                         autoPrompt={autoPrompt}
                         onPromptHandled={handlePromptHandled}

@@ -156,7 +156,7 @@ const ChatPage = ({ onUsageUpdate }) => {
     };
 
     const handleSend = async (text = input) => {
-        if (!text.trim()) return;
+        if (!text.trim() || loading) return;
 
         const userMsg = { role: 'user', content: text };
         setMessages(prev => [...prev, userMsg]);
@@ -173,10 +173,10 @@ const ChatPage = ({ onUsageUpdate }) => {
         }
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 180000); // 180s timeout (3 mins) for cold starts
+        const timeoutId = setTimeout(() => controller.abort(), 180000); // 180s timeout
 
         try {
-            // Construct history with Role if enabled
+            // Construct history including system prompt if present
             let history = [...messages, userMsg];
 
             if (systemPrompt.trim()) {
@@ -203,7 +203,6 @@ const ChatPage = ({ onUsageUpdate }) => {
             const aiMsg = { role: 'assistant', content: data.response };
             setMessages(prev => [...prev, aiMsg]);
 
-            // Trigger refresh for credits
             if (onUsageUpdate) onUsageUpdate();
 
         } catch (error) {
@@ -217,7 +216,6 @@ const ChatPage = ({ onUsageUpdate }) => {
             } else if (error.message.includes('limit') || error.message.includes('Insufficient credits')) {
                 errorMessage = "Usage limit reached. Please upgrade your plan or top up credits.";
             } else {
-                // Append actual error message for debugging if it's not one of the above
                 errorMessage = `Error: ${error.message}`;
             }
 
@@ -228,6 +226,9 @@ const ChatPage = ({ onUsageUpdate }) => {
     };
 
     const handleKeyDown = (e) => {
+        // Prevent sending during IME composition (e.g., Japanese, Chinese input)
+        if (e.nativeEvent.isComposing) return;
+
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
