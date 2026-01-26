@@ -9,6 +9,7 @@ import { authService } from './services/authService';
 import UpgradeModal from './components/UpgradeModal/UpgradeModal';
 import PipedLoading from './components/PipedLoading/PipedLoading';
 import loadingStyles from './components/PipedLoading/PipedLoading.module.css';
+import { healthService } from './services/healthService';
 
 function App() {
     const [currentView, setCurrentView] = useState('dashboard');
@@ -33,6 +34,8 @@ function App() {
 
     useEffect(() => {
         fetchUser();
+        // Send wake-up signal to backend
+        healthService.wakeUp();
 
         // Ensure loading shows for a minimum amount of time for smoothness
         const timer = setTimeout(() => {
