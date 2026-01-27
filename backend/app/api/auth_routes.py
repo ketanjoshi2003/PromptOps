@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from app.db.database import get_db
@@ -9,13 +9,9 @@ from datetime import timedelta, datetime, timezone
 import random
 from google.oauth2 import id_token
 from google.auth.transport import requests
-
-from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks
-from app.utils.email import send_otp_email
-
-from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks, Request
 from app.utils.email import send_otp_email
 from app.utils.limiter import limiter
+from app.config.settings import settings  # Fixed: Added missing import
 
 router = APIRouter()
 
@@ -110,28 +106,15 @@ async def verify_otp(request: Request, otp_data: OTPVerify, db: AsyncSession = D
 
 @router.post("/google", response_model=Token)
 async def google_auth(login_data: GoogleLogin, db: AsyncSession = Depends(get_db)):
+    print(f"DEBUG: Received Google Login Request. Credential length: {len(login_data.credential)}")
     try:
-        # Verify Token
-        # You normally need to specify CLIENT_ID. 
-        # If the user hasn't provided one, we can catch the error, or if we want to proceed without verification for dev (NOT RECOMMENDED for "real auth"), we'd skip.
-        # But request asked for "real".
-        # We will try to verify.
-        
-        # from google.oauth2 import id_token
-        # from google.auth.transport import requests
-        
-        # Verify audience (CLIENT_ID) is critical for security!
+        # Verify audience (CLIENT_ID) 
         client_id = settings.GOOGLE_CLIENT_ID
-        if not client_id:
-             # Fallback for dev only if needed, but for "secure oauth" we should log a warning or fail
-             # For now, let's allow it but print a big warning if missing, or better, require it.
-             # User asked for "secure", so let's try to verify if it exists.
-             pass 
-
+        
         id_info = id_token.verify_oauth2_token(
             login_data.credential, 
             requests.Request(), 
-            audience=client_id, # Can be None, but better if set
+            audience=client_id, 
             clock_skew_in_seconds=5
         )
         
