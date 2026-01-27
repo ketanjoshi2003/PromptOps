@@ -119,7 +119,7 @@ async def google_auth(login_data: GoogleLogin, db: AsyncSession = Depends(get_db
         
         # from google.oauth2 import id_token
         # from google.auth.transport import requests
-        id_info = id_token.verify_oauth2_token(login_data.credential, requests.Request())
+        id_info = id_token.verify_oauth2_token(login_data.credential, requests.Request(), clock_skew_in_seconds=5)
         
         email = id_info['email']
         google_id = id_info['sub']
@@ -161,9 +161,13 @@ async def google_auth(login_data: GoogleLogin, db: AsyncSession = Depends(get_db
             "token_type": "bearer"
         }
 
+    except ValueError as e:
+        # Invalid token
+        print(f"Google Auth Error (ValueError): {e}")
+        raise HTTPException(status_code=400, detail=f"Invalid Google Token: {str(e)}")
     except Exception as e:
-        print(f"Google Auth Error: {e}")
-        raise HTTPException(status_code=400, detail="Invalid Google Token")
+        print(f"Google Auth Error (General): {e}")
+        raise HTTPException(status_code=400, detail="Google Login Failed")
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
