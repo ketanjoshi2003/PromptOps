@@ -1,14 +1,17 @@
 
+import logging
 import aiosmtplib
 from email.message import EmailMessage
 from app.config.settings import settings
+
+logger = logging.getLogger(__name__)
 
 async def send_otp_email(to_email: str, otp_code: str):
     """
     Sends an OTP email to the user.
     """
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
-        print(f"SMTP Credentials not set. Simulate sending email to {to_email} with OTP: {otp_code}")
+        logger.warning(f"SMTP Credentials not set. Simulate sending email to {to_email} with OTP: {otp_code}")
         return
 
     message = EmailMessage()
@@ -33,6 +36,10 @@ async def send_otp_email(to_email: str, otp_code: str):
     message.set_content("Your Verification Code is: " + otp_code)
     message.add_alternative(html_content, subtype="html")
 
+    # Determine TLS settings based on port
+    use_tls = True if settings.SMTP_PORT == 465 else False
+    start_tls = False if settings.SMTP_PORT == 465 else True
+
     try:
         await aiosmtplib.send(
             message,
@@ -40,11 +47,9 @@ async def send_otp_email(to_email: str, otp_code: str):
             port=settings.SMTP_PORT,
             username=settings.SMTP_USER,
             password=settings.SMTP_PASSWORD,
-            use_tls=False,
-            start_tls=True,
+            use_tls=use_tls,
+            start_tls=start_tls,
         )
-        print(f"OTP Email sent successfully to {to_email}")
+        logger.info(f"OTP Email sent successfully to {to_email}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
-        # Don't crash the app, just log error.
-        # In prod, we might want to return an error if email is critical.
+        logger.error(f"Failed to send email to {to_email}: {e}", exc_info=True)
