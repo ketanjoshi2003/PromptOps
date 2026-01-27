@@ -9,7 +9,7 @@ pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 # JWT Configuration
 # In a real app, these should be in environment variables
-SECRET_KEY = "your-secret-key-change-it-in-production" # TODO: Move to env
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7

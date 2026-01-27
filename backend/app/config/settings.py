@@ -30,4 +30,7 @@ class Settings:
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@promptops.com")
 
+    # Security
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "super-secret-key-change-this")
+
 settings = Settings()

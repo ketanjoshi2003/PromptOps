@@ -25,7 +25,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_headers=["*"],
 )
+
+# Rate Limiter
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from app.utils.limiter import limiter
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
 app.include_router(auth_routes.router, prefix="/api/auth", tags=["auth"])
 app.include_router(prompt_routes.router, prefix="/api", tags=["prompts"])

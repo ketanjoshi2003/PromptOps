@@ -13,10 +13,15 @@ from google.auth.transport import requests
 from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks
 from app.utils.email import send_otp_email
 
+from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks, Request
+from app.utils.email import send_otp_email
+from app.utils.limiter import limiter
+
 router = APIRouter()
 
 @router.post("/register")
-async def register(user: UserCreate, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, user: UserCreate, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_db)):
     # Check if user exists
     result = await db.execute(select(User).where(User.email == user.email))
     existing_user = result.scalar_one_or_none()
@@ -55,7 +60,8 @@ async def register(user: UserCreate, background_tasks: BackgroundTasks, db: Asyn
     return {"message": "OTP sent to email", "email": user.email}
 
 @router.post("/verify-otp", response_model=Token)
-async def verify_otp(otp_data: OTPVerify, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def verify_otp(request: Request, otp_data: OTPVerify, db: AsyncSession = Depends(get_db)):
     # Check OTP
     result = await db.execute(
         select(OTP).where(OTP.email == otp_data.email)
