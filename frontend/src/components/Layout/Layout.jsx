@@ -338,7 +338,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                             {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
 
                             <div key={authMode} className={styles.formFade}>
-                                {(authMode === 'login' || authMode === 'register') && !showEmailForm ? (
+                                {authMode !== 'otp' && (
                                     <>
                                         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
                                             <GoogleLogin
@@ -354,72 +354,63 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                             />
                                         </div>
 
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-                                            <div style={{ height: '1px', flex: 1, backgroundColor: 'var(--color-border)' }}></div>
-                                            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>OR</span>
-                                            <div style={{ height: '1px', flex: 1, backgroundColor: 'var(--color-border)' }}></div>
+                                        <div style={{ position: 'relative', margin: '1.5rem 0', textAlign: 'center' }}>
+                                            <span
+                                                style={{ background: 'var(--color-bg-primary)', padding: '0 10px', color: 'var(--color-text-muted)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                                                onClick={() => setShowEmailForm(!showEmailForm)}
+                                            >
+                                                {showEmailForm ? 'Hide Email Option' : 'Or continue with Email'}
+                                            </span>
                                         </div>
-
-                                        <button
-                                            className={styles.loginBtn}
-                                            onClick={() => setShowEmailForm(true)}
-                                            style={{ marginTop: 0, backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)' }}
-                                        >
-                                            Continue with Email
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        {authMode !== 'otp' && (
-                                            <>
-                                                <div className={styles.inputGroup}>
-                                                    <input
-                                                        type="email"
-                                                        placeholder="Email Address"
-                                                        className={styles.loginInput}
-                                                        value={email}
-                                                        onChange={(e) => setEmail(e.target.value)}
-                                                        autoFocus
-                                                    />
-                                                </div>
-
-                                                <div className={styles.inputGroup}>
-                                                    <input
-                                                        type="password"
-                                                        placeholder="Password"
-                                                        className={styles.loginInput}
-                                                        value={password}
-                                                        onChange={(e) => setPassword(e.target.value)}
-                                                    />
-                                                </div>
-                                            </>
-                                        )}
-
-                                        {authMode === 'otp' && (
-                                            <div className={styles.inputGroup}>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Enter 6-digit OTP"
-                                                    className={styles.loginInput}
-                                                    value={otp}
-                                                    onChange={(e) => setOtp(e.target.value)}
-                                                    maxLength={6}
-                                                    autoFocus
-                                                />
-                                            </div>
-                                        )}
-
-                                        <button
-                                            className={styles.loginBtn}
-                                            onClick={handleAuthSubmit}
-                                            disabled={isLoading}
-                                        >
-                                            {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : (authMode === 'register' ? 'Create Account' : 'Verify OTP'))}
-                                        </button>
-
-                                        {/* Google Login is now on the selection screen for both login and register */}
                                     </>
                                 )}
+
+                                {showEmailForm && authMode !== 'otp' && (
+                                    <>
+                                        <div className={styles.inputGroup}>
+                                            <input
+                                                type="email"
+                                                placeholder="Email Address"
+                                                className={styles.loginInput}
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                autoFocus
+                                            />
+                                        </div>
+
+                                        <div className={styles.inputGroup}>
+                                            <input
+                                                type="password"
+                                                placeholder="Password"
+                                                className={styles.loginInput}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
+                                {authMode === 'otp' && (
+                                    <div className={styles.inputGroup}>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter 6-digit OTP"
+                                            className={styles.loginInput}
+                                            value={otp}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                            maxLength={6}
+                                            autoFocus
+                                        />
+                                    </div>
+                                )}
+
+                                <button
+                                    className={styles.loginBtn}
+                                    onClick={handleAuthSubmit}
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : (authMode === 'register' ? 'Create Account' : 'Verify OTP'))}
+                                </button>
 
                             </div>
 
