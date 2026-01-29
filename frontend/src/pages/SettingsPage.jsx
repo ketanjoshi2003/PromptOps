@@ -140,7 +140,18 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 </div>
             </div>
 
-
+            {/* FOOTER */}
+            <div style={{
+                textAlign: 'center',
+                marginTop: '3rem',
+                paddingBottom: '2rem',
+                color: 'var(--color-text-muted)',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+                opacity: 0.7
+            }}>
+                Created By Ketan Joshi
+            </div>
 
             {/* Plan Details Modal */}
             {

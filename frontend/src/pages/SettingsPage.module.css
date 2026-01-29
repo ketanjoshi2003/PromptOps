@@ -3,6 +3,9 @@
     max-width: 600px;
     margin: 0 auto;
     color: var(--color-text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
