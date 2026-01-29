@@ -115,9 +115,9 @@ class LLMService:
         else:
             base_instruction = ENHANCER_SYSTEM_PROMPT
             template_context = f"\n\nHere is the BASE TEMPLATE that defines the required structure, rules, and conditions:\n{BASE_TEMPLATE}\n\n"
-            guidelines = get_complexity_guidelines(complexity)
+            # guidelines removed to avoid structural conflict
         
-        system_instruction = base_instruction + template_context + guidelines
+        system_instruction = base_instruction + template_context
         user_message = f"Please enhance the following project prompt/chain to be more professional and detailed:\n\n{content}"
 
         errors = []
