@@ -62,7 +62,7 @@ const Projects = ({ isVisible }) => {
 
     const deleteProject = async (e, id) => {
         if (e) e.stopPropagation();
-        if (!window.confirm("Are you sure you want to delete this project?")) return;
+
 
         const token = localStorage.getItem('token');
         if (!token) return;

@@ -52,14 +52,18 @@ const ChatPage = ({ onUsageUpdate }) => {
     const messagesEndRef = useRef(null);
     const textareaRef = useRef(null);
 
+    const [initialLoading, setInitialLoading] = useState(true);
+
     // Load latest session on mount
     useEffect(() => {
-        if (!localStorage.getItem('token')) return;
         const restoreSession = async () => {
+            if (!localStorage.getItem('token')) {
+                setInitialLoading(false);
+                return;
+            }
             try {
                 const sessions = await chatService.getSessions();
                 if (sessions && sessions.length > 0) {
-                    // Sort by updated_at? Backend sorts by updated_at desc already.
                     const latest = sessions[0];
                     setSessionId(latest.id);
                     if (latest.messages && latest.messages.length > 0) {
@@ -68,6 +72,8 @@ const ChatPage = ({ onUsageUpdate }) => {
                 }
             } catch (err) {
                 console.error("Failed to restore session", err);
+            } finally {
+                setInitialLoading(false);
             }
         };
         restoreSession();
@@ -140,7 +146,8 @@ const ChatPage = ({ onUsageUpdate }) => {
 
     const handleDeleteSession = async (e, id) => {
         e.stopPropagation(); // Prevent opening the chat
-        if (!window.confirm("Delete this chat?")) return;
+        // Removed confirm dialog as requested
+
 
         try {
             await chatService.deleteSession(id);
@@ -236,9 +243,7 @@ const ChatPage = ({ onUsageUpdate }) => {
     };
 
     const handleReset = () => {
-        if (window.confirm("Clear chat history?")) {
-            setMessages([]);
-        }
+        setMessages([]);
     };
 
     const openSettings = () => {
@@ -255,13 +260,18 @@ const ChatPage = ({ onUsageUpdate }) => {
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
     const [chatHistory, setChatHistory] = useState([]);
 
+    const [historyLoading, setHistoryLoading] = useState(false);
+
     const openHistory = async () => {
         setIsHistoryOpen(true);
+        setHistoryLoading(true); // Start loading
         try {
             const sessions = await chatService.getSessions();
             setChatHistory(sessions);
         } catch (err) {
             console.error("Failed to load history:", err);
+        } finally {
+            setHistoryLoading(false); // Stop loading regardless of success
         }
     };
 
@@ -311,7 +321,11 @@ const ChatPage = ({ onUsageUpdate }) => {
             }
 
             <div className={styles.messagesArea}>
-                {messages.length === 0 ? (
+                {initialLoading ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: 'var(--color-text-muted)' }}>
+                        Loading...
+                    </div>
+                ) : messages.length === 0 ? (
                     <div className={styles.heroSection}>
                         <h2 className={styles.heroTitle}>Build a professional spec</h2>
                         <p className={styles.heroSubtitle}>
@@ -434,7 +448,11 @@ const ChatPage = ({ onUsageUpdate }) => {
                     <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                         <h3 className={styles.modalTitle}>Your Chats</h3>
                         <div className={styles.historyList}>
-                            {Array.isArray(chatHistory) && chatHistory.length === 0 ? (
+                            {historyLoading ? (
+                                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
+                                    Loading...
+                                </div>
+                            ) : Array.isArray(chatHistory) && chatHistory.length === 0 ? (
                                 <p className={styles.emptyHistory}>No previous chats found.</p>
                             ) : (
                                 (chatHistory || []).map((session) => (
