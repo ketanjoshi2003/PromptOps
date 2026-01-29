@@ -130,7 +130,7 @@ export const authService = {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('userEmail');
-        window.location.href = '/login'; // Force redirect
+        window.location.href = '/'; // Force redirect
     },
 
     async refreshToken() {
