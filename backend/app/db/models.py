@@ -29,6 +29,7 @@ class User(Base):
     credits = Column(Integer, default=5)
     google_id = Column(String, unique=True, nullable=True)
     is_verified = Column(Boolean, default=False)
+    has_used_free_trial = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     # Relationship with Cascade Delete

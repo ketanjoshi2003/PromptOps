@@ -280,12 +280,29 @@ async def delete_account(
 
 @router.put("/upgrade")
 async def upgrade_plan(
+    payment_token: str = Body(None, embed=True), 
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    # Mock Payment Logic
+    # Logic: 
+    # 1. If payment_token is present and valid (admin/payment bypass), allow regardless.
+    # 2. If no payment_token, check if user has used free trial.
+    # 3. If used, block. If not, allow once and mark used.
+
+    is_admin_bypass = payment_token and payment_token == settings.SECRET_KEY
+    
+    if not is_admin_bypass:
+        if current_user.has_used_free_trial:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You have already used your one-time free upgrade."
+            )
+        # Mark as used
+        current_user.has_used_free_trial = True
+
     current_user.plan = "dev"
-    current_user.credits += 50  # Add 50 generations
+    current_user.credits += 50 
+    
     db.add(current_user)
     await db.commit()
     await db.refresh(current_user)
