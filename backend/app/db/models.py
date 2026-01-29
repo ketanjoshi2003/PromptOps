@@ -72,3 +72,13 @@ class OTP(Base):
     otp_code = Column(String)
     expires_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class Feedback(Base):
+    __tablename__ = "feedbacks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    message = Column(Text)
+    rating = Column(Integer, nullable=True) # 1-5
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
-from app.api import auth_routes, prompt_routes, chat_routes, chain_routes, plan_routes
+from app.api import auth_routes, prompt_routes, chat_routes, chain_routes, plan_routes, feedback_routes
 
 app = FastAPI()
 
@@ -15,13 +15,13 @@ origins = [
     "http://127.0.0.1:5175",
     # Add production frontend URL
     os.getenv("FRONTEND_URL", ""),
-    "https://promptops-frontend.onrender.com", # Guessed pattern, or user can update
+    "https://promptops-frontend.onrender.com", 
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_origin_regex=r"https://.*\.(vercel\.app|netlify\.app)",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,6 +42,7 @@ app.include_router(prompt_routes.router, prefix="/api", tags=["prompts"])
 app.include_router(chat_routes.router, prefix="/api/chat", tags=["chat"])
 app.include_router(chain_routes.router, prefix="/api/chain", tags=["chain"])
 app.include_router(plan_routes.router, prefix="/api/plan", tags=["plan"])
+app.include_router(feedback_routes.router, prefix="/api/feedback", tags=["feedback"])
 
 @app.get("/")
 def read_root():

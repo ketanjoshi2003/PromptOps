@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Layout.module.css';
-import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers } from 'react-icons/fi';
+import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircle } from 'react-icons/fi';
 import { authService } from '../../services/authService';
+import { feedbackService } from '../../services/feedbackService';
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
 
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -15,6 +17,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
     // isAuthOpen is now a prop
     const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'otp'
     const [isLoading, setIsLoading] = useState(false);
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
     // Form State
     const [email, setEmail] = useState('');
@@ -148,6 +151,11 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
         }
     };
 
+    const handleFeedbackSubmit = async (data) => {
+        await feedbackService.sendFeedback(data);
+        alert("Thank you for your feedback!");
+    };
+
     return (
         <div className={styles.container}>
             {/* Mobile Overlay Backdrop */}
@@ -208,6 +216,17 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                     >
                         <FiSettings />
                         Settings
+                    </button>
+
+                    <button
+                        className={`${styles.navItem}`}
+                        onClick={() => {
+                            setIsFeedbackOpen(true);
+                            if (window.innerWidth <= 768) setIsSidebarOpen(false);
+                        }}
+                    >
+                        <FiMessageCircle />
+                        Feedback
                     </button>
 
                 </div>
@@ -450,6 +469,12 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                     </div>
                 )
             }
+
+            <FeedbackModal
+                isOpen={isFeedbackOpen}
+                onClose={() => setIsFeedbackOpen(false)}
+                onSubmit={handleFeedbackSubmit}
+            />
         </div >
     );
 };

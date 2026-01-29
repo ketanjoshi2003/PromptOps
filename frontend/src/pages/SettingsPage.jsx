@@ -125,62 +125,79 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 </div>
             </div>
 
+            <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Support</h2>
+                <div className={styles.settingItem}>
+                    <div className={styles.settingInfo}>
+                        <span className={styles.settingName}>Contact Us</span>
+                        <span className={styles.settingDescription}>
+                            Need help? Get in touch with our team.
+                        </span>
+                    </div>
+                    <a href="mailto:support@promptops.ai" className={styles.themeBtn} style={{ border: '1px solid var(--color-border)', textDecoration: 'none' }}>
+                        Email Support
+                    </a>
+                </div>
+            </div>
+
 
 
             {/* Plan Details Modal */}
-            {showPlanModal && (
-                <div className={styles.modalOverlay} onClick={() => setShowPlanModal(false)}>
-                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                        <h3 className={styles.modalTitle}>Plan Details: {userData.plan === 'dev' ? 'Dev (Pro)' : 'Free'}</h3>
+            {
+                showPlanModal && (
+                    <div className={styles.modalOverlay} onClick={() => setShowPlanModal(false)}>
+                        <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                            <h3 className={styles.modalTitle}>Plan Details: {userData.plan === 'dev' ? 'Dev (Pro)' : 'Free'}</h3>
 
-                        <div className={styles.featureList}>
-                            {userData.plan === 'dev' ? (
-                                <>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> 50 Generations per cycle
-                                    </div>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> Fast Generation Speed
-                                    </div>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> Priority Support
-                                    </div>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> Access to Advanced Models
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> 5 Generations per cycle
-                                    </div>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> Standard Generation Speed
-                                    </div>
-                                    <div className={styles.featureItem}>
-                                        <FiCheck className={styles.featureIcon} /> Basic Support
-                                    </div>
-                                </>
-                            )}
-                        </div>
+                            <div className={styles.featureList}>
+                                {userData.plan === 'dev' ? (
+                                    <>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> 50 Generations per cycle
+                                        </div>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> Fast Generation Speed
+                                        </div>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> Priority Support
+                                        </div>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> Access to Advanced Models
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> 5 Generations per cycle
+                                        </div>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> Standard Generation Speed
+                                        </div>
+                                        <div className={styles.featureItem}>
+                                            <FiCheck className={styles.featureIcon} /> Basic Support
+                                        </div>
+                                    </>
+                                )}
+                            </div>
 
-                        <div className={styles.modalActions}>
-                            <button
-                                className={styles.cancelBtn}
-                                onClick={() => setShowPlanModal(false)}
-                                style={{ width: '100%', textAlign: 'center' }}
-                            >
-                                Close
-                            </button>
+                            <div className={styles.modalActions}>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => setShowPlanModal(false)}
+                                    style={{ width: '100%', textAlign: 'center' }}
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
 
 
 
-        </div>
+        </div >
     );
 };
 
