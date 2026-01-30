@@ -57,7 +57,7 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
 
     // E. Database (Persistence layer)
     const DATABASE_OPTIONS = [
-        'None', 'PostgreSQL', 'MySQL', 'SQLite', 'SQL Server', // SQL
+        'PostgreSQL', 'MySQL', 'SQLite', 'SQL Server', // SQL
         'MongoDB', 'Redis', 'DynamoDB', 'Firestore' // NoSQL
     ];
 

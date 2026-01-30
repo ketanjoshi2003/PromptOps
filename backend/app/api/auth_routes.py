@@ -115,7 +115,7 @@ async def google_auth(login_data: GoogleLogin, db: AsyncSession = Depends(get_db
             login_data.credential, 
             requests.Request(), 
             audience=client_id, 
-            clock_skew_in_seconds=5
+            clock_skew_in_seconds=300
         )
         
         email = id_info['email']
