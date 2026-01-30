@@ -57,7 +57,7 @@ async def generate_prompt(
             "devOps": request.dev_ops,
             "ai_target": request.target_tool, # Pass through the tool selection
             "project_type": request.project_type,
-            "complexity": request.complexity,
+
             "ai_control": request.ai_control,
             "enhance_prompt": request.enhance_prompt
         }

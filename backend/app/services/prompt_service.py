@@ -22,8 +22,7 @@ async def create_prompt(input_data: dict) -> str:
     if input_data.get('enhance_prompt', True):
         from app.services.llm_service import llm_service
         # Pass complexity to enhance_prompt
-        complexity = input_data.get('complexity', 'Medium')
-        enhanced_prompt = await llm_service.enhance_prompt(final_prompt, complexity)
+        enhanced_prompt = await llm_service.enhance_prompt(final_prompt)
         return enhanced_prompt
     
     print("Optimization SKIPPED. Returning raw base template output.")

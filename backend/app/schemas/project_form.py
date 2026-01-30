@@ -15,7 +15,7 @@ class PromptRequest(BaseModel):
     dev_ops: Optional[List[str]] = []
     # Future-proofing schema
     project_type: Optional[str] = "general"
-    complexity: Optional[str] = "medium"
+
     ai_control: Optional[str] = "Controlled"
     enhance_prompt: bool = True
 

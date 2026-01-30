@@ -3,7 +3,7 @@ import google.generativeai as genai
 from openai import OpenAI
 from groq import Groq
 from app.config.settings import settings
-from app.prompt_engine.templates import get_complexity_guidelines, BASE_TEMPLATE
+from app.prompt_engine.templates import BASE_TEMPLATE
 from app.prompt_engine.instructions import ENHANCER_SYSTEM_PROMPT, CHAT_SYSTEM_PROMPT, CHAIN_ENHANCER_SYSTEM_PROMPT
 
 class LLMService:
@@ -99,7 +99,7 @@ class LLMService:
         
         return err_str
 
-    async def enhance_prompt(self, content: str, complexity: str = "Medium", is_chain: bool = False) -> str:
+    async def enhance_prompt(self, content: str, is_chain: bool = False) -> str:
         """
         Enhances the generated prompt using available LLMs with failover (Async).
         """

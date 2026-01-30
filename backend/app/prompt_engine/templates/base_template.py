@@ -1,24 +1,19 @@
 BASE_TEMPLATE = """
 # Role
 {role}
-
 # AI Control Mode
 {ai_control_instructions}
-
-# Complexity Guidelines
-{complexity_guidelines}
 
 # Project Context
 ## Title
 {project_title}
 
-{goal_header}
+## Comprehensive Goal
 {goal}
 
 ## Type
 {project_type}
-
-{tech_stack_header}
+## Tech Stack & Architecture
 {tech_stack_section}
 
 # Critical Instructions for Implementation
@@ -29,23 +24,11 @@ BASE_TEMPLATE = """
 5. **Comments**: Add comments only for non-obvious or complex logic. Avoid redundant or self-explanatory comments.
 6. **Modern Standards**: Use the latest stable language and framework features while keeping implementations simple and efficient.
 
-{standards_header}
+# Quality Standards & Implementation Guidelines
 {technical_standards}
-
-# Expected Output
-- Provide backend and frontend code separately
-- Include folder structure
-- Use code blocks only
-- Avoid explanations unless necessary
-
-{steps_header}
-{steps}
-
-
 """
 
 ROLES = {
-
     "generic": "Expert Full-Stack Software Engineer",
     "web": "Modern Web Application Architect (React/Next.js/Vue)",
     "backend": "Senior Backend Systems Engineer & API Specialist",

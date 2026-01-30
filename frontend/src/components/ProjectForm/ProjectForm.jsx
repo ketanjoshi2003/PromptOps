@@ -15,7 +15,7 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
         auth: [],
         api: [],
         devOps: [],
-        complexity: 'Medium',
+
         aiControl: 'Controlled',
         additionalInstructions: ''
     });
@@ -78,7 +78,7 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
         'Linting', 'Docker', 'CI/CD'
     ];
 
-    const complexityLevels = ['Low', 'Medium', 'High'];
+
     const aiControlOptions = ['Controlled', 'Balanced', 'Exploratory'];
 
     const handleChange = (e) => {
@@ -169,6 +169,16 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                 {errors.additionalInstructions && <span className={styles.errorText}>{errors.additionalInstructions}</span>}
             </div>
 
+            <div className={styles.fieldSection}>
+                <div className={styles.fieldLabel}>AI Control Mode</div>
+                <CustomSelect
+                    options={aiControlOptions}
+                    value={formData.aiControl}
+                    onChange={(val) => handleCustomSelectChange('aiControl', val)}
+                    placeholder="Select Control"
+                />
+            </div>
+
             {/* A. Application Type - Radio Buttons */}
             <div className={styles.fieldSection}>
                 <div className={styles.fieldLabel}>Application Type</div>
@@ -188,26 +198,7 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                 </div>
             </div>
 
-            <div className={styles.rowInputs}>
-                <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>Complexity Level</div>
-                    <CustomSelect
-                        options={complexityLevels}
-                        value={formData.complexity}
-                        onChange={(val) => handleCustomSelectChange('complexity', val)}
-                        placeholder="Select Complexity"
-                    />
-                </div>
-                <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>AI Control Mode</div>
-                    <CustomSelect
-                        options={aiControlOptions}
-                        value={formData.aiControl}
-                        onChange={(val) => handleCustomSelectChange('aiControl', val)}
-                        placeholder="Select Control"
-                    />
-                </div>
-            </div>
+
 
             {/* B. Frontend Stack */}
             {showFrontend() && (
@@ -280,12 +271,27 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
             {/* E. Database */}
             <div className={styles.fieldSection}>
                 <div className={styles.fieldLabel}>Database</div>
-                <CustomSelect
-                    options={DATABASE_OPTIONS}
-                    value={formData.database}
-                    onChange={(val) => handleCustomSelectChange('database', val)}
-                    placeholder="Select Database"
-                />
+                <div className={styles.checkboxGroup}>
+                    {DATABASE_OPTIONS.map(opt => (
+                        <label key={opt} className={styles.checkboxLabel}>
+                            <input
+                                type="radio"
+                                name="database"
+                                value={opt}
+                                checked={formData.database === opt}
+                                onClick={() => {
+                                    if (formData.database === opt) {
+                                        handleRadioChange('database', 'None');
+                                    } else {
+                                        handleRadioChange('database', opt);
+                                    }
+                                }}
+                                onChange={() => { }} // specific handler above
+                            />
+                            {opt}
+                        </label>
+                    ))}
+                </div>
             </div>
 
             {/* F. Authentication */}
