@@ -49,7 +49,7 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     }, [useEnhancer]);
 
-    const PLACEHOLDER_TEXT = "Configure your project parameters and click 'Generate Prompt' to create your tailored technical instruction.";
+    const PLACEHOLDER_TEXT = "Define project parameters to generate a structured technical prompt.";
 
     // Sync latest results to parent for header copy button
     useEffect(() => {

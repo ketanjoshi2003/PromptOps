@@ -1,13 +1,3 @@
-class GlobalInstructions:
-    @staticmethod
-    def get_instruction_set(target: str) -> str:
-        if target == "antigravity":
-            return (
-                "### ANTIGRAVITY INSTRUCTION SET ###\n"
-                "EXECUTE STEP-BY-STEP. NO EXPLANATIONS UNLESS ASKED.\n\n"
-            )
-        return "" # Generic does not add prefix currently
-
 # Distinct System Prompts to prevent context leakage
 ENHANCER_SYSTEM_PROMPT = (
     "You are a senior prompt engineer and software architect specializing in modern web development systems.\n\n"
@@ -71,6 +61,4 @@ CHAIN_ENHANCER_SYSTEM_PROMPT = (
     "3. Do NOT add extra headers or filler text. Just the structured blocks separated by '---'."
 )
 
-def apply_global_instructions(prompt: str, target: str) -> str:
-    prefix = GlobalInstructions.get_instruction_set(target)
-    return prefix + prompt
+
