@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Layout.module.css';
-import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircle } from 'react-icons/fi';
+import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircle, FiMail } from 'react-icons/fi';
 import { authService } from '../../services/authService';
 import { feedbackService } from '../../services/feedbackService';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
@@ -359,7 +359,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                             <div key={authMode} className={styles.formFade}>
                                 {authMode !== 'otp' && (
                                     <>
-                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem', marginTop: '0.5rem' }}>
+                                        <div style={{ marginBottom: '1rem', marginTop: '0.5rem', width: '100%' }}>
                                             <GoogleLogin
                                                 onSuccess={handleGoogleSuccess}
                                                 onError={() => {
@@ -373,14 +373,41 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                             />
                                         </div>
 
-                                        <div style={{ position: 'relative', margin: '1.5rem 0', textAlign: 'center' }}>
-                                            <span
-                                                style={{ background: 'var(--color-bg-primary)', padding: '0 10px', color: 'var(--color-text-muted)', fontSize: '0.8rem', cursor: 'pointer', textDecoration: 'underline' }}
-                                                onClick={() => setShowEmailForm(!showEmailForm)}
-                                            >
-                                                {showEmailForm ? 'Hide Email Option' : 'Or continue with Email'}
-                                            </span>
-                                        </div>
+                                        {!showEmailForm && (
+                                            <div style={{ margin: '0.5rem 0', width: '100%' }}>
+                                                <button
+                                                    onClick={() => setShowEmailForm(true)}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '40px',
+                                                        borderRadius: '4px',
+                                                        border: '1px solid #303030',
+                                                        background: '#131314', // Google Dark
+                                                        color: '#e3e3e3',
+                                                        cursor: 'pointer',
+                                                        fontSize: '14px',
+                                                        fontFamily: 'Roboto, arial, sans-serif',
+                                                        fontWeight: '500',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center', // Center content
+                                                        position: 'relative',
+                                                        transition: 'background-color 0.2s'
+                                                    }}
+                                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#2d2e2f'}
+                                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#131314'}
+                                                >
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        marginRight: '12px'
+                                                    }}>
+                                                        <FiMail size={18} />
+                                                    </div>
+                                                    <span>Continue with Email</span>
+                                                </button>
+                                            </div>
+                                        )}
                                     </>
                                 )}
 
@@ -423,13 +450,15 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                     </div>
                                 )}
 
-                                <button
-                                    className={styles.loginBtn}
-                                    onClick={handleAuthSubmit}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : (authMode === 'register' ? 'Create Account' : 'Verify OTP'))}
-                                </button>
+                                {(authMode === 'otp' || showEmailForm) && (
+                                    <button
+                                        className={styles.loginBtn}
+                                        onClick={handleAuthSubmit}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : (authMode === 'register' ? 'Create Account' : 'Verify OTP'))}
+                                    </button>
+                                )}
 
                             </div>
 

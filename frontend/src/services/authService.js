@@ -1,6 +1,19 @@
 const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/auth`;
 
 export const authService = {
+    // Helper to format validation errors
+    formatError(detail) {
+        if (typeof detail === 'string') return detail;
+        if (Array.isArray(detail)) {
+            // Pydantic error list: return the first message or a joined list
+            return detail.map(err => err.msg).join(', ');
+        }
+        if (typeof detail === 'object') {
+            return JSON.stringify(detail);
+        }
+        return 'An unknown error occurred';
+    },
+
     async register(userData) {
         try {
             const response = await fetch(`${API_URL}/register`, {
@@ -13,7 +26,7 @@ export const authService = {
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.detail || 'Registration failed');
+                throw new Error(this.formatError(error.detail) || 'Registration failed');
             }
 
             return await response.json();
@@ -35,7 +48,7 @@ export const authService = {
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.detail || 'OTP Verification failed');
+                throw new Error(this.formatError(error.detail) || 'OTP Verification failed');
             }
 
             const data = await response.json();
@@ -65,7 +78,7 @@ export const authService = {
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.detail || 'Google Login failed');
+                throw new Error(this.formatError(error.detail) || 'Google Login failed');
             }
 
             const data = await response.json();
@@ -106,7 +119,7 @@ export const authService = {
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.detail || 'Login failed');
+                throw new Error(this.formatError(error.detail) || 'Login failed');
             }
 
             const data = await response.json();
