@@ -14,10 +14,7 @@ import { healthService } from './services/healthService';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 
 function App() {
-    // Basic routing check for privacy policy
-    if (window.location.pathname === '/privacy-policy') {
-        return <PrivacyPolicyPage />;
-    }
+
 
     const [currentView, setCurrentView] = useState('dashboard');
     const [user, setUser] = useState(null);
@@ -77,6 +74,11 @@ function App() {
     };
 
     const handlePromptHandled = () => setAutoPrompt(null);
+
+    // Basic routing check for privacy policy
+    if (window.location.pathname === '/privacy-policy') {
+        return <PrivacyPolicyPage />;
+    }
 
     return (
         <>

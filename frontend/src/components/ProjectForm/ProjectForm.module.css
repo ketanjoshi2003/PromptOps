@@ -1,12 +1,12 @@
 .formContainer {
-    padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+    padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
     background-color: transparent;
     /* Fluid background like image */
     width: 100%;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -81,7 +81,7 @@
 .helperText {
     color: var(--color-text-secondary);
     font-size: 0.75rem;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 4px;
 }
 
 .textareaWrapper {
@@ -132,7 +132,7 @@
     font-size: var(--font-size-sm);
     font-weight: 700;
     color: var(--color-text-primary);
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 4px;
 }
 
 .infoIcon {

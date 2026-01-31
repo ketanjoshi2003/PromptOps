@@ -13,7 +13,6 @@ def test_build_intent_with_full_data():
         "frontendStack": ["React", "Vite"],
         "frontendStyling": ["Tailwind"],
         "database": "PostgreSQL",
-        "complexity": "High",
         "ai_control": "Strict"
     }
     
@@ -24,7 +23,6 @@ def test_build_intent_with_full_data():
     assert "React" in result["frontend_stack"]
     assert "Vite" in result["frontend_stack"]
     assert result["database"] == "PostgreSQL"
-    assert result["complexity"] == "high" # Should be lowercased
     assert result["ai_control"] == "Strict"
 
 def test_build_intent_defaults():
@@ -32,7 +30,6 @@ def test_build_intent_defaults():
     result = build_intent(raw_data)
     
     assert result["project_title"] == "Untitled Project"
-    # assert result["complexity"] == "medium"
     assert result["ai_target"] == "generic"
 
 # --- Tests for modes.py ---
@@ -57,7 +54,6 @@ def test_compose_prompt_integration():
     data = {
         "project_type": "Web Application",
         "ai_target": "developer",
-        "complexity": "High",
         "ai_control": "Controlled",
         "frontend_stack": ["React"],
         "frontend_styling": ["CSS"],
@@ -74,7 +70,7 @@ def test_compose_prompt_integration():
     prompt = compose_prompt(data)
     
     # Check for presence of key sections
-    assert "# Implementation Steps (Detailed)" in prompt # Due to High complexity
+    assert "## Comprehensive Goal" in prompt
     assert "FastAPI" in prompt
     assert "Test Goal" in prompt
     assert "AI CONTROL MODE: CONTROLLED" in prompt
@@ -83,7 +79,6 @@ def test_compose_prompt_low_complexity():
     data = {
         "project_type": "Web Application",
         "ai_target": "developer",
-        "complexity": "Low",
         "ai_control": "Balanced",
         "frontend_stack": [],
         "frontend_styling": [],
@@ -99,5 +94,5 @@ def test_compose_prompt_low_complexity():
     
     prompt = compose_prompt(data)
     
-    assert "## Goal (Simple)" in prompt
+    assert "## Comprehensive Goal" in prompt
     assert "AI CONTROL MODE: BALANCED" in prompt
