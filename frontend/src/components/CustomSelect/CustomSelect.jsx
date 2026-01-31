@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { FiChevronDown } from 'react-icons/fi';
 import styles from './CustomSelect.module.css';
 
-const CustomSelect = ({ options, value, onChange, placeholder = 'Select...' }) => {
+const CustomSelect = ({ options, value, onChange, placeholder = 'Select...', className = '' }) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
 
     const handleToggle = () => setIsOpen(!isOpen);
 
     const handleSelect = (option) => {
-        onChange(option);
+        const val = typeof option === 'object' ? option.value : option;
+        onChange(val);
         setIsOpen(false);
     };
 
@@ -25,23 +27,47 @@ const CustomSelect = ({ options, value, onChange, placeholder = 'Select...' }) =
         };
     }, []);
 
+    // Find label for current value
+    const getDisplayLabel = () => {
+        if (!value) return placeholder || "Select...";
+
+        // Check if options are objects
+        if (options.length > 0 && typeof options[0] === 'object') {
+            const found = options.find(o => o.value === value);
+            return found ? found.label : value;
+        }
+
+        return value;
+    };
+
     return (
-        <div className={styles.selectContainer} ref={containerRef}>
-            <div className={`${styles.selectHeader} ${isOpen ? styles.open : ''}`} onClick={handleToggle}>
-                <span className={styles.selectedValue}>{value || placeholder}</span>
-                <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>▼</span>
+        <div className={`${styles.selectContainer} ${className}`} ref={containerRef}>
+            <div
+                className={`${styles.selectHeader} ${isOpen ? styles.open : ''}`}
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className={styles.selectedValue}>
+                    {getDisplayLabel()}
+                </div>
+                <FiChevronDown className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`} />
             </div>
+
             {isOpen && (
-                <div className={styles.optionsContainer}>
-                    {options.map((option) => (
-                        <div
-                            key={option}
-                            className={`${styles.option} ${option === value ? styles.selected : ''}`}
-                            onClick={() => handleSelect(option)}
-                        >
-                            {option}
-                        </div>
-                    ))}
+                <div className={styles.optionsList}>
+                    {options.map((option, index) => {
+                        const optValue = typeof option === 'object' ? option.value : option;
+                        const optLabel = typeof option === 'object' ? option.label : option;
+
+                        return (
+                            <div
+                                key={index}
+                                className={`${styles.option} ${value === optValue ? styles.selected : ''}`}
+                                onClick={() => handleSelect(option)}
+                            >
+                                {optLabel}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

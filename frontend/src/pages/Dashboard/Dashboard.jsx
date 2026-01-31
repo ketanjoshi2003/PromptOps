@@ -65,7 +65,9 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
         }
     }, [messages, onResultChange]);
 
-    const handleFormSubmit = async (formData, shouldSaveData = true) => {
+    const [model, setModel] = useState('meta-llama/llama-4-scout-17b-16e-instruct'); // Default to Scout
+
+    const handleFormSubmit = async (formData, shouldSaveData = true, selectedModel) => {
         if (loading) return; // Prevent double submission
 
         // Display representation for user
@@ -107,7 +109,8 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
                     dev_ops: formData.devOps,
                     database: formData.database,
                     ai_control: formData.aiControl,
-                    enhance_prompt: useEnhancer
+                    enhance_prompt: useEnhancer,
+                    model: selectedModel || model
                 }),
             });
 
@@ -150,7 +153,12 @@ const Dashboard = ({ autoPrompt, onPromptHandled, onUsageUpdate, useEnhancer, on
             <div className={styles.splitGrid}>
                 {/* Left Section: Form */}
                 <div className={styles.formSection}>
-                    <ProjectForm onSubmit={handleFormSubmit} isSubmitting={loading} />
+                    <ProjectForm
+                        onSubmit={(data) => handleFormSubmit(data, true, model)}
+                        isSubmitting={loading}
+                        selectedModel={model}
+                        onModelChange={setModel}
+                    />
                 </div>
 
                 {/* Right Section: Results */}

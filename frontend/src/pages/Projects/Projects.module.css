@@ -106,8 +106,8 @@
 }
 
 .projectItem {
-    background-color: var(--color-bg-secondary);
-    border: none;
+    background-color: #000000;
+    border: 1px solid transparent;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s;
@@ -121,7 +121,7 @@
 .projectItem:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    border-color: var(--color-text-muted);
+    /* border-color: var(--color-text-muted); */
 }
 
 .projectItem.selected {
@@ -151,7 +151,7 @@
     flex-direction: column;
     gap: var(--spacing-md);
     flex-grow: 1;
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.03), transparent);
+    background: transparent;
 }
 
 .titleWrapper {

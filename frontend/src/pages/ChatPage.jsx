@@ -54,7 +54,7 @@ const ChatPage = ({ onUsageUpdate }) => {
 
     const [initialLoading, setInitialLoading] = useState(true);
 
-    // Load latest session on mount
+    // Load session based on local storage preference or latest
     useEffect(() => {
         const restoreSession = async () => {
             if (!localStorage.getItem('token')) {
@@ -62,6 +62,29 @@ const ChatPage = ({ onUsageUpdate }) => {
                 return;
             }
             try {
+                const lastSessionId = localStorage.getItem('lastSessionId');
+
+                if (lastSessionId === 'RESET') {
+                    // User explicitly reset, start fresh
+                    setInitialLoading(false);
+                    return;
+                }
+
+                if (lastSessionId) {
+                    // Try to load specific last session
+                    try {
+                        const session = await chatService.getSession(lastSessionId);
+                        setSessionId(session.id);
+                        setMessages(session.messages || []);
+                        setInitialLoading(false);
+                        return;
+                    } catch (e) {
+                        // If failed (e.g. deleted), fall through to load latest
+                        console.warn("Could not load last session, falling back to latest");
+                    }
+                }
+
+                // Fallback: Load latest if no preference or preference failed
                 const sessions = await chatService.getSessions();
                 if (sessions && sessions.length > 0) {
                     const latest = sessions[0];
@@ -69,6 +92,8 @@ const ChatPage = ({ onUsageUpdate }) => {
                     if (latest.messages && latest.messages.length > 0) {
                         setMessages(latest.messages);
                     }
+                    // Update local storage to match what we auto-loaded
+                    localStorage.setItem('lastSessionId', latest.id);
                 }
             } catch (err) {
                 console.error("Failed to restore session", err);
@@ -79,10 +104,7 @@ const ChatPage = ({ onUsageUpdate }) => {
         restoreSession();
     }, []);
 
-    // If new messages are added, update history
-    // Since handleSend is async and adds user -> API -> AI, we can hook into handleSend result to save.
-    // Or use useEffect on messages.
-    // useEffect approach ensures any change (user or ai) is captured.
+    // Auto-save & Update localStorage
     useEffect(() => {
         if (!localStorage.getItem('token') || messages.length === 0) return;
 
@@ -90,6 +112,8 @@ const ChatPage = ({ onUsageUpdate }) => {
             try {
                 if (sessionId) {
                     await chatService.updateSession(sessionId, null, messages);
+                    // Ensure we remember we are on this session
+                    localStorage.setItem('lastSessionId', sessionId);
                 } else {
                     // Create new Only if we have at least one valid exchange or user msg
                     const firstMsg = messages[0];
@@ -97,17 +121,14 @@ const ChatPage = ({ onUsageUpdate }) => {
                         const title = firstMsg.content.slice(0, 30) + (firstMsg.content.length > 30 ? "..." : "");
                         const session = await chatService.createSession(title, messages);
                         setSessionId(session.id);
+                        localStorage.setItem('lastSessionId', session.id);
                     }
                 }
             } catch (err) {
                 console.error("Failed to auto-save chat:", err);
             }
         };
-        // Debounce slightly to catch rapid updates (like user msg + wait + ai msg)
-        // Wait, immediate save on user message might race with creation for AI message.
-        // If sessionId is null, user message triggers create. 
-        // Then AI message comes, triggers update. This is fine.
-        // A small timeout helps avoid double save on immediate state updates.
+
         const timer = setTimeout(saveHistory, 1000);
         return () => clearTimeout(timer);
     }, [messages, sessionId]);
@@ -244,6 +265,8 @@ const ChatPage = ({ onUsageUpdate }) => {
 
     const handleReset = () => {
         setMessages([]);
+        setSessionId(null);
+        localStorage.setItem('lastSessionId', 'RESET');
     };
 
     const openSettings = () => {
@@ -282,6 +305,7 @@ const ChatPage = ({ onUsageUpdate }) => {
             const session = await chatService.getSession(id);
             setSessionId(session.id);
             setMessages(session.messages || []);
+            localStorage.setItem('lastSessionId', session.id);
         } catch (err) {
             console.error("Failed to load session:", err);
         } finally {

@@ -26,17 +26,17 @@
 
 
 
-.arrow {
-    font-size: 0.8em;
+.chevron {
+    font-size: 1.2em;
     transition: transform 0.2s;
     color: var(--color-text-secondary);
 }
 
-.arrowOpen {
+.chevronOpen {
     transform: rotate(180deg);
 }
 
-.optionsContainer {
+.optionsList {
     position: absolute;
     top: 100%;
     left: 0;

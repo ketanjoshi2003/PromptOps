@@ -3,7 +3,7 @@ import { FiZap, FiChevronDown } from 'react-icons/fi';
 import styles from './ProjectForm.module.css';
 import CustomSelect from '../CustomSelect/CustomSelect';
 
-const ProjectForm = ({ onSubmit, isSubmitting }) => {
+const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) => {
     const [formData, setFormData] = useState({
         title: '',
         type: 'Web App',
@@ -171,14 +171,29 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                 {errors.additionalInstructions && <span className={styles.errorText}>{errors.additionalInstructions}</span>}
             </div>
 
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>AI Control Mode</div>
-                <CustomSelect
-                    options={aiControlOptions}
-                    value={formData.aiControl}
-                    onChange={(val) => handleCustomSelectChange('aiControl', val)}
-                    placeholder="Select Control"
-                />
+            <div className={styles.rowInputs}>
+                <div className={styles.fieldSection}>
+                    <div className={styles.fieldLabel}>Model Selection</div>
+                    <CustomSelect
+                        options={[
+                            { label: 'Fast & Structured', value: 'meta-llama/llama-4-scout-17b-16e-instruct' },
+                            { label: 'Expert Reasoner', value: 'llama-3.3-70b-versatile' }
+                        ]}
+                        value={selectedModel}
+                        onChange={(val) => onModelChange(val)}
+                        placeholder="Select Model"
+                    />
+                </div>
+
+                <div className={styles.fieldSection}>
+                    <div className={styles.fieldLabel}>AI Control Mode</div>
+                    <CustomSelect
+                        options={aiControlOptions}
+                        value={formData.aiControl}
+                        onChange={(val) => handleCustomSelectChange('aiControl', val)}
+                        placeholder="Select Control"
+                    />
+                </div>
             </div>
 
             {/* A. Application Type - Radio Buttons */}

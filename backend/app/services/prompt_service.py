@@ -21,7 +21,8 @@ async def create_prompt(input_data: dict) -> str:
     if input_data.get('enhance_prompt', True):
         from app.services.llm_service import llm_service
         # Enhance prompt with LLM
-        enhanced_prompt = await llm_service.enhance_prompt(final_prompt)
+        model_id = input_data.get('model')
+        enhanced_prompt = await llm_service.enhance_prompt(final_prompt, model_id=model_id)
         return enhanced_prompt
     
     print("Optimization SKIPPED. Returning raw base template output.")

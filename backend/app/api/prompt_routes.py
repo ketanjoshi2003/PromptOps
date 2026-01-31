@@ -59,7 +59,8 @@ async def generate_prompt(
             "project_type": request.project_type,
 
             "ai_control": request.ai_control,
-            "enhance_prompt": request.enhance_prompt
+            "enhance_prompt": request.enhance_prompt,
+            "model": request.model
         }
 
         

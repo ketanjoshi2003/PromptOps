@@ -18,6 +18,7 @@ class PromptRequest(BaseModel):
 
     ai_control: Optional[str] = "Controlled"
     enhance_prompt: bool = True
+    model: Optional[str] = None
 
 class PromptUpdate(BaseModel):
     title: Optional[str] = None

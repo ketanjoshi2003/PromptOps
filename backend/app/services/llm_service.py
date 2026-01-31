@@ -99,7 +99,7 @@ class LLMService:
         
         return err_str
 
-    async def enhance_prompt(self, content: str, is_chain: bool = False) -> str:
+    async def enhance_prompt(self, content: str, is_chain: bool = False, model_id: Optional[str] = None) -> str:
         """
         Enhances the generated prompt using available LLMs with failover (Async).
         """
@@ -132,7 +132,7 @@ class LLMService:
                     {"role": "user", "content": user_message}
                 ]
                 
-                result = await self._chat_with_provider(provider, messages)
+                result = await self._chat_with_provider(provider, messages, model_id=model_id if provider == 'groq' else None)
                 print(f"DEBUG: {provider} returned: {result[:100] if result else 'EMPTY LINK/NONE'}")
                 return result
 
@@ -173,58 +173,81 @@ class LLMService:
             )
         return f"Error encountered: All providers failed. Details: {all_errors_str}"
 
-    async def _chat_with_provider(self, provider: str, messages: List[Dict[str, str]], system_prompt: Optional[str] = None) -> str:
+    async def _chat_with_provider(self, provider: str, messages: List[Dict[str, str]], system_prompt: Optional[str] = None, model_id: Optional[str] = None) -> str:
         """
         Internal method to execute chat with a specific provider (Async).
         """
-        # Use provided system_prompt or fallback to default global
-        if not system_prompt:
-             system_prompt = CHAT_SYSTEM_PROMPT
-        
-        # Extract system prompt if present in messages (legacy override)
-        start_index = 0
-        if messages and messages[0]['role'] == 'system':
-            # If explicit system message, it overrides everything
-            system_prompt = messages[0]['content']
-            start_index = 1
+        try:
+            # Use provided system_prompt or fallback to default global
+            if not system_prompt:
+                 system_prompt = CHAT_SYSTEM_PROMPT
+            
+            # Extract system prompt if present in messages (legacy override)
+            start_index = 0
+            if messages and messages[0]['role'] == 'system':
+                # If explicit system message, it overrides everything
+                system_prompt = messages[0]['content']
+                start_index = 1
+    
+            if provider == 'gemini':
+                # Construct history for Gemini
+                current_history = []
+                
+                # Add system prompt as user message (common workaround)
+                current_history.append({"role": "user", "parts": [f"System: {system_prompt}"]})
+                
+                # Map messages
+                for msg in messages[start_index:]:
+                    role = "user" if msg['role'] == 'user' else "model"
+                    current_history.append({"role": role, "parts": [msg['content']]})
+                
+                response = await self.gemini_model.generate_content_async(current_history)
+                return response.text
+    
+            elif provider == 'openai':
+                openai_messages = [{"role": "system", "content": system_prompt}]
+                openai_messages.extend(messages[start_index:])
+                
+                response = await self.openai_client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=openai_messages,
+                    temperature=0.7
+                )
+                return response.choices[0].message.content
+    
+            elif provider == 'groq':
+                groq_messages = [{"role": "system", "content": system_prompt}]
+                groq_messages.extend(messages[start_index:])
+                
+                # Use provided model_id or fallback to default
+                selected_model = model_id if model_id else "meta-llama/llama-4-scout-17b-16e-instruct"
+                
+                response = await self.groq_client.chat.completions.create(
+                    model=selected_model,
+                    messages=groq_messages,
+                    temperature=0.7
+                )
+                return response.choices[0].message.content
+                
+            raise ValueError(f"Unknown provider: {provider}")
+            
+        except Exception as e:
+            # Enhanced Error Handling
+            error_msg = str(e)
+            model_name = model_id if model_id else provider
+            
+            if "429" in error_msg or "rate limit" in error_msg.lower():
+                raise Exception(f"**Rate Limit Exceeded for {model_name}**\n\nThe AI provider is currently busy. Please try again in a moment or select a different model.")
+            
+            if "401" in error_msg or "invalid api key" in error_msg.lower():
+                 raise Exception(f"**Authentication Failed for {provider}**\n\nThe API key provided is invalid or expired. Please check your settings.")
 
-        if provider == 'gemini':
-            # Construct history for Gemini
-            current_history = []
-            
-            # Add system prompt as user message (common workaround)
-            current_history.append({"role": "user", "parts": [f"System: {system_prompt}"]})
-            
-            # Map messages
-            for msg in messages[start_index:]:
-                role = "user" if msg['role'] == 'user' else "model"
-                current_history.append({"role": role, "parts": [msg['content']]})
-            
-            response = await self.gemini_model.generate_content_async(current_history)
-            return response.text
+            if "403" in error_msg or "permission" in error_msg.lower() or "blocked" in error_msg.lower():
+                 raise Exception(f"**Access Denied: {model_name}**\n\nYour project settings block this model. Please check Allowed Models in your Groq console.")
 
-        elif provider == 'openai':
-            openai_messages = [{"role": "system", "content": system_prompt}]
-            openai_messages.extend(messages[start_index:])
+            if "404" in error_msg or "not found" in error_msg.lower() or "does not exist" in error_msg.lower():
+                 raise Exception(f"**Model Unavailable: {model_name}**\n\nThis model is not accessible with your current API key (it might be private or waitlisted). Please try a different model.")
             
-            response = await self.openai_client.chat.completions.create(
-                model="gpt-4o",
-                messages=openai_messages,
-                temperature=0.7
-            )
-            return response.choices[0].message.content
-
-        elif provider == 'groq':
-            groq_messages = [{"role": "system", "content": system_prompt}]
-            groq_messages.extend(messages[start_index:])
-            
-            response = await self.groq_client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=groq_messages,
-                temperature=0.7
-            )
-            return response.choices[0].message.content
-            
-        raise ValueError(f"Unknown provider: {provider}")
+            raise e
 
 llm_service = LLMService()
