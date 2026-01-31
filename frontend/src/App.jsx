@@ -11,7 +11,14 @@ import PipedLoading from './components/PipedLoading/PipedLoading';
 import loadingStyles from './components/PipedLoading/PipedLoading.module.css';
 import { healthService } from './services/healthService';
 
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+
 function App() {
+    // Basic routing check for privacy policy
+    if (window.location.pathname === '/privacy-policy') {
+        return <PrivacyPolicyPage />;
+    }
+
     const [currentView, setCurrentView] = useState('dashboard');
     const [user, setUser] = useState(null);
     const [autoPrompt, setAutoPrompt] = useState(null);

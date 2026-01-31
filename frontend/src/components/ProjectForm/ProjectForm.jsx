@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiZap } from 'react-icons/fi';
+import { FiZap, FiChevronDown } from 'react-icons/fi';
 import styles from './ProjectForm.module.css';
 import CustomSelect from '../CustomSelect/CustomSelect';
 
@@ -19,6 +19,8 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
         aiControl: 'Controlled',
         additionalInstructions: ''
     });
+    const [isDevOpsOpen, setIsDevOpsOpen] = useState(false);
+    const [isDeveloperSettingsOpen, setIsDeveloperSettingsOpen] = useState(false);
 
     const [errors, setErrors] = useState({});
 
@@ -198,152 +200,186 @@ const ProjectForm = ({ onSubmit, isSubmitting }) => {
                 </div>
             </div>
 
+            {/* Developer Options Dropdown */}
+            <div className={styles.fieldSection}>
+                <div
+                    className={styles.advancedToggle}
+                    onClick={() => setIsDeveloperSettingsOpen(!isDeveloperSettingsOpen)}
+                    role="button"
+                    tabIndex={0}
+                >
+                    <span>Developer Options</span>
+                    <FiChevronDown
+                        className={styles.chevron}
+                        style={{ transform: isDeveloperSettingsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    />
+                </div>
+            </div>
 
+            {isDeveloperSettingsOpen && (
+                <div className={styles.advancedContent} style={{ marginTop: 'var(--spacing-md)' }}>
+                    {/* B. Frontend Stack */}
+                    {showFrontend() && (
+                        <div className={styles.fieldSection}>
+                            <div className={styles.fieldLabel}>Frontend Frameworks</div>
+                            <div className={styles.checkboxGroup}>
+                                {FRONTEND_FRAMEWORKS.map(opt => (
+                                    <label key={opt} className={styles.checkboxLabel}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.frontendStack.includes(opt)}
+                                            onChange={() => handleCheckboxChange('frontendStack', opt)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                            <div className={styles.fieldLabel} style={{ marginTop: '10px' }}>Styling</div>
+                            <div className={styles.checkboxGroup}>
+                                {STYLING_OPTIONS.map(opt => (
+                                    <label key={opt} className={styles.checkboxLabel}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.frontendStyling.includes(opt)}
+                                            onChange={() => handleCheckboxChange('frontendStyling', opt)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-            {/* B. Frontend Stack */}
-            {showFrontend() && (
-                <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>Frontend Frameworks</div>
-                    <div className={styles.checkboxGroup}>
-                        {FRONTEND_FRAMEWORKS.map(opt => (
-                            <label key={opt} className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.frontendStack.includes(opt)}
-                                    onChange={() => handleCheckboxChange('frontendStack', opt)}
-                                />
-                                {opt}
-                            </label>
-                        ))}
+                    {/* C. Mobile Stack */}
+                    {showMobile() && (
+                        <div className={styles.fieldSection}>
+                            <div className={styles.fieldLabel}>Mobile Stack</div>
+                            <div className={styles.checkboxGroup}>
+                                {MOBILE_STACK.map(opt => (
+                                    <label key={opt} className={styles.checkboxLabel}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.mobileStack.includes(opt)}
+                                            onChange={() => handleCheckboxChange('mobileStack', opt)}
+                                        />
+                                        {opt}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* D. Backend Stack */}
+                    <div className={styles.fieldSection}>
+                        <div className={styles.fieldLabel}>Backend Stack</div>
+                        <div className={styles.checkboxGroup}>
+                            {BACKEND_STACK.map(opt => (
+                                <label key={opt} className={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.backendStack.includes(opt)}
+                                        onChange={() => handleCheckboxChange('backendStack', opt)}
+                                    />
+                                    {opt}
+                                </label>
+                            ))}
+                        </div>
                     </div>
-                    <div className={styles.fieldLabel} style={{ marginTop: '10px' }}>Styling</div>
-                    <div className={styles.checkboxGroup}>
-                        {STYLING_OPTIONS.map(opt => (
-                            <label key={opt} className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.frontendStyling.includes(opt)}
-                                    onChange={() => handleCheckboxChange('frontendStyling', opt)}
-                                />
-                                {opt}
-                            </label>
-                        ))}
+
+                    {/* E. Database */}
+                    <div className={styles.fieldSection}>
+                        <div className={styles.fieldLabel}>Database</div>
+                        <div className={styles.checkboxGroup}>
+                            {DATABASE_OPTIONS.map(opt => (
+                                <label key={opt} className={styles.checkboxLabel}>
+                                    <input
+                                        type="radio"
+                                        name="database"
+                                        value={opt}
+                                        checked={formData.database === opt}
+                                        onClick={() => {
+                                            if (formData.database === opt) {
+                                                handleRadioChange('database', 'None');
+                                            } else {
+                                                handleRadioChange('database', opt);
+                                            }
+                                        }}
+                                        onChange={() => { }} // specific handler above
+                                    />
+                                    {opt}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* F. Authentication */}
+                    <div className={styles.fieldSection}>
+                        <div className={styles.fieldLabel}>Authentication</div>
+                        <div className={styles.checkboxGroup}>
+                            {AUTH_OPTIONS.map(opt => (
+                                <label key={opt} className={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.auth.includes(opt)}
+                                        onChange={() => handleCheckboxChange('auth', opt)}
+                                    />
+                                    {opt}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* G. API / Communication */}
+                    <div className={styles.fieldSection}>
+                        <div className={styles.fieldLabel}>API / Communication</div>
+                        <div className={styles.checkboxGroup}>
+                            {API_OPTIONS.map(opt => (
+                                <label key={opt} className={styles.checkboxLabel}>
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.api.includes(opt)}
+                                        onChange={() => handleCheckboxChange('api', opt)}
+                                    />
+                                    {opt}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* H. Dev & Quality */}
+                    <div className={styles.fieldSection}>
+                        <div
+                            className={styles.advancedToggle}
+                            onClick={() => setIsDevOpsOpen(!isDevOpsOpen)}
+                            role="button"
+                            tabIndex={0}
+                        >
+                            <span>Dev & Quality (Advanced)</span>
+                            <FiChevronDown
+                                className={styles.chevron}
+                                style={{ transform: isDevOpsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                            />
+                        </div>
+
+                        {isDevOpsOpen && (
+                            <div className={styles.advancedContent}>
+                                <div className={styles.checkboxGroup}>
+                                    {DEVOPS_OPTIONS.map(opt => (
+                                        <label key={opt} className={styles.checkboxLabel}>
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.devOps.includes(opt)}
+                                                onChange={() => handleCheckboxChange('devOps', opt)}
+                                            />
+                                            {opt}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
-
-            {/* C. Mobile Stack */}
-            {showMobile() && (
-                <div className={styles.fieldSection}>
-                    <div className={styles.fieldLabel}>Mobile Stack</div>
-                    <div className={styles.checkboxGroup}>
-                        {MOBILE_STACK.map(opt => (
-                            <label key={opt} className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.mobileStack.includes(opt)}
-                                    onChange={() => handleCheckboxChange('mobileStack', opt)}
-                                />
-                                {opt}
-                            </label>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* D. Backend Stack */}
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>Backend Stack</div>
-                <div className={styles.checkboxGroup}>
-                    {BACKEND_STACK.map(opt => (
-                        <label key={opt} className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={formData.backendStack.includes(opt)}
-                                onChange={() => handleCheckboxChange('backendStack', opt)}
-                            />
-                            {opt}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            {/* E. Database */}
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>Database</div>
-                <div className={styles.checkboxGroup}>
-                    {DATABASE_OPTIONS.map(opt => (
-                        <label key={opt} className={styles.checkboxLabel}>
-                            <input
-                                type="radio"
-                                name="database"
-                                value={opt}
-                                checked={formData.database === opt}
-                                onClick={() => {
-                                    if (formData.database === opt) {
-                                        handleRadioChange('database', 'None');
-                                    } else {
-                                        handleRadioChange('database', opt);
-                                    }
-                                }}
-                                onChange={() => { }} // specific handler above
-                            />
-                            {opt}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            {/* F. Authentication */}
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>Authentication</div>
-                <div className={styles.checkboxGroup}>
-                    {AUTH_OPTIONS.map(opt => (
-                        <label key={opt} className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={formData.auth.includes(opt)}
-                                onChange={() => handleCheckboxChange('auth', opt)}
-                            />
-                            {opt}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            {/* G. API / Communication */}
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>API / Communication</div>
-                <div className={styles.checkboxGroup}>
-                    {API_OPTIONS.map(opt => (
-                        <label key={opt} className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={formData.api.includes(opt)}
-                                onChange={() => handleCheckboxChange('api', opt)}
-                            />
-                            {opt}
-                        </label>
-                    ))}
-                </div>
-            </div>
-
-            {/* H. Dev & Quality */}
-            <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>Dev & Quality (Advanced)</div>
-                <div className={styles.checkboxGroup}>
-                    {DEVOPS_OPTIONS.map(opt => (
-                        <label key={opt} className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={formData.devOps.includes(opt)}
-                                onChange={() => handleCheckboxChange('devOps', opt)}
-                            />
-                            {opt}
-                        </label>
-                    ))}
-                </div>
-            </div>
 
             <div className={styles.buttonSection}>
                 <button type="submit" className={styles.getApiBtn} disabled={isSubmitting} style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? 'not-allowed' : 'pointer' }}>

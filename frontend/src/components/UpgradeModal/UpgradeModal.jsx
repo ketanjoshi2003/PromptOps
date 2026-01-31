@@ -82,25 +82,7 @@ const UpgradeModal = ({ isOpen, onClose, currentUser, onUpgradeSuccess }) => {
                         )}
                     </div>
 
-                    {/* Team Plan */}
-                    <div className={`${styles.planCard} ${styles.planTeam}`}>
-                        <div className={styles.planHeader}>
-                            <h4 className={styles.planTitle}>Team</h4>
-                            <div className={styles.planPrice}>$50<span>/mo</span></div>
-                        </div>
-                        <div className={styles.planFeatures}>
-                            <div className={styles.featureItem}><FiCheck className={styles.featureIcon} /> Unlimited Gens</div>
-                            <div className={styles.featureItem}><FiCheck className={styles.featureIcon} /> Ultra Speed</div>
-                            <div className={styles.featureItem}><FiCheck className={styles.featureIcon} /> 24/7 Support</div>
-                            <div className={styles.featureItem}><FiCheck className={styles.featureIcon} /> SSO Integration</div>
-                        </div>
-                        <button
-                            className={styles.planBtn}
-                            onClick={() => alert("Team plan coming soon!")}
-                        >
-                            Contact Sales
-                        </button>
-                    </div>
+
                 </div>
 
                 <div className={styles.modalActions}>

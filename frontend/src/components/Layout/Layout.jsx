@@ -4,6 +4,7 @@ import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircl
 import { authService } from '../../services/authService';
 import { feedbackService } from '../../services/feedbackService';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
+import PrivacyPolicyModal from '../PrivacyPolicyModal/PrivacyPolicyModal';
 
 import { GoogleLogin } from '@react-oauth/google';
 
@@ -18,6 +19,7 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
     const [authMode, setAuthMode] = useState('login'); // 'login' | 'register' | 'otp'
     const [isLoading, setIsLoading] = useState(false);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+    const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
 
     // Form State
     const [email, setEmail] = useState('');
@@ -494,6 +496,27 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                                     </>
                                 )}
                             </div>
+
+                            <div style={{
+                                marginTop: '1.5rem',
+                                textAlign: 'center',
+                                fontSize: '0.75rem',
+                                color: 'var(--color-text-secondary)',
+                                borderTop: '1px solid var(--color-border)',
+                                paddingTop: '1rem'
+                            }}>
+                                By continuing, you agree to our{' '}
+                                <span
+                                    onClick={() => setShowPrivacyPolicy(true)}
+                                    style={{
+                                        color: 'var(--color-text-primary)',
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline'
+                                    }}
+                                >
+                                    Privacy Policy
+                                </span>
+                            </div>
                         </div>
                     </div>
                 )
@@ -503,6 +526,11 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                 isOpen={isFeedbackOpen}
                 onClose={() => setIsFeedbackOpen(false)}
                 onSubmit={handleFeedbackSubmit}
+            />
+
+            <PrivacyPolicyModal
+                isOpen={showPrivacyPolicy}
+                onClose={() => setShowPrivacyPolicy(false)}
             />
         </div >
     );
