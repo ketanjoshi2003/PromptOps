@@ -19,9 +19,7 @@
     transition: all 0.2s;
 }
 
-:global([data-theme='light']) .selectHeader {
-    border: none;
-}
+
 
 .selectHeader:hover {
     color: #ff0000;
