@@ -106,7 +106,7 @@
 }
 
 .projectItem {
-    background-color: #080808;
+    background-color: #101010;
     border: 1px solid transparent;
     border-radius: var(--radius-lg);
     overflow: hidden;
