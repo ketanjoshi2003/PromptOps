@@ -846,11 +846,12 @@
 }
 
 .popupItem:hover {
-    background-color: var(--color-bg-tertiary);
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
 }
 
 .popupItemSelected {
-    background-color: var(--color-bg-tertiary);
+    background-color: rgba(255, 0, 0, 0.15);
     font-weight: 500;
-    color: var(--color-text-primary);
+    color: #ff0000;
 }
