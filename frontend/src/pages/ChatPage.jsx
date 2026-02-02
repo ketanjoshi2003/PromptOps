@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ReactMarkdown from 'react-markdown';
-import { FiMessageSquare, FiSettings, FiRefreshCw, FiArrowUp, FiUser, FiCopy, FiCheck, FiTrash2 } from 'react-icons/fi';
+import { FiMessageSquare, FiSettings, FiRefreshCw, FiArrowUp, FiUser, FiCopy, FiCheck, FiTrash2, FiCpu } from 'react-icons/fi';
 import styles from './ChatPage.module.css';
 import { authService } from '../services/authService';
 import { chatService } from '../services/chatService';
@@ -153,6 +153,11 @@ const ChatPage = ({ onUsageUpdate }) => {
     const [tempSystemPrompt, setTempSystemPrompt] = useState('');
     const [copiedIndex, setCopiedIndex] = useState(null);
 
+    // Model Selection State
+    const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
+    const [selectedModel, setSelectedModel] = useState('llama-3.1-8b-instant');
+    const [selectedModelName, setSelectedModelName] = useState('Fast');
+
     const handleCopy = (text, index) => {
         navigator.clipboard.writeText(text);
         setCopiedIndex(index);
@@ -216,7 +221,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ messages: history }),
+                body: JSON.stringify({ messages: history, model: selectedModel }),
                 signal: controller.signal
             });
 
@@ -432,6 +437,48 @@ const ChatPage = ({ onUsageUpdate }) => {
                         <button className={styles.inputActionBtn} onClick={openSettings} title="Role">
                             <FiSettings /> Role
                         </button>
+                        <div style={{ position: 'relative' }}>
+                            <button className={styles.inputActionBtn} onClick={() => setIsModelSelectorOpen(true)} title="Model">
+                                <FiCpu /> {selectedModelName}
+                            </button>
+                            {isModelSelectorOpen && (
+                                <>
+                                    <div
+                                        style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+                                        onClick={() => setIsModelSelectorOpen(false)}
+                                    />
+                                    <div
+                                        className={styles.popupMenu}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '100%',
+                                            left: 0,
+                                            marginBottom: '8px',
+                                            zIndex: 100
+                                        }}
+                                        onClick={e => e.stopPropagation()}
+                                    >
+                                        {[
+                                            { id: 'llama-3.1-8b-instant', name: 'Fast' },
+                                            { id: 'llama-3.3-70b-versatile', name: 'Smart' }
+                                        ].map(model => (
+                                            <div
+                                                key={model.id}
+                                                className={`${styles.popupItem} ${selectedModel === model.id ? styles.popupItemSelected : ''}`}
+                                                onClick={() => {
+                                                    setSelectedModel(model.id);
+                                                    setSelectedModelName(model.name);
+                                                    setIsModelSelectorOpen(false);
+                                                }}
+                                            >
+                                                <span>{model.name}</span>
+                                                {selectedModel === model.id && <FiCheck size={14} />}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+                        </div>
                         <div style={{ flex: 1 }}></div>
                         <button className={styles.sendButton} onClick={() => handleSend()} disabled={loading || !input.trim()}>
                             <FiArrowUp size={18} />
@@ -440,7 +487,7 @@ const ChatPage = ({ onUsageUpdate }) => {
                 </div>
             </div>
 
-            {/* SETTINGS MODAL */}
+            {/* SETTINGS (ROLE) MODAL */}
             {
                 isSettingsOpen && (
                     <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
@@ -465,6 +512,8 @@ const ChatPage = ({ onUsageUpdate }) => {
                     </div>
                 )
             }
+
+
 
             {/* HISTORY MODAL */}
             {isHistoryOpen && (
