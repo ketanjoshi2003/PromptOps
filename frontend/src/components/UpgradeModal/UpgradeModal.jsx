@@ -61,7 +61,7 @@ const UpgradeModal = ({ isOpen, onClose, currentUser, onUpgradeSuccess }) => {
                     <div className={`${styles.planCard} ${styles.planDev} ${currentPlan === 'dev' ? styles.currentPlan : ''}`}>
                         <div className={styles.planHeader}>
                             <h4 className={styles.planTitle}>Dev (Pro)</h4>
-                            <div className={styles.planPrice}>$10<span>/mo</span></div>
+                            <div className={styles.planPrice}>$5<span>/mo</span></div>
                         </div>
                         <div className={styles.planFeatures}>
                             <div className={styles.featureItem}><FiCheck className={styles.featureIcon} /> 50 Gens/cycle</div>
