@@ -134,8 +134,12 @@
 }
 
 .projectItem.selected {
-    border-color: transparent;
-    background-color: rgba(255, 255, 255, 0.03);
+    border-color: var(--color-selection-border);
+}
+
+:global([data-theme='light']) .projectItem.selected {
+    border-color: #e4e4e7;
+    background-color: #ffffff;
 }
 
 /* Checkbox specific positioning for cards */
@@ -152,6 +156,11 @@
     color: var(--color-selection-border);
     font-size: 1.2rem;
     cursor: pointer;
+}
+
+:global([data-theme='light']) .checkbox {
+    background: rgba(255, 0, 0, 0.15);
+    color: #ff0000;
 }
 
 .projectHeader {
