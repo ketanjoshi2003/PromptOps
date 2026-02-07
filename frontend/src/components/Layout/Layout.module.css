@@ -223,7 +223,7 @@
     left: 0;
     width: 100%;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     padding: 4px;
     margin-bottom: 8px;
@@ -234,7 +234,7 @@
 }
 
 :global([data-theme='light']) .authMenu {
-    border-color: #c0c0c0;
+    border-color: var(--dynamic-border);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -427,13 +427,13 @@
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 400px;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     /* animation: slideUp 0.3s ease-out; Removed for instant feel */
 }
 
 :global([data-theme='light']) .loginModal {
-    border-color: #c0c0c0;
+    border-color: var(--dynamic-border);
 }
 
 .modalTitle {
@@ -459,7 +459,7 @@
     width: 100%;
     padding: 12px;
     background-color: var(--color-bg-primary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: 1rem;

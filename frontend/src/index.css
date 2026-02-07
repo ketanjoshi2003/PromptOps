@@ -16,6 +16,7 @@
   --color-selection-border: #ff0000;
 
   --color-border: #2e2e2e;
+  --dynamic-border: transparent;
   --color-success: #34d399;
   --color-error: #ff0000;
   /* Use orange for errors too for consistency */
@@ -53,6 +54,10 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-glow: 0 0 15px var(--color-accent-glow);
+}
+
+[data-borders='true'] {
+  --dynamic-border: var(--color-border) !important;
 }
 
 @media (max-width: 768px) {

@@ -19,7 +19,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid var(--dynamic-border);
 }
 
 .chatHeader h1 {
@@ -317,7 +317,7 @@
     margin-bottom: 1rem;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     background-color: var(--color-bg-tertiary);
 }
 
@@ -327,7 +327,7 @@
     align-items: center;
     padding: 4px 12px;
     background-color: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--dynamic-border);
     font-size: 0.8rem;
     color: var(--color-text-muted);
 }
@@ -407,7 +407,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--color-bg-secondary);
-    border: none;
+    border: 1px solid var(--dynamic-border);
     border-radius: 16px;
     padding: var(--spacing-sm);
     transition: all 0.2s ease;
@@ -529,7 +529,7 @@
 }
 
 :global([data-theme='light']) .modalContent {
-    border: 1px solid #c0c0c0;
+    border: 1px solid var(--dynamic-border);
 }
 
 .modalTitle {
@@ -618,7 +618,7 @@
 /* Copy Button */
 .copyButton {
     background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     color: var(--color-text-secondary);
     padding: 6px;
     border-radius: 6px;
@@ -740,7 +740,7 @@
 .historyItem {
     padding: 12px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: 8px;
     cursor: pointer;
     display: flex;

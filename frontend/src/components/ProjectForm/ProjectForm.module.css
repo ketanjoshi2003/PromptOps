@@ -93,7 +93,7 @@
     width: 100%;
     min-height: 100px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     padding: var(--spacing-md);
@@ -106,7 +106,7 @@
 }
 
 :global([data-theme='light']) .textarea {
-    border-color: #c0c0c0;
+    border-color: var(--dynamic-border);
 }
 
 
@@ -173,7 +173,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -185,7 +185,7 @@
 
 :global([data-theme='light']) .select,
 :global([data-theme='light']) .input {
-    border-color: #c0c0c0;
+    border-color: var(--dynamic-border);
 }
 
 
@@ -194,7 +194,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -207,7 +207,7 @@
 }
 
 :global([data-theme='light']) .advancedToggle {
-    border-color: #c0c0c0;
+    border-color: var(--dynamic-border);
 }
 
 
