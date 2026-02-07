@@ -105,6 +105,10 @@
     box-sizing: border-box;
 }
 
+:global([data-theme='light']) .textarea {
+    border-color: #c0c0c0;
+}
+
 
 
 
@@ -164,6 +168,11 @@
     transition: all 0.2s;
 }
 
+:global([data-theme='light']) .select,
+:global([data-theme='light']) .input {
+    border-color: #c0c0c0;
+}
+
 
 
 .advancedToggle {
@@ -180,6 +189,10 @@
     align-items: center;
     box-sizing: border-box;
     transition: all 0.2s;
+}
+
+:global([data-theme='light']) .advancedToggle {
+    border-color: #c0c0c0;
 }
 
 
@@ -246,6 +259,10 @@
     cursor: pointer;
     background-color: var(--color-bg-tertiary);
     transition: all 0.2s;
+}
+
+:global([data-theme='light']) .checkboxLabel input {
+    border-color: #c0c0c0;
 }
 
 .checkboxLabel input:checked {

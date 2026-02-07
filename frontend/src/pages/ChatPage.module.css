@@ -528,6 +528,10 @@
     will-change: transform, opacity;
 }
 
+:global([data-theme='light']) .modalContent {
+    border: 1px solid #c0c0c0;
+}
+
 .modalTitle {
     font-size: 1.1rem;
     font-weight: 600;
@@ -831,6 +835,11 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     min-width: 140px;
     animation: fadeIn 0.1s ease-out;
+}
+
+:global([data-theme='light']) .popupMenu {
+    border: 1px solid #c0c0c0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .popupItem {

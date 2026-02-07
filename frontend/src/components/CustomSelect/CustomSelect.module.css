@@ -57,6 +57,11 @@
     padding: 4px;
 }
 
+:global([data-theme='light']) .optionsList {
+    border: 1px solid #c0c0c0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 @keyframes dropdownSlide {
     from {
         opacity: 0;
