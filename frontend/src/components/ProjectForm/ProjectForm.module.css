@@ -139,6 +139,21 @@
     font-weight: 700;
     color: var(--color-text-primary);
     margin-bottom: 4px;
+    position: relative;
+    width: fit-content;
+}
+
+.addIcon {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 2px;
+}
+
+.addIcon:hover {
+    color: #ff0000;
+    transform: scale(1.1);
 }
 
 .infoIcon {
@@ -257,6 +272,29 @@
     cursor: pointer;
 }
 
+.checkboxWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.removeIcon {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.removeIcon:hover {
+    color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+    opacity: 1;
+}
+
 .checkboxLabel input {
     appearance: none;
     width: 14px;
@@ -301,4 +339,88 @@
     color: var(--color-text-secondary);
     font-size: 0.8rem;
     margin-top: var(--spacing-lg);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    display: flex;
+    z-index: 2000;
+}
+
+.minimalModalContent {
+    background-color: #151515;
+    width: 280px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    animation: slideRight 0.15s ease-out;
+    position: absolute;
+    margin-left: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    z-index: 2002;
+    height: 38px;
+}
+
+:global([data-theme='light']) .minimalModalContent {
+    background-color: #ffffff;
+    border-color: #d1d1d1;
+}
+
+.minimalModalTextarea {
+    flex: 1;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    outline: none;
+    resize: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.minimalAddBtn {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+    border: none;
+    padding: 6px 14px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.minimalAddBtn:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
