@@ -197,9 +197,18 @@
 
 
 
-.advancedToggle:hover {
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .advancedToggle:hover {
+        color: #ff0000;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}
+
+/* Touch feedback for mobile */
+.advancedToggle:active {
     color: #ff0000;
-    background-color: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.15);
 }
 
 .chevron {

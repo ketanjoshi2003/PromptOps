@@ -21,9 +21,18 @@
 
 
 
-.selectHeader:hover {
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .selectHeader:hover {
+        color: #ff0000;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}
+
+/* Touch feedback: show only when active/pressed */
+.selectHeader:active {
     color: #ff0000;
-    background-color: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.15);
 }
 
 
@@ -82,13 +91,23 @@
     transition: background-color 0.2s, color 0.2s;
     border-radius: var(--radius-sm);
     margin-bottom: 2px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .option:last-child {
     margin-bottom: 0;
 }
 
-.option:hover {
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .option:hover {
+        background-color: rgba(255, 0, 0, 0.1);
+        color: #ff0000;
+    }
+}
+
+/* Active state for touch devices - show feedback when touched */
+.option:active {
     background-color: rgba(255, 0, 0, 0.1);
     color: #ff0000;
 }
