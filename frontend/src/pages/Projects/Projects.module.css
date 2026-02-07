@@ -134,11 +134,11 @@
 }
 
 .projectItem.selected {
-    border-color: var(--color-selection-border);
+    border-color: transparent;
 }
 
 :global([data-theme='light']) .projectItem.selected {
-    border-color: #e4e4e7;
+    border-color: transparent;
     background-color: #ffffff;
 }
 
