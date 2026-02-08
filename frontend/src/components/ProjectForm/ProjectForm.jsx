@@ -15,9 +15,9 @@ const InlineAddPopup = ({ category, isOpen, activeCategory, customValue, setCust
             <div
                 className={styles.minimalModalContent}
                 onClick={e => e.stopPropagation()}
-                style={{ zIndex: 2001 }}
             >
-                <textarea
+                <input
+                    type="text"
                     className={styles.minimalModalTextarea}
                     value={customValue}
                     onChange={e => setCustomValue(e.target.value)}

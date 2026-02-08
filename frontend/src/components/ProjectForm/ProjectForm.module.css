@@ -361,14 +361,27 @@
     align-items: center;
     animation: slideRight 0.15s ease-out;
     position: absolute;
-    left: calc(100% + 12px);
-    top: -6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    left: calc(100% + 10px);
+    top: -2px;
+    transform: none;
+    margin-left: 0;
+    width: 260px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
     z-index: 2002;
-    height: 38px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 600px) {
+    .minimalModalContent {
+        left: 0;
+        top: 100%;
+        margin-top: 5px;
+        position: absolute;
+        transform: none;
+        width: 260px;
+    }
 }
 
 :global([data-theme='light']) .minimalModalContent {
@@ -382,25 +395,23 @@
     background-color: transparent;
     border: none;
     color: var(--color-text-primary);
-    padding: 0 12px;
-    font-size: 0.85rem;
-    line-height: 36px;
+    padding: 0 10px;
+    font-size: 0.75rem;
     outline: none;
-    resize: none;
     box-sizing: border-box;
     font-family: inherit;
-    overflow: hidden;
-    white-space: nowrap;
+    width: 100%;
+    /* Ensure full width availability */
 }
 
 .minimalAddBtn {
     background-color: rgba(255, 0, 0, 0.1);
     color: #ff0000;
     border: none;
-    padding: 6px 14px;
-    margin-right: 8px;
+    padding: 4px 10px;
+    margin-right: 4px;
     cursor: pointer;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     transition: all 0.2s;
@@ -413,40 +424,14 @@
     background-color: rgba(255, 0, 0, 0.2);
 }
 
-@media (max-width: 600px) {
-    .minimalModalContent {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        margin-left: 0;
-        width: 90%;
-        max-width: 320px;
-        height: 48px;
-        animation: slideUp 0.15s ease-out;
-    }
-
-    .minimalModalTextarea {
-        padding: 0 16px;
-        font-size: 0.9rem;
-        line-height: 48px;
-        white-space: normal;
-        overflow: hidden;
-    }
-
-    .modalOverlay {
-        background-color: rgba(0, 0, 0, 0.4);
-    }
-}
-
 @keyframes slideUp {
     from {
         opacity: 0;
-        transform: translate(-50%, calc(-50% + 10px));
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translate(-50%, -50%);
+        transform: translateY(0);
     }
 }
