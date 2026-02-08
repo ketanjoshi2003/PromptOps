@@ -455,7 +455,7 @@
 
 .sendButton {
     background-color: #ffffff;
-    color: #090909;
+    color: #121212;
     border: none;
     width: 32px;
     height: 32px;
@@ -589,7 +589,7 @@
 .saveBtn {
     background-color: #ffffff;
     border: none;
-    color: #090909;
+    color: #121212;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
