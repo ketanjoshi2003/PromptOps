@@ -26,8 +26,6 @@ function App() {
     const [isAppLoading, setIsAppLoading] = useState(true);
     // Initialize theme from localStorage or default to 'dark'
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-    // Initialize borders from localStorage or default to 'false' (since user recently wanted them removed)
-    const [showBorders, setShowBorders] = useState(() => localStorage.getItem('borders') === 'true');
 
     const fetchUser = async () => {
         const currentUser = authService.getCurrentUser();
@@ -56,12 +54,6 @@ function App() {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
-
-    // Borders Effect
-    useEffect(() => {
-        document.documentElement.setAttribute('data-borders', showBorders);
-        localStorage.setItem('borders', showBorders);
-    }, [showBorders]);
 
     const handleUserRefresh = async () => {
         const token = localStorage.getItem('token');
@@ -124,8 +116,6 @@ function App() {
                         onUserRefresh={handleUserRefresh}
                         theme={theme}
                         setTheme={setTheme}
-                        showBorders={showBorders}
-                        setShowBorders={setShowBorders}
                         onOpenAuth={() => setIsAuthOpen(true)}
                         currentUser={user}
                         onOpenUpgrade={() => setIsUpgradeModalOpen(true)}

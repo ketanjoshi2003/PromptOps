@@ -192,7 +192,9 @@
     /* Hide scrollbars */
 }
 
-
+:root .codeEditor {
+    border-color: transparent;
+}
 
 .messageContent:hover {
     cursor: default;

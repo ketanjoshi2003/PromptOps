@@ -4,7 +4,7 @@ import { FiMoon, FiSun, FiCloud, FiCheck } from 'react-icons/fi';
 import { authService } from '../services/authService';
 import PrivacyPolicyModal from '../components/PrivacyPolicyModal/PrivacyPolicyModal';
 
-const SettingsPage = ({ theme, setTheme, showBorders, setShowBorders, onUserRefresh, onOpenAuth, currentUser, onOpenUpgrade }) => {
+const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser, onOpenUpgrade }) => {
     const [showPlanModal, setShowPlanModal] = useState(false);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -88,30 +88,6 @@ const SettingsPage = ({ theme, setTheme, showBorders, setShowBorders, onUserRefr
                             onClick={() => setTheme('dark')}
                         >
                             <FiMoon /> Dark
-                        </button>
-                    </div>
-                </div>
-
-                <div className={styles.settingItem}>
-                    <div className={styles.settingInfo}>
-                        <span className={styles.settingName}>Component Borders</span>
-                        <span className={styles.settingDescription}>
-                            Enable borders for forms, cards, and inputs
-                        </span>
-                    </div>
-
-                    <div className={styles.toggleContainer}>
-                        <button
-                            className={`${styles.themeBtn} ${showBorders ? styles.active : ''}`}
-                            onClick={() => setShowBorders(true)}
-                        >
-                            Enable
-                        </button>
-                        <button
-                            className={`${styles.themeBtn} ${!showBorders ? styles.active : ''}`}
-                            onClick={() => setShowBorders(false)}
-                        >
-                            Disable
                         </button>
                     </div>
                 </div>
@@ -325,7 +301,7 @@ const SettingsPage = ({ theme, setTheme, showBorders, setShowBorders, onUserRefr
 
 
 
-        </div >
+        </div>
     );
 };
 
