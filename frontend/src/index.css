@@ -15,7 +15,7 @@
 
   --color-selection-border: #ff0000;
 
-  --color-border: #2e2e2e;
+  --color-border: rgba(255, 255, 255, 0.2);
   --dynamic-border: var(--color-border);
   --color-success: #34d399;
   --color-error: #ff0000;
@@ -136,4 +136,9 @@ input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--color-text-primary) !important;
   caret-color: var(--color-text-primary) !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+::selection {
+  background-color: #ffffff;
+  color: #000000;
 }
