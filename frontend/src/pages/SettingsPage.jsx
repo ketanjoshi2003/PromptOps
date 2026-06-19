@@ -270,7 +270,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
 
                                 <h4>9. Contact Us</h4>
                                 <p>If you have any questions about this Privacy Policy, you can contact us at:</p>
-                                <p>📧 <a href="mailto:ketanjoshi2003@gmail.com" style={{ color: 'var(--color-accent-primary)' }}>ketanjoshi2003@gmail.com</a></p>
+                                <p>📧 <a href="mailto:support@promptops.ai" style={{ color: 'var(--color-accent-primary)' }}>support@promptops.ai</a></p>
                             </div>
 
                             <div className={styles.modalActions} style={{ marginTop: '2rem' }}>

@@ -88,7 +88,7 @@ const PrivacyPolicyPage = () => {
 
                 <h2 style={{ marginTop: '2rem' }}>9. Contact Us</h2>
                 <p>If you have any questions about this Privacy Policy, you can contact us at:</p>
-                <p>📧 <a href="mailto:ketanjoshi2003@gmail.com">ketanjoshi2003@gmail.com</a></p>
+                <p>📧 <a href="mailto:support@promptops.ai">support@promptops.ai</a></p>
             </div>
         </div>
     );
