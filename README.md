@@ -179,5 +179,6 @@ Contributions are what make the open-source community such an amazing place to l
 
 This project is open-source software licensed under the [MIT License](LICENSE).
 
----
-*Developed by **Ketan Joshi**.*
+## 👤 Author
+
+* **Ketan Joshi** - *Initial Work & Architecture* - [@ketanjoshi2003](https://github.com/ketanjoshi2003)
