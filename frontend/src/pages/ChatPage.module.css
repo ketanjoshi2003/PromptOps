@@ -19,7 +19,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid var(--dynamic-border);
 }
 
 .chatHeader h1 {
@@ -317,7 +317,7 @@
     margin-bottom: 1rem;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     background-color: var(--color-bg-tertiary);
 }
 
@@ -327,7 +327,7 @@
     align-items: center;
     padding: 4px 12px;
     background-color: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--dynamic-border);
     font-size: 0.8rem;
     color: var(--color-text-muted);
 }
@@ -407,7 +407,7 @@
     display: flex;
     flex-direction: column;
     background-color: var(--color-bg-secondary);
-    border: none;
+    border: 1px solid var(--dynamic-border);
     border-radius: 16px;
     padding: var(--spacing-sm);
     transition: all 0.2s ease;
@@ -450,11 +450,12 @@
     align-items: center;
     padding: 0 8px 4px 8px;
     margin-top: 4px;
+    gap: 8px;
 }
 
 .sendButton {
     background-color: #ffffff;
-    color: #090909;
+    color: #121212;
     border: none;
     width: 32px;
     height: 32px;
@@ -527,6 +528,10 @@
     will-change: transform, opacity;
 }
 
+:global([data-theme='light']) .modalContent {
+    border: 1px solid var(--dynamic-border);
+}
+
 .modalTitle {
     font-size: 1.1rem;
     font-weight: 600;
@@ -584,7 +589,7 @@
 .saveBtn {
     background-color: #ffffff;
     border: none;
-    color: #090909;
+    color: #121212;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -613,7 +618,7 @@
 /* Copy Button */
 .copyButton {
     background: var(--color-bg-tertiary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     color: var(--color-text-secondary);
     padding: 6px;
     border-radius: 6px;
@@ -735,7 +740,7 @@
 .historyItem {
     padding: 12px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: 8px;
     cursor: pointer;
     display: flex;
@@ -812,7 +817,50 @@
     margin-left: 8px;
 }
 
+
 .deleteChatBtn:hover {
     background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+}
+
+/* Small Popup Menu */
+.popupMenu {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 140px;
+    animation: fadeIn 0.1s ease-out;
+}
+
+:global([data-theme='light']) .popupMenu {
+    border: 1px solid #c0c0c0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.popupItem {
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--color-text-primary);
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popupItem:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+}
+
+.popupItemSelected {
+    background-color: rgba(255, 0, 0, 0.15);
+    font-weight: 500;
     color: #ff0000;
 }

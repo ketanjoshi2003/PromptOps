@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Layout.module.css';
-import { FiHome, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircle, FiMail } from 'react-icons/fi';
+import { FiPackage, FiMessageSquare, FiFolder, FiSettings, FiLayers, FiMessageCircle, FiMail } from 'react-icons/fi';
 import { authService } from '../../services/authService';
 import { feedbackService } from '../../services/feedbackService';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
@@ -176,8 +176,8 @@ const Layout = ({ children, onPromptSelect, currentView, onNavigate, externalUse
                             if (window.innerWidth <= 768) setIsSidebarOpen(false);
                         }}
                     >
-                        <FiHome />
-                        Home
+                        <FiPackage />
+                        MVP
                     </button>
                     <button
                         className={`${styles.navItem} ${currentView === 'chain' ? styles.navItemActive : ''}`}

@@ -18,6 +18,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
+    model: Optional[str] = None
 
 @router.post("/message")
 async def chat_endpoint(
@@ -34,7 +35,7 @@ async def chat_endpoint(
             )
         # Convert Pydantic models to dicts
         msgs = [{"role": m.role, "content": m.content} for m in request.messages]
-        response = await llm_service.chat(msgs)
+        response = await llm_service.chat(msgs, model_id=request.model)
         # Decrement credit count
         current_user.credits -= 1
         await db.commit()

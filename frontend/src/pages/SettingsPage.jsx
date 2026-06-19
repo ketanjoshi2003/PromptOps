@@ -166,10 +166,9 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
                 textAlign: 'center',
                 marginTop: '1.5rem',
                 paddingBottom: '2rem',
-                color: 'var(--color-text-muted)',
+                color: theme === 'light' ? '#000000' : '#ffffff',
                 fontSize: '0.85rem',
-                fontWeight: 500,
-                opacity: 0.7
+                fontWeight: 500
             }}>
                 Created By Ketan Joshi
             </div>
@@ -301,7 +300,7 @@ const SettingsPage = ({ theme, setTheme, onUserRefresh, onOpenAuth, currentUser,
 
 
 
-        </div >
+        </div>
     );
 };
 

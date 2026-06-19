@@ -79,7 +79,7 @@
 
 
 .helperText {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     font-size: 0.75rem;
     margin-bottom: 4px;
 }
@@ -93,7 +93,7 @@
     width: 100%;
     min-height: 100px;
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     padding: var(--spacing-md);
@@ -103,6 +103,10 @@
     resize: none;
     transition: all 0.2s;
     box-sizing: border-box;
+}
+
+:global([data-theme='light']) .textarea {
+    border-color: var(--dynamic-border);
 }
 
 
@@ -135,18 +139,33 @@
     font-weight: 700;
     color: var(--color-text-primary);
     margin-bottom: 4px;
+    position: relative;
+    width: fit-content;
+}
+
+.addIcon {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 2px;
+}
+
+.addIcon:hover {
+    color: #ff0000;
+    transform: scale(1.1);
 }
 
 .infoIcon {
     width: 14px;
     height: 14px;
-    border: 1px solid var(--color-text-muted);
+    border: 1px solid var(--color-text-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 10px;
-    color: var(--color-text-muted);
+    color: var(--color-text-primary);
 }
 
 .select,
@@ -154,7 +173,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -164,13 +183,18 @@
     transition: all 0.2s;
 }
 
+:global([data-theme='light']) .select,
+:global([data-theme='light']) .input {
+    border-color: var(--dynamic-border);
+}
+
 
 
 .advancedToggle {
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -182,17 +206,30 @@
     transition: all 0.2s;
 }
 
+:global([data-theme='light']) .advancedToggle {
+    border-color: var(--dynamic-border);
+}
 
 
-.advancedToggle:hover {
+
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .advancedToggle:hover {
+        color: #ff0000;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}
+
+/* Touch feedback for mobile */
+.advancedToggle:active {
     color: #ff0000;
-    background-color: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.15);
 }
 
 .chevron {
     transition: transform 0.2s;
     font-size: 0.8em;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
 }
 
 .chevron.open {
@@ -231,8 +268,31 @@
     align-items: center;
     gap: 8px;
     font-size: 0.8rem;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     cursor: pointer;
+}
+
+.checkboxWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.removeIcon {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.removeIcon:hover {
+    color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+    opacity: 1;
 }
 
 .checkboxLabel input {
@@ -248,6 +308,10 @@
     transition: all 0.2s;
 }
 
+:global([data-theme='light']) .checkboxLabel input {
+    border-color: #c0c0c0;
+}
+
 .checkboxLabel input:checked {
     background-color: #ffffff;
     border-color: #ffffff;
@@ -259,7 +323,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #090909;
+    color: #121212;
     font-size: 10px;
     font-weight: 900;
 }
@@ -272,7 +336,102 @@
 
 .validationWarning {
     text-align: center;
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     font-size: 0.8rem;
     margin-top: var(--spacing-lg);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent;
+    display: flex;
+    z-index: 2000;
+}
+
+.minimalModalContent {
+    background-color: #18181b;
+    width: 280px;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    animation: slideRight 0.15s ease-out;
+    position: absolute;
+    left: calc(100% + 10px);
+    top: -2px;
+    transform: none;
+    margin-left: 0;
+    width: 260px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--color-border);
+    z-index: 2002;
+    height: 34px;
+    border-radius: var(--radius-sm);
+}
+
+@media (max-width: 600px) {
+    .minimalModalContent {
+        left: 0;
+        top: 100%;
+        margin-top: 5px;
+        position: absolute;
+        transform: none;
+        width: 260px;
+    }
+}
+
+:global([data-theme='light']) .minimalModalContent {
+    background-color: #ffffff;
+    border-color: #d1d1d1;
+}
+
+.minimalModalTextarea {
+    flex: 1;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    padding: 0 10px;
+    font-size: 0.75rem;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    width: 100%;
+    /* Ensure full width availability */
+}
+
+.minimalAddBtn {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+    border: none;
+    padding: 4px 10px;
+    margin-right: 4px;
+    cursor: pointer;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.minimalAddBtn:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

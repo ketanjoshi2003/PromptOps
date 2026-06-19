@@ -7,7 +7,7 @@
     width: 100%;
     padding: 10px var(--spacing-md);
     background-color: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-sm);
@@ -21,9 +21,18 @@
 
 
 
-.selectHeader:hover {
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .selectHeader:hover {
+        color: #ff0000;
+        background-color: rgba(255, 0, 0, 0.1);
+    }
+}
+
+/* Touch feedback: show only when active/pressed */
+.selectHeader:active {
     color: #ff0000;
-    background-color: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.15);
 }
 
 
@@ -45,16 +54,21 @@
     width: 100%;
     margin-top: 4px;
     background-color: var(--color-bg-secondary);
-    border: none;
+    border: 1px solid var(--dynamic-border);
     border-radius: var(--radius-md);
-    box-shadow: 0 4px 12px var(--shadow-sm);
-    /* Use theme shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     overflow: hidden;
     max-height: 200px;
     overflow-y: auto;
     animation: dropdownSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     transform-origin: top center;
+    padding: 4px;
+}
+
+:global([data-theme='light']) .optionsList {
+    border: 1px solid var(--dynamic-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes dropdownSlide {
@@ -70,15 +84,36 @@
 }
 
 .option {
-    padding: 10px var(--spacing-md);
+    padding: 8px var(--spacing-md);
     cursor: pointer;
     font-size: var(--font-size-sm);
     color: var(--color-text-primary);
     transition: background-color 0.2s, color 0.2s;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.option:hover,
-.option.selected {
+.option:last-child {
+    margin-bottom: 0;
+}
+
+/* Only apply hover on devices that support hover (mouse/trackpad) */
+@media (hover: hover) and (pointer: fine) {
+    .option:hover {
+        background-color: rgba(255, 0, 0, 0.1);
+        color: #ff0000;
+    }
+}
+
+/* Active state for touch devices - show feedback when touched */
+.option:active {
     background-color: rgba(255, 0, 0, 0.1);
     color: #ff0000;
+}
+
+.option.selected {
+    background-color: rgba(255, 0, 0, 0.15);
+    color: #ff0000;
+    font-weight: 500;
 }

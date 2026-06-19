@@ -144,7 +144,7 @@ class LLMService:
         print("All providers failed for enhance_prompt.")
         return f"Error reporting: All providers failed. Details: {' | '.join(errors)}"
 
-    async def chat(self, messages: List[Dict[str, str]]) -> str:
+    async def chat(self, messages: List[Dict[str, str]], model_id: Optional[str] = None) -> str:
         """
         Handles a general chat conversation with failover (Async).
         """
@@ -157,7 +157,7 @@ class LLMService:
         for provider in providers:
             try:
                 print(f"Attempting chat with {provider}...")
-                return await self._chat_with_provider(provider, messages)
+                return await self._chat_with_provider(provider, messages, model_id=model_id)
             except Exception as e:
                 print(f"Error with {provider}: {e}")
                 errors.append(f"{provider}: {self._sanitize_error(e)}")

@@ -1,7 +1,34 @@
 import React, { useState } from 'react';
-import { FiZap, FiChevronDown } from 'react-icons/fi';
+import { FiZap, FiChevronDown, FiPlus, FiX } from 'react-icons/fi';
 import styles from './ProjectForm.module.css';
 import CustomSelect from '../CustomSelect/CustomSelect';
+
+const InlineAddPopup = ({ category, isOpen, activeCategory, customValue, setCustomValue, onAdd, onClose }) => {
+    if (!isOpen || activeCategory !== category) return null;
+
+    return (
+        <>
+            {/* Invisible fixed overlay to catch clicks outside */}
+            <div className={styles.modalOverlay} onClick={onClose} />
+
+            {/* The actual popup box relative to the header */}
+            <div
+                className={styles.minimalModalContent}
+                onClick={e => e.stopPropagation()}
+            >
+                <input
+                    type="text"
+                    className={styles.minimalModalTextarea}
+                    value={customValue}
+                    onChange={e => setCustomValue(e.target.value)}
+                    placeholder="Add custom..."
+                    autoFocus
+                />
+                <button className={styles.minimalAddBtn} onClick={onAdd}>SAVE</button>
+            </div>
+        </>
+    );
+};
 
 const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) => {
     const [formData, setFormData] = useState({
@@ -19,67 +46,136 @@ const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) =
         aiControl: 'Controlled',
         additionalInstructions: ''
     });
+
+    // Custom Options State
+    const [customOptions, setCustomOptions] = useState({
+        frontendStack: [],
+        frontendStyling: [],
+        mobileStack: [],
+        backendStack: [],
+        database: [],
+        auth: [],
+        api: [],
+        devOps: [],
+        appType: []
+    });
+
+    // Modal State
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [activeCategory, setActiveCategory] = useState(null);
+    const [customValue, setCustomValue] = useState('');
+
     const [isDevOpsOpen, setIsDevOpsOpen] = useState(false);
     const [isDeveloperSettingsOpen, setIsDeveloperSettingsOpen] = useState(false);
 
     const [errors, setErrors] = useState({});
 
     // 1️⃣ Canonical Tech Stack Categories
-
-    // A. Application Type
     const APP_TYPES = [
         'Web App', 'Mobile App', 'Full-Stack App',
         'Backend API', 'SaaS Platform', 'Admin Dashboard',
-        'Landing Page', 'CLI Tool', 'Microservice', 'AI-powered App'
+        'Landing Page', 'CLI Tool', 'Microservice', 'AI-powered App',
+        ...customOptions.appType
     ];
 
-    // B. Frontend Stack (Only if app type involves UI)
     const FRONTEND_FRAMEWORKS = [
         'React', 'Next.js', 'Vue', 'Nuxt',
-        'Angular', 'Svelte / SvelteKit', 'Flutter (web/mobile)', 'None'
+        'Angular', 'Svelte / SvelteKit', 'Flutter (web/mobile)', 'None',
+        ...customOptions.frontendStack
     ];
     const STYLING_OPTIONS = [
         'CSS', 'Tailwind CSS', 'Material UI',
-        'Ant Design', 'Bootstrap', 'Chakra UI'
+        'Ant Design', 'Bootstrap', 'Chakra UI',
+        ...customOptions.frontendStyling
     ];
-
-    // C. Mobile Stack (Only if Mobile App is selected)
     const MOBILE_STACK = [
         'React Native', 'Flutter', 'SwiftUI (iOS)',
-        'Kotlin (Android)', 'Expo'
+        'Kotlin (Android)', 'Expo',
+        ...customOptions.mobileStack
     ];
-
-    // D. Backend Stack (API & business logic)
     const BACKEND_STACK = [
         'Node.js (Express)', 'Node.js (NestJS)', 'FastAPI',
         'Django', 'Django REST Framework', 'Spring Boot',
         '.NET Web API', 'Ruby on Rails', 'Go (Gin / Fiber)',
-        'None (Frontend-only)'
+        'None (Frontend-only)',
+        ...customOptions.backendStack
     ];
-
-    // E. Database (Persistence layer)
     const DATABASE_OPTIONS = [
-        'PostgreSQL', 'MySQL', 'SQLite', 'SQL Server', // SQL
-        'MongoDB', 'Redis', 'DynamoDB', 'Firestore' // NoSQL
+        'PostgreSQL', 'MySQL', 'SQLite', 'SQL Server',
+        'MongoDB', 'Redis', 'DynamoDB', 'Firestore',
+        ...customOptions.database
     ];
-
-    // F. Authentication
     const AUTH_OPTIONS = [
         'Email + Password', 'JWT', 'OAuth (Google, GitHub)',
-        'Session-based', 'None'
+        'Session-based', 'None',
+        ...customOptions.auth
     ];
-
-    // G. API / Communication
     const API_OPTIONS = [
-        'REST', 'GraphQL', 'WebSockets', 'gRPC'
+        'REST', 'GraphQL', 'WebSockets', 'gRPC',
+        ...customOptions.api
     ];
-
-    // H. Dev & Quality (Advanced)
     const DEVOPS_OPTIONS = [
         'Unit tests', 'Integration tests', 'TypeScript',
-        'Linting', 'Docker', 'CI/CD'
+        'Linting', 'Docker', 'CI/CD',
+        ...customOptions.devOps
     ];
 
+    const openAddModal = (e, category) => {
+        e.stopPropagation();
+        setActiveCategory(category);
+        setIsAddModalOpen(true);
+        setCustomValue('');
+    };
+
+    const handleAddCustom = () => {
+        if (!customValue.trim()) {
+            setIsAddModalOpen(false);
+            return;
+        }
+
+        const newValue = customValue.trim();
+
+        setCustomOptions(prev => ({
+            ...prev,
+            [activeCategory]: [...prev[activeCategory], newValue]
+        }));
+
+        // Automatically select the newly added item
+        if (activeCategory === 'database' || activeCategory === 'appType') {
+            handleRadioChange(activeCategory === 'appType' ? 'type' : activeCategory, newValue);
+        } else {
+            handleCheckboxChange(activeCategory, newValue);
+        }
+
+        setIsAddModalOpen(false);
+        setCustomValue('');
+    };
+
+
+    const handleDeleteCustom = (e, category, value) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        setCustomOptions(prev => ({
+            ...prev,
+            [category]: prev[category].filter(opt => opt !== value)
+        }));
+
+        // Remove from formData if it was selected
+        setFormData(prev => {
+            if (category === 'database' || category === 'appType') {
+                const fieldName = category === 'appType' ? 'type' : 'database';
+                const defaultVal = category === 'appType' ? 'Web App' : 'None';
+                return prev[fieldName] === value ? { ...prev, [fieldName]: defaultVal } : prev;
+            } else {
+                const currentList = prev[category] || [];
+                return {
+                    ...prev,
+                    [category]: currentList.filter(item => item !== value)
+                };
+            }
+        });
+    };
 
     const aiControlOptions = ['Controlled', 'Balanced', 'Exploratory'];
 
@@ -198,20 +294,44 @@ const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) =
 
             {/* A. Application Type - Radio Buttons */}
             <div className={styles.fieldSection}>
-                <div className={styles.fieldLabel}>Application Type</div>
+                <div className={styles.fieldLabel}>
+                    Application Type
+                    <FiPlus className={styles.addIcon} title="Add Custom Application Type" onClick={(e) => openAddModal(e, 'appType')} />
+                    <InlineAddPopup
+                        category="appType"
+                        isOpen={isAddModalOpen}
+                        activeCategory={activeCategory}
+                        customValue={customValue}
+                        setCustomValue={setCustomValue}
+                        onAdd={handleAddCustom}
+                        onClose={() => setIsAddModalOpen(false)}
+                    />
+                </div>
                 <div className={styles.checkboxGroup}> {/* Reusing checkboxGroup style for grid layout */}
-                    {APP_TYPES.map(type => (
-                        <label key={type} className={styles.checkboxLabel}>
-                            <input
-                                type="radio"
-                                name="type"
-                                value={type}
-                                checked={formData.type === type}
-                                onChange={() => handleRadioChange('type', type)}
-                            />
-                            {type}
-                        </label>
-                    ))}
+                    {APP_TYPES.map(type => {
+                        const isCustom = customOptions.appType.includes(type);
+                        return (
+                            <div key={type} className={styles.checkboxWrapper}>
+                                <label className={styles.checkboxLabel}>
+                                    <input
+                                        type="radio"
+                                        name="type"
+                                        value={type}
+                                        checked={formData.type === type}
+                                        onChange={() => handleRadioChange('type', type)}
+                                    />
+                                    {type}
+                                </label>
+                                {isCustom && (
+                                    <FiX
+                                        className={styles.removeIcon}
+                                        onClick={(e) => handleDeleteCustom(e, 'appType', type)}
+                                        title="Remove custom option"
+                                    />
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -235,31 +355,79 @@ const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) =
                         {/* B. Frontend Stack */}
                         {showFrontend() && (
                             <div className={styles.fieldSection}>
-                                <div className={styles.fieldLabel}>Frontend Frameworks</div>
-                                <div className={styles.checkboxGroup}>
-                                    {FRONTEND_FRAMEWORKS.map(opt => (
-                                        <label key={opt} className={styles.checkboxLabel}>
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.frontendStack.includes(opt)}
-                                                onChange={() => handleCheckboxChange('frontendStack', opt)}
-                                            />
-                                            {opt}
-                                        </label>
-                                    ))}
+                                <div className={styles.fieldLabel}>
+                                    Frontend Frameworks
+                                    <FiPlus className={styles.addIcon} title="Add Custom Framework" onClick={(e) => openAddModal(e, 'frontendStack')} />
+                                    <InlineAddPopup
+                                        category="frontendStack"
+                                        isOpen={isAddModalOpen}
+                                        activeCategory={activeCategory}
+                                        customValue={customValue}
+                                        setCustomValue={setCustomValue}
+                                        onAdd={handleAddCustom}
+                                        onClose={() => setIsAddModalOpen(false)}
+                                    />
                                 </div>
-                                <div className={styles.fieldLabel} style={{ marginTop: '10px' }}>Styling</div>
                                 <div className={styles.checkboxGroup}>
-                                    {STYLING_OPTIONS.map(opt => (
-                                        <label key={opt} className={styles.checkboxLabel}>
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.frontendStyling.includes(opt)}
-                                                onChange={() => handleCheckboxChange('frontendStyling', opt)}
-                                            />
-                                            {opt}
-                                        </label>
-                                    ))}
+                                    {FRONTEND_FRAMEWORKS.map(opt => {
+                                        const isCustom = customOptions.frontendStack.includes(opt);
+                                        return (
+                                            <div key={opt} className={styles.checkboxWrapper}>
+                                                <label className={styles.checkboxLabel}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.frontendStack.includes(opt)}
+                                                        onChange={() => handleCheckboxChange('frontendStack', opt)}
+                                                    />
+                                                    {opt}
+                                                </label>
+                                                {isCustom && (
+                                                    <FiX
+                                                        className={styles.removeIcon}
+                                                        onClick={(e) => handleDeleteCustom(e, 'frontendStack', opt)}
+                                                        title="Remove custom option"
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <div className={styles.fieldLabel} style={{ marginTop: '10px' }}>
+                                    Styling
+                                    <FiPlus className={styles.addIcon} title="Add Custom Styling" onClick={(e) => openAddModal(e, 'frontendStyling')} />
+                                    <InlineAddPopup
+                                        category="frontendStyling"
+                                        isOpen={isAddModalOpen}
+                                        activeCategory={activeCategory}
+                                        customValue={customValue}
+                                        setCustomValue={setCustomValue}
+                                        onAdd={handleAddCustom}
+                                        onClose={() => setIsAddModalOpen(false)}
+                                    />
+                                </div>
+                                <div className={styles.checkboxGroup}>
+                                    {STYLING_OPTIONS.map(opt => {
+                                        const isCustom = customOptions.frontendStyling.includes(opt);
+                                        return (
+                                            <div key={opt} className={styles.checkboxWrapper}>
+                                                <label className={styles.checkboxLabel}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.frontendStyling.includes(opt)}
+                                                        onChange={() => handleCheckboxChange('frontendStyling', opt)}
+                                                    />
+                                                    {opt}
+                                                </label>
+                                                {isCustom && (
+                                                    <FiX
+                                                        className={styles.removeIcon}
+                                                        onClick={(e) => handleDeleteCustom(e, 'frontendStyling', opt)}
+                                                        title="Remove custom option"
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -267,119 +435,244 @@ const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) =
                         {/* C. Mobile Stack */}
                         {showMobile() && (
                             <div className={styles.fieldSection}>
-                                <div className={styles.fieldLabel}>Mobile Stack</div>
+                                <div className={styles.fieldLabel}>
+                                    Mobile Stack
+                                    <FiPlus className={styles.addIcon} title="Add Custom Mobile Framework" onClick={(e) => openAddModal(e, 'mobileStack')} />
+                                    <InlineAddPopup
+                                        category="mobileStack"
+                                        isOpen={isAddModalOpen}
+                                        activeCategory={activeCategory}
+                                        customValue={customValue}
+                                        setCustomValue={setCustomValue}
+                                        onAdd={handleAddCustom}
+                                        onClose={() => setIsAddModalOpen(false)}
+                                    />
+                                </div>
                                 <div className={styles.checkboxGroup}>
-                                    {MOBILE_STACK.map(opt => (
-                                        <label key={opt} className={styles.checkboxLabel}>
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.mobileStack.includes(opt)}
-                                                onChange={() => handleCheckboxChange('mobileStack', opt)}
-                                            />
-                                            {opt}
-                                        </label>
-                                    ))}
+                                    {MOBILE_STACK.map(opt => {
+                                        const isCustom = customOptions.mobileStack.includes(opt);
+                                        return (
+                                            <div key={opt} className={styles.checkboxWrapper}>
+                                                <label className={styles.checkboxLabel}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={formData.mobileStack.includes(opt)}
+                                                        onChange={() => handleCheckboxChange('mobileStack', opt)}
+                                                    />
+                                                    {opt}
+                                                </label>
+                                                {isCustom && (
+                                                    <FiX
+                                                        className={styles.removeIcon}
+                                                        onClick={(e) => handleDeleteCustom(e, 'mobileStack', opt)}
+                                                        title="Remove custom option"
+                                                    />
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
 
                         {/* D. Backend Stack */}
                         <div className={styles.fieldSection}>
-                            <div className={styles.fieldLabel}>Backend Stack</div>
+                            <div className={styles.fieldLabel}>
+                                Backend Stack
+                                <FiPlus className={styles.addIcon} title="Add Custom Backend Framework" onClick={(e) => openAddModal(e, 'backendStack')} />
+                                <InlineAddPopup
+                                    category="backendStack"
+                                    isOpen={isAddModalOpen}
+                                    activeCategory={activeCategory}
+                                    customValue={customValue}
+                                    setCustomValue={setCustomValue}
+                                    onAdd={handleAddCustom}
+                                    onClose={() => setIsAddModalOpen(false)}
+                                />
+                            </div>
                             <div className={styles.checkboxGroup}>
-                                {BACKEND_STACK.map(opt => (
-                                    <label key={opt} className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.backendStack.includes(opt)}
-                                            onChange={() => handleCheckboxChange('backendStack', opt)}
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
+                                {BACKEND_STACK.map(opt => {
+                                    const isCustom = customOptions.backendStack.includes(opt);
+                                    return (
+                                        <div key={opt} className={styles.checkboxWrapper}>
+                                            <label className={styles.checkboxLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.backendStack.includes(opt)}
+                                                    onChange={() => handleCheckboxChange('backendStack', opt)}
+                                                />
+                                                {opt}
+                                            </label>
+                                            {isCustom && (
+                                                <FiX
+                                                    className={styles.removeIcon}
+                                                    onClick={(e) => handleDeleteCustom(e, 'backendStack', opt)}
+                                                    title="Remove custom option"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
                         {/* E. Database */}
                         <div className={styles.fieldSection}>
-                            <div className={styles.fieldLabel}>Database</div>
+                            <div className={styles.fieldLabel}>
+                                Database
+                                <FiPlus className={styles.addIcon} title="Add Custom Database" onClick={(e) => openAddModal(e, 'database')} />
+                                <InlineAddPopup
+                                    category="database"
+                                    isOpen={isAddModalOpen}
+                                    activeCategory={activeCategory}
+                                    customValue={customValue}
+                                    setCustomValue={setCustomValue}
+                                    onAdd={handleAddCustom}
+                                    onClose={() => setIsAddModalOpen(false)}
+                                />
+                            </div>
                             <div className={styles.checkboxGroup}>
-                                {DATABASE_OPTIONS.map(opt => (
-                                    <label key={opt} className={styles.checkboxLabel}>
-                                        <input
-                                            type="radio"
-                                            name="database"
-                                            value={opt}
-                                            checked={formData.database === opt}
-                                            onClick={() => {
-                                                if (formData.database === opt) {
-                                                    handleRadioChange('database', 'None');
-                                                } else {
-                                                    handleRadioChange('database', opt);
-                                                }
-                                            }}
-                                            onChange={() => { }} // specific handler above
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
+                                {DATABASE_OPTIONS.map(opt => {
+                                    const isCustom = customOptions.database.includes(opt);
+                                    return (
+                                        <div key={opt} className={styles.checkboxWrapper}>
+                                            <label className={styles.checkboxLabel}>
+                                                <input
+                                                    type="radio"
+                                                    name="database"
+                                                    value={opt}
+                                                    checked={formData.database === opt}
+                                                    onClick={() => {
+                                                        if (formData.database === opt) {
+                                                            handleRadioChange('database', 'None');
+                                                        } else {
+                                                            handleRadioChange('database', opt);
+                                                        }
+                                                    }}
+                                                    onChange={() => { }} // specific handler above
+                                                />
+                                                {opt}
+                                            </label>
+                                            {isCustom && (
+                                                <FiX
+                                                    className={styles.removeIcon}
+                                                    onClick={(e) => handleDeleteCustom(e, 'database', opt)}
+                                                    title="Remove custom option"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
                         {/* F. Authentication */}
                         <div className={styles.fieldSection}>
-                            <div className={styles.fieldLabel}>Authentication</div>
+                            <div className={styles.fieldLabel}>
+                                Authentication
+                                <FiPlus className={styles.addIcon} title="Add Custom Auth Option" onClick={(e) => openAddModal(e, 'auth')} />
+                                <InlineAddPopup
+                                    category="auth"
+                                    isOpen={isAddModalOpen}
+                                    activeCategory={activeCategory}
+                                    customValue={customValue}
+                                    setCustomValue={setCustomValue}
+                                    onAdd={handleAddCustom}
+                                    onClose={() => setIsAddModalOpen(false)}
+                                />
+                            </div>
                             <div className={styles.checkboxGroup}>
-                                {AUTH_OPTIONS.map(opt => (
-                                    <label key={opt} className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.auth.includes(opt)}
-                                            onChange={() => handleCheckboxChange('auth', opt)}
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
+                                {AUTH_OPTIONS.map(opt => {
+                                    const isCustom = customOptions.auth.includes(opt);
+                                    return (
+                                        <div key={opt} className={styles.checkboxWrapper}>
+                                            <label className={styles.checkboxLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.auth.includes(opt)}
+                                                    onChange={() => handleCheckboxChange('auth', opt)}
+                                                />
+                                                {opt}
+                                            </label>
+                                            {isCustom && (
+                                                <FiX
+                                                    className={styles.removeIcon}
+                                                    onClick={(e) => handleDeleteCustom(e, 'auth', opt)}
+                                                    title="Remove custom option"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
                         {/* G. API / Communication */}
                         <div className={styles.fieldSection}>
-                            <div className={styles.fieldLabel}>API / Communication</div>
+                            <div className={styles.fieldLabel}>
+                                API / Communication
+                                <FiPlus className={styles.addIcon} title="Add Custom API Option" onClick={(e) => openAddModal(e, 'api')} />
+                                <InlineAddPopup
+                                    category="api"
+                                    isOpen={isAddModalOpen}
+                                    activeCategory={activeCategory}
+                                    customValue={customValue}
+                                    setCustomValue={setCustomValue}
+                                    onAdd={handleAddCustom}
+                                    onClose={() => setIsAddModalOpen(false)}
+                                />
+                            </div>
                             <div className={styles.checkboxGroup}>
-                                {API_OPTIONS.map(opt => (
-                                    <label key={opt} className={styles.checkboxLabel}>
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.api.includes(opt)}
-                                            onChange={() => handleCheckboxChange('api', opt)}
-                                        />
-                                        {opt}
-                                    </label>
-                                ))}
+                                {API_OPTIONS.map(opt => {
+                                    const isCustom = customOptions.api.includes(opt);
+                                    return (
+                                        <div key={opt} className={styles.checkboxWrapper}>
+                                            <label className={styles.checkboxLabel}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.api.includes(opt)}
+                                                    onChange={() => handleCheckboxChange('api', opt)}
+                                                />
+                                                {opt}
+                                            </label>
+                                            {isCustom && (
+                                                <FiX
+                                                    className={styles.removeIcon}
+                                                    onClick={(e) => handleDeleteCustom(e, 'api', opt)}
+                                                    title="Remove custom option"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
                         {/* H. Dev & Quality */}
                         <div className={styles.fieldSection}>
-                            <div
-                                className={styles.advancedToggle}
-                                onClick={() => setIsDevOpsOpen(!isDevOpsOpen)}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <span>Dev & Quality (Advanced)</span>
-                                <FiChevronDown
-                                    className={styles.chevron}
-                                    style={{ transform: isDevOpsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                            <div className={styles.fieldLabel}>
+                                Dev & Quality
+                                <FiPlus
+                                    className={styles.addIcon}
+                                    onClick={(e) => openAddModal(e, 'devOps')}
+                                    title="Add Custom Test/Dev Option"
+                                />
+                                <InlineAddPopup
+                                    category="devOps"
+                                    isOpen={isAddModalOpen}
+                                    activeCategory={activeCategory}
+                                    customValue={customValue}
+                                    setCustomValue={setCustomValue}
+                                    onAdd={handleAddCustom}
+                                    onClose={() => setIsAddModalOpen(false)}
                                 />
                             </div>
-
-                            {isDevOpsOpen && (
-                                <div className={styles.advancedContent}>
-                                    <div className={styles.checkboxGroup}>
-                                        {DEVOPS_OPTIONS.map(opt => (
-                                            <label key={opt} className={styles.checkboxLabel}>
+                            <div className={styles.checkboxGroup}>
+                                {DEVOPS_OPTIONS.map(opt => {
+                                    const isCustom = customOptions.devOps.includes(opt);
+                                    return (
+                                        <div key={opt} className={styles.checkboxWrapper}>
+                                            <label className={styles.checkboxLabel}>
                                                 <input
                                                     type="checkbox"
                                                     checked={formData.devOps.includes(opt)}
@@ -387,10 +680,17 @@ const ProjectForm = ({ onSubmit, isSubmitting, selectedModel, onModelChange }) =
                                                 />
                                                 {opt}
                                             </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                            {isCustom && (
+                                                <FiX
+                                                    className={styles.removeIcon}
+                                                    onClick={(e) => handleDeleteCustom(e, 'devOps', opt)}
+                                                    title="Remove custom option"
+                                                />
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 )}
