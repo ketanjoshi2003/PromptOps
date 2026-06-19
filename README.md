@@ -4,7 +4,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![React](https://img.shields.io/badge/React-19.0-61DAFB)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.95%2B-009688)
-![License](https://img.shields.io/badge/License-Proprietary-red)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 **PromptOps** is a specialized prompt engineering platform designed to supercharge AI-assisted software development. It generates context-rich, high-level prompts optimized for AI-native IDEs like **Antigravity**, **Cursor**, **Blackbox**, and **Claude Dev**.
 
@@ -94,8 +94,7 @@ UI: `http://localhost:5173` | API Docs: `http://localhost:8000/docs`
 
 ## 📄 License
 
-Copyright (c) 2026 Ketan Joshi. All Rights Reserved.
-This project is proprietary software. Unauthorized copying, modification, distribution, or use is strictly prohibited.
+This project is open-source software licensed under the [MIT License](LICENSE).
 
 ---
-*Developed by Ketan Joshi for Educational Purpose.*
+*Developed by Ketan Joshi.*
